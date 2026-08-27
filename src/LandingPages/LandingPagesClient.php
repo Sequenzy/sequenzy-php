@@ -27,6 +27,7 @@ use Sequenzy\LandingPages\Types\ListLandingPagesResponse;
 use Sequenzy\LandingPages\Requests\PublishLandingPagesRequest;
 use Sequenzy\LandingPages\Types\PublishLandingPagesResponse;
 use Sequenzy\LandingPages\Types\RemoveDedicatedDomainLandingPagesResponse;
+use Sequenzy\LandingPages\Types\RenderLandingPagesResponse;
 use Sequenzy\LandingPages\Requests\UnpublishLandingPagesRequest;
 use Sequenzy\LandingPages\Types\UnpublishLandingPagesResponse;
 use Sequenzy\LandingPages\Requests\UpdateLandingPagesRequest;
@@ -677,6 +678,61 @@ class LandingPagesClient
                     return null;
                 }
                 return RemoveDedicatedDomainLandingPagesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns a signed, unlisted preview URL for the current landing page content. Works for drafts. Does not publish the page or collect signup form submissions on a draft preview.
+     *
+     * Example:
+     * ```php
+     * $client->landingPages->render(
+     *     'landingPageId',
+     * );
+     * ```
+     *
+     * @param string $landingPageId Landing page ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?RenderLandingPagesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function render(string $landingPageId, ?array $options = null): ?RenderLandingPagesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "landing-pages/{$landingPageId}/render",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return RenderLandingPagesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

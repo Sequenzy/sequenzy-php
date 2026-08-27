@@ -5,7 +5,7 @@
   "generatorConfig": {
     "namespace": "Sequenzy"
   },
-  "originGitCommit": "5be721ac3768e1b476bb1a6fdde210b1e0a8f0f9",
+  "originGitCommit": "b40b386a34b5721a4a57b21056fd375877e169ee",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
   "ciProvider": "github"

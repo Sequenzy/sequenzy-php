@@ -8397,6 +8397,62 @@ $client->landingPages->removeDedicatedDomain(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;landingPages-&gt;render($landingPageId) -> ?RenderLandingPagesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a signed, unlisted preview URL for the current landing page content. Works for drafts. Does not publish the page or collect signup form submissions on a draft preview.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->landingPages->render(
+    'landingPageId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$landingPageId:** `string` — Landing page ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;landingPages-&gt;unpublish($landingPageId, $request) -> ?UnpublishLandingPagesResponse</code></summary>
 <dl>
 <dd>
@@ -19114,6 +19170,10 @@ Maximum 10 attachments and 7MB total per email.
 
 Custom from address. Format: "Name <email>" or just "email".
 The domain must be verified for your account. If not verified, this field is silently ignored.
+When the address exactly matches an existing sender identity (the display name disambiguates if
+several identities share the address), that identity - including its sending route - is used for
+the send; otherwise the template or company-default identity is kept and this field only changes
+the visible From.
     
 </dd>
 </dl>

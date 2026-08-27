@@ -64,6 +64,12 @@ class LandingPageSummary extends JsonSerializableType
     public ?string $name;
 
     /**
+     * @var ?string $previewUrl Signed, unlisted visitor-facing preview of the current content. Works for drafts. Not indexed.
+     */
+    #[JsonProperty('previewUrl')]
+    public ?string $previewUrl;
+
+    /**
      * @var ?string $publicUrl Custom-domain public URL when a verified custom domain is connected, otherwise the Sequenzy-hosted public URL.
      */
     #[JsonProperty('publicUrl')]
@@ -116,6 +122,7 @@ class LandingPageSummary extends JsonSerializableType
      *   customDomainScope?: ?value-of<LandingPageSummaryCustomDomainScope>,
      *   id?: ?string,
      *   name?: ?string,
+     *   previewUrl?: ?string,
      *   publicUrl?: ?string,
      *   publishedAt?: ?DateTime,
      *   slug?: ?string,
@@ -137,6 +144,7 @@ class LandingPageSummary extends JsonSerializableType
         $this->customDomainScope = $values['customDomainScope'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->name = $values['name'] ?? null;
+        $this->previewUrl = $values['previewUrl'] ?? null;
         $this->publicUrl = $values['publicUrl'] ?? null;
         $this->publishedAt = $values['publishedAt'] ?? null;
         $this->slug = $values['slug'] ?? null;
