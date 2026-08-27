@@ -1,0 +1,12 @@
+{
+  "cliVersion": "5.103.0",
+  "generatorName": "fernapi/fern-php-sdk",
+  "generatorVersion": "2.20.4",
+  "generatorConfig": {
+    "namespace": "Sequenzy"
+  },
+  "originGitCommit": "5be721ac3768e1b476bb1a6fdde210b1e0a8f0f9",
+  "originGitCommitIsDirty": false,
+  "invokedBy": "ci",
+  "ciProvider": "github"
+}
