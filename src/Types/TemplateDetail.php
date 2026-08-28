@@ -13,6 +13,18 @@ class TemplateDetail extends JsonSerializableType
     use TemplateSummary;
 
     /**
+     * Present when this email belongs to one or more A/B test
+     * variants and the key has ab_tests:read. Content edits must use
+     * the A/B variant update endpoint / `update_ab_test_variant`
+     * tool, not PUT /templates/{templateId}. Campaign variants can
+     * share one email, so each test lists every matching variant.
+     *
+     * @var ?array<TemplateAbTestReference> $abTests
+     */
+    #[JsonProperty('abTests'), ArrayType([TemplateAbTestReference::class])]
+    public ?array $abTests;
+
+    /**
      * @var ?array<EmailBlock> $blocks
      */
     #[JsonProperty('blocks'), ArrayType([EmailBlock::class])]
@@ -56,6 +68,7 @@ class TemplateDetail extends JsonSerializableType
      *   previewText?: ?string,
      *   subject?: ?string,
      *   updatedAt?: ?DateTime,
+     *   abTests?: ?array<TemplateAbTestReference>,
      *   blocks?: ?array<EmailBlock>,
      *   companyId?: ?string,
      *   emailLocalizationConfig?: ?array<string, mixed>,
@@ -75,6 +88,7 @@ class TemplateDetail extends JsonSerializableType
         $this->previewText = $values['previewText'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->updatedAt = $values['updatedAt'] ?? null;
+        $this->abTests = $values['abTests'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
         $this->companyId = $values['companyId'] ?? null;
         $this->emailLocalizationConfig = $values['emailLocalizationConfig'] ?? null;

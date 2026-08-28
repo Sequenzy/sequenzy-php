@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * A/B test attached to an action_ab_test step. The step's own subject, previewText, and blocks are control variant A only. Without ab_tests:read, record-backed fields are null and variants is empty while the configured id and editing guidance remain available.
+ * A/B test attached to an action_ab_test step. The step's own subject, previewText, and blocks are control variant A only. With ab_tests:read, variants[] includes each variant's full blocks. Without ab_tests:read, record-backed fields are null and variants is empty while the configured id and editing guidance remain available.
  */
 class SequenceAbTestStepSummary extends JsonSerializableType
 {

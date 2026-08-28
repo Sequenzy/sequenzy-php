@@ -26,6 +26,8 @@ use Sequenzy\AbTests\Requests\ListAbTestsRequest;
 use Sequenzy\AbTests\Types\ListAbTestsResponse;
 use Sequenzy\AbTests\Requests\RestartAbTestsRequest;
 use Sequenzy\AbTests\Types\RestartAbTestsResponse;
+use Sequenzy\AbTests\Requests\SelectWinnerAbTestsRequest;
+use Sequenzy\AbTests\Types\SelectWinnerAbTestsResponse;
 use Sequenzy\AbTests\Requests\UpdateAbTestsRequest;
 use Sequenzy\AbTests\Types\UpdateAbTestsResponse;
 use Sequenzy\AbTests\Requests\UpdateVariantAbTestsRequest;
@@ -533,6 +535,66 @@ class AbTestsClient
                     return null;
                 }
                 return RestartAbTestsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+     *
+     * Example:
+     * ```php
+     * $client->abTests->selectWinner(
+     *     'abTestId',
+     *     new SelectWinnerAbTestsRequest([
+     *         'variantId' => 'variantId',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $abTestId
+     * @param SelectWinnerAbTestsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SelectWinnerAbTestsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function selectWinner(string $abTestId, SelectWinnerAbTestsRequest $request, ?array $options = null): ?SelectWinnerAbTestsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "ab-tests/{$abTestId}/select-winner",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SelectWinnerAbTestsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

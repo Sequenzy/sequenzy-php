@@ -4,14 +4,21 @@ namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
 
 class SequenceAbTestStepVariant extends JsonSerializableType
 {
     /**
-     * @var ?float $blockCount Number of blocks in this variant's body. Read the blocks themselves with GET /ab-tests/{abTestId}.
+     * @var ?float $blockCount Number of blocks in this variant's body. Same as blocks.length.
      */
     #[JsonProperty('blockCount')]
     public ?float $blockCount;
+
+    /**
+     * @var ?array<EmailBlock> $blocks This variant's email body. Present when ab_tests:read is granted. Step-level blocks remain control variant A only.
+     */
+    #[JsonProperty('blocks'), ArrayType([EmailBlock::class])]
+    public ?array $blocks;
 
     /**
      * @var ?string $emailId Email template holding this variant's stored copy.
@@ -52,6 +59,7 @@ class SequenceAbTestStepVariant extends JsonSerializableType
     /**
      * @param array{
      *   blockCount?: ?float,
+     *   blocks?: ?array<EmailBlock>,
      *   emailId?: ?string,
      *   isWinner?: ?bool,
      *   previewText?: ?string,
@@ -64,6 +72,7 @@ class SequenceAbTestStepVariant extends JsonSerializableType
         array $values = [],
     ) {
         $this->blockCount = $values['blockCount'] ?? null;
+        $this->blocks = $values['blocks'] ?? null;
         $this->emailId = $values['emailId'] ?? null;
         $this->isWinner = $values['isWinner'] ?? null;
         $this->previewText = $values['previewText'] ?? null;
