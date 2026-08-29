@@ -11,6 +11,7 @@ use Sequenzy\Companies\CompaniesClient;
 use Sequenzy\Conversations\ConversationsClient;
 use Sequenzy\EmailBlocks\EmailBlocksClient;
 use Sequenzy\EmailComponents\EmailComponentsClient;
+use Sequenzy\EmailDesignSystem\EmailDesignSystemClient;
 use Sequenzy\Emails\EmailsClient;
 use Sequenzy\EmailSends\EmailSendsClient;
 use Sequenzy\Events\EventsClient;
@@ -91,6 +92,11 @@ class SequenzyClient
      * @var EmailComponentsClient $emailComponents
      */
     public EmailComponentsClient $emailComponents;
+
+    /**
+     * @var EmailDesignSystemClient $emailDesignSystem
+     */
+    public EmailDesignSystemClient $emailDesignSystem;
 
     /**
      * @var EmailsClient $emails
@@ -305,6 +311,7 @@ class SequenzyClient
         $this->conversations = new ConversationsClient($this->client, $this->options);
         $this->emailBlocks = new EmailBlocksClient($this->client, $this->options);
         $this->emailComponents = new EmailComponentsClient($this->client, $this->options);
+        $this->emailDesignSystem = new EmailDesignSystemClient($this->client, $this->options);
         $this->emails = new EmailsClient($this->client, $this->options);
         $this->emailSends = new EmailSendsClient($this->client, $this->options);
         $this->events = new EventsClient($this->client, $this->options);

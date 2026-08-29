@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#ffffff"}} repaints only the background. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
+ * Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#f3f4f6"}} repaints only the outer canvas, while content controls the inner card the blocks sit on. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
  */
 class EmailThemePatch extends JsonSerializableType
 {

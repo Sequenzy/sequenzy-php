@@ -43,7 +43,7 @@ class CreateSubscribersRequest extends JsonSerializableType
     public ?string $email;
 
     /**
-     * @var ?bool $enrollInSequences Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied.
+     * @var ?bool $enrollInSequences Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied. Explicitly passing true requires the automations:trigger scope and returns 403 when that scope is missing.
      */
     #[JsonProperty('enrollInSequences')]
     public ?bool $enrollInSequences;

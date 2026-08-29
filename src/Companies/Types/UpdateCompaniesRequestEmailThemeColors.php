@@ -11,7 +11,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class UpdateCompaniesRequestEmailThemeColors extends JsonSerializableType
 {
     /**
-     * @var ?string $background
+     * @var ?string $background Outer canvas behind the email.
      */
     #[JsonProperty('background')]
     public ?string $background;
@@ -27,6 +27,12 @@ class UpdateCompaniesRequestEmailThemeColors extends JsonSerializableType
      */
     #[JsonProperty('buttonText')]
     public ?string $buttonText;
+
+    /**
+     * @var ?string $content Inner content card. Omit to preserve its current effective color.
+     */
+    #[JsonProperty('content')]
+    public ?string $content;
 
     /**
      * @var ?string $heading
@@ -53,7 +59,7 @@ class UpdateCompaniesRequestEmailThemeColors extends JsonSerializableType
     public ?string $primary;
 
     /**
-     * @var ?string $surface
+     * @var ?string $surface Nested cards and tinted tiles.
      */
     #[JsonProperty('surface')]
     public ?string $surface;
@@ -69,6 +75,7 @@ class UpdateCompaniesRequestEmailThemeColors extends JsonSerializableType
      *   background?: ?string,
      *   border?: ?string,
      *   buttonText?: ?string,
+     *   content?: ?string,
      *   heading?: ?string,
      *   link?: ?string,
      *   mutedText?: ?string,
@@ -83,6 +90,7 @@ class UpdateCompaniesRequestEmailThemeColors extends JsonSerializableType
         $this->background = $values['background'] ?? null;
         $this->border = $values['border'] ?? null;
         $this->buttonText = $values['buttonText'] ?? null;
+        $this->content = $values['content'] ?? null;
         $this->heading = $values['heading'] ?? null;
         $this->link = $values['link'] ?? null;
         $this->mutedText = $values['mutedText'] ?? null;

@@ -42,7 +42,7 @@ class RenderEmailRequest extends JsonSerializableType
     public ?array $variables;
 
     /**
-     * @var ?string $variantId Render a specific A/B test variant. Ignored for templates.
+     * @var ?string $variantId Render a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test; those steps have no email of their own. Sequence variants also need the ab_tests:read scope. Ignored for templates.
      */
     #[JsonProperty('variantId')]
     public ?string $variantId;
