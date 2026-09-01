@@ -8,7 +8,7 @@ use Sequenzy\Core\Types\ArrayType;
 use DateTime;
 use Sequenzy\Core\Types\Date;
 
-class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
+class SequenceEnrollmentGetResponseEnrollment extends JsonSerializableType
 {
     /**
      * @var ?int $branchDecisionCount Total decisions taken, including decisions omitted from the bounded array.
@@ -77,10 +77,10 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
     public ?DateTime $enrollmentStartedAt;
 
     /**
-     * @var ?SequenceEnrollmentListResponseEnrollmentsItemEnteredVia $enteredVia What put this contact into the sequence. The distinguishing detail when a trigger covers several lists or tags.
+     * @var ?SequenceEnrollmentGetResponseEnrollmentEnteredVia $enteredVia What put this contact into the sequence. The distinguishing detail when a trigger covers several lists or tags.
      */
     #[JsonProperty('enteredVia')]
-    public ?SequenceEnrollmentListResponseEnrollmentsItemEnteredVia $enteredVia;
+    public ?SequenceEnrollmentGetResponseEnrollmentEnteredVia $enteredVia;
 
     /**
      * @var ?SequenceEnrollmentEntryContext $entryContext
@@ -137,7 +137,7 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
     public ?string $sequenceId;
 
     /**
-     * @var ?value-of<SequenceEnrollmentListResponseEnrollmentsItemStatus> $status
+     * @var ?value-of<SequenceEnrollmentGetResponseEnrollmentStatus> $status
      */
     #[JsonProperty('status')]
     public ?string $status;
@@ -185,7 +185,7 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
      *   enrollmentId?: ?string,
      *   enrollmentKey?: ?string,
      *   enrollmentStartedAt?: ?DateTime,
-     *   enteredVia?: ?SequenceEnrollmentListResponseEnrollmentsItemEnteredVia,
+     *   enteredVia?: ?SequenceEnrollmentGetResponseEnrollmentEnteredVia,
      *   entryContext?: ?SequenceEnrollmentEntryContext,
      *   failedReason?: ?string,
      *   firstName?: ?string,
@@ -195,7 +195,7 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
      *   movedFromNodeId?: ?string,
      *   moveReason?: ?string,
      *   sequenceId?: ?string,
-     *   status?: ?value-of<SequenceEnrollmentListResponseEnrollmentsItemStatus>,
+     *   status?: ?value-of<SequenceEnrollmentGetResponseEnrollmentStatus>,
      *   stopConditionMatches?: ?bool,
      *   stopConditionMatchReason?: ?string,
      *   subscriberId?: ?string,

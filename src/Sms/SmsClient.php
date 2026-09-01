@@ -106,7 +106,7 @@ class SmsClient
     }
 
     /**
-     * Sends a real test text message. Test sends charge credits, bypass quiet hours, are excluded from step stats, and are limited to 5 per company per hour. Requires the SMS add-on with a verified number.
+     * Sends a real test text message. Test sends charge credits, bypass quiet hours, are excluded from step stats, and are limited to 100 per company in a rolling 24-hour window. Requires the SMS add-on with a verified number.
      *
      * Example:
      * ```php

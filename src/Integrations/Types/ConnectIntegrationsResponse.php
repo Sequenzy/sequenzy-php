@@ -39,7 +39,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
-     * @var ?string $webhookUrl URL to configure in the provider's webhook settings with the same secret.
+     * @var ?string $webhookUrl URL to configure in the provider's webhook settings with the same secret. Empty for Attio, which is outbound-only.
      */
     #[JsonProperty('webhookUrl')]
     public ?string $webhookUrl;

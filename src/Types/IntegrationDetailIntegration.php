@@ -23,7 +23,7 @@ class IntegrationDetailIntegration extends JsonSerializableType
     public ?DateTime $connectedAt;
 
     /**
-     * @var ?array<string, mixed> $details Allowlisted non-secret metadata. Never contains credentials.
+     * @var ?array<string, mixed> $details Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, and syncCompanyFromDomain for configuration diagnostics.
      */
     #[JsonProperty('details'), ArrayType(['string' => 'mixed'])]
     public ?array $details;

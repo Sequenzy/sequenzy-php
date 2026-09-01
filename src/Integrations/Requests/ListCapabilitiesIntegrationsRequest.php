@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 class ListCapabilitiesIntegrationsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $category Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, or developer.
+     * @var ?string $category Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, crm, or developer.
      */
     public ?string $category;
 

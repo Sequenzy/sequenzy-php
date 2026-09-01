@@ -15,6 +15,7 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Integrations\Requests\ConnectIntegrationsRequest;
 use Sequenzy\Integrations\Types\ConnectIntegrationsResponse;
 use Sequenzy\Types\IntegrationDetail;
+use Sequenzy\Types\IntegrationAttioMapping;
 use Sequenzy\Types\IntegrationPixelState;
 use Sequenzy\Integrations\Requests\ListIntegrationsRequest;
 use Sequenzy\Integrations\Types\ListIntegrationsResponse;
@@ -23,6 +24,7 @@ use Sequenzy\Integrations\Types\ListActivityIntegrationsResponse;
 use Sequenzy\Integrations\Requests\ListCapabilitiesIntegrationsRequest;
 use Sequenzy\Integrations\Types\ListCapabilitiesIntegrationsResponse;
 use Sequenzy\Integrations\Types\SyncIntegrationsResponse;
+use Sequenzy\Integrations\Requests\UpdateAttioSettingsRequest;
 use Sequenzy\Integrations\Requests\UpdateSyncIntegrationsRequest;
 use Sequenzy\Integrations\Types\UpdateSyncIntegrationsResponse;
 
@@ -118,14 +120,13 @@ class IntegrationsClient
     }
 
     /**
-     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, or affonso. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. The response includes the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
+     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only and returns an empty webhookUrl. Other providers include the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
      *
      * Example:
      * ```php
      * $client->integrations->connect(
      *     new ConnectIntegrationsRequest([
      *         'provider' => ConnectIntegrationsRequestProvider::Polar->value,
-     *         'webhookSecret' => 'webhookSecret',
      *     ]),
      * );
      * ```
@@ -218,6 +219,61 @@ class IntegrationsClient
                     return null;
                 }
                 return IntegrationDetail::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Reads a connected Attio integration's saved Sequenzy-to-Attio list map, this company's Sequenzy lists, and live Attio people-lists using the stored access token. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
+     *
+     * Example:
+     * ```php
+     * $client->integrations->getAttioMapping(
+     *     'id',
+     * );
+     * ```
+     *
+     * @param string $id Attio integration ID.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?IntegrationAttioMapping
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getAttioMapping(string $id, ?array $options = null): ?IntegrationAttioMapping
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "integrations/{$id}/attio",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return IntegrationAttioMapping::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -520,6 +576,64 @@ class IntegrationsClient
                     return null;
                 }
                 return SyncIntegrationsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Saves Sequenzy-to-Attio list mappings and/or company-matching on an already-connected Attio integration using the stored access token. Does not require the secret again. listMap is a full replacement when provided; an empty object clears every mapping. Provide at least one of listMap or syncCompanyFromDomain. Idempotent. Attio only. Requires the integrations:manage scope.
+     *
+     * Example:
+     * ```php
+     * $client->integrations->updateAttioSettings(
+     *     'id',
+     *     new UpdateAttioSettingsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $id Attio integration ID.
+     * @param UpdateAttioSettingsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?IntegrationAttioMapping
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function updateAttioSettings(string $id, UpdateAttioSettingsRequest $request = new UpdateAttioSettingsRequest(), ?array $options = null): ?IntegrationAttioMapping
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "integrations/{$id}/attio",
+                    method: HttpMethod::PATCH,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return IntegrationAttioMapping::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

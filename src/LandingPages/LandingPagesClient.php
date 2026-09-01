@@ -23,6 +23,8 @@ use Sequenzy\LandingPages\Types\DuplicateLandingPagesResponse;
 use Sequenzy\LandingPages\Types\GetLandingPagesResponse;
 use Sequenzy\LandingPages\Types\GetDedicatedDomainLandingPagesResponse;
 use Sequenzy\LandingPages\Types\GetDomainLandingPagesResponse;
+use Sequenzy\LandingPages\Requests\GetStatsLandingPagesRequest;
+use Sequenzy\LandingPages\Types\GetStatsLandingPagesResponse;
 use Sequenzy\LandingPages\Types\ListLandingPagesResponse;
 use Sequenzy\LandingPages\Requests\PublishLandingPagesRequest;
 use Sequenzy\LandingPages\Types\PublishLandingPagesResponse;
@@ -513,6 +515,77 @@ class LandingPagesClient
                     return null;
                 }
                 return GetDomainLandingPagesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns visits, unique visits, clicks, subscribes, conversion rate, a daily histogram, referrers, UTM sources, and crawler hits. Default totals exclude known crawlers. Preview URLs and the editor never count. The all period covers retained analytics only; dataAvailableFrom marks the beginning of available event coverage.
+     *
+     * Example:
+     * ```php
+     * $client->landingPages->getStats(
+     *     'landingPageId',
+     *     new GetStatsLandingPagesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $landingPageId Landing page ID
+     * @param GetStatsLandingPagesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetStatsLandingPagesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getStats(string $landingPageId, GetStatsLandingPagesRequest $request = new GetStatsLandingPagesRequest(), ?array $options = null): ?GetStatsLandingPagesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->end != null) {
+            $query['end'] = $request->end;
+        }
+        if ($request->includeBots != null) {
+            $query['includeBots'] = $request->includeBots;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = $request->start;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "landing-pages/{$landingPageId}/stats",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetStatsLandingPagesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

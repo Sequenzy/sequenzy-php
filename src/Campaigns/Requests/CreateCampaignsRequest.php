@@ -139,7 +139,7 @@ class CreateCampaignsRequest extends JsonSerializableType
     public ?string $status;
 
     /**
-     * @var ?string $style Generation style; valid only with prompt.
+     * @var ?string $style Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
      */
     #[JsonProperty('style')]
     public ?string $style;

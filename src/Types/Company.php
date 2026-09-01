@@ -84,6 +84,12 @@ class Company extends JsonSerializableType
     public ?string $description;
 
     /**
+     * @var ?CompanyEmailBranding $emailBranding Effective "Sent with Sequenzy" entitlement for future renders and sends. This is derived from the company owner's subscription and is not an editable footer field. Existing live sequences pick up an entitlement change without their stored email blocks changing.
+     */
+    #[JsonProperty('emailBranding')]
+    public ?CompanyEmailBranding $emailBranding;
+
+    /**
      * @var ?string $emailDesignPrompt Art direction for AI-designed emails: layout, density, which sections belong in an email, imagery, and CTA prominence. `toneVoice` steers copy; this steers design. When empty, the next email generation prefills it with the direction derived from the brand.
      */
     #[JsonProperty('emailDesignPrompt')]
@@ -259,6 +265,7 @@ class Company extends JsonSerializableType
      *   defaultSenderProfileId?: ?string,
      *   defaultSubscriberListIds?: ?array<string>,
      *   description?: ?string,
+     *   emailBranding?: ?CompanyEmailBranding,
      *   emailDesignPrompt?: ?string,
      *   emailDirection?: ?string,
      *   emailLengthPreference?: ?value-of<CompanyEmailLengthPreference>,
@@ -303,6 +310,7 @@ class Company extends JsonSerializableType
         $this->defaultSenderProfileId = $values['defaultSenderProfileId'] ?? null;
         $this->defaultSubscriberListIds = $values['defaultSubscriberListIds'] ?? null;
         $this->description = $values['description'] ?? null;
+        $this->emailBranding = $values['emailBranding'] ?? null;
         $this->emailDesignPrompt = $values['emailDesignPrompt'] ?? null;
         $this->emailDirection = $values['emailDirection'] ?? null;
         $this->emailLengthPreference = $values['emailLengthPreference'] ?? null;

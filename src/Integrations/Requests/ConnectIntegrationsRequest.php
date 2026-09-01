@@ -11,7 +11,7 @@ use Sequenzy\Integrations\Types\ConnectIntegrationsRequestSettings;
 class ConnectIntegrationsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $apiKey Provider API key. Required for every provider except clerk, posthog, and segment.
+     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
      */
     #[JsonProperty('apiKey')]
     public ?string $apiKey;
@@ -35,25 +35,25 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public ?string $providerAccountId;
 
     /**
-     * @var ?ConnectIntegrationsRequestSettings $settings PostHog and Segment only. Event delivery scope. PostHog defaults to every non-internal event; new Segment connections skip automatic page/screen calls unless explicitly allowlisted.
+     * @var ?ConnectIntegrationsRequestSettings $settings PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
      */
     #[JsonProperty('settings')]
     public ?ConnectIntegrationsRequestSettings $settings;
 
     /**
-     * @var string $webhookSecret Signing secret of the webhook created at the provider. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+     * @var ?string $webhookSecret Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
      */
     #[JsonProperty('webhookSecret')]
-    public string $webhookSecret;
+    public ?string $webhookSecret;
 
     /**
      * @param array{
      *   provider: value-of<ConnectIntegrationsRequestProvider>,
-     *   webhookSecret: string,
      *   apiKey?: ?string,
      *   historyImport?: ?ConnectIntegrationsRequestHistoryImport,
      *   providerAccountId?: ?string,
      *   settings?: ?ConnectIntegrationsRequestSettings,
+     *   webhookSecret?: ?string,
      * } $values
      */
     public function __construct(
@@ -64,6 +64,6 @@ class ConnectIntegrationsRequest extends JsonSerializableType
         $this->provider = $values['provider'];
         $this->providerAccountId = $values['providerAccountId'] ?? null;
         $this->settings = $values['settings'] ?? null;
-        $this->webhookSecret = $values['webhookSecret'];
+        $this->webhookSecret = $values['webhookSecret'] ?? null;
     }
 }

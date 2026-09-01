@@ -11,5 +11,6 @@ enum IntegrationProviderCapabilityCategory: string
     case Ads = "ads";
     case Affiliate = "affiliate";
     case Cms = "cms";
+    case Crm = "crm";
     case Developer = "developer";
 }

@@ -29,6 +29,7 @@ use Sequenzy\Sequences\Types\EnrollSubscribersInSequencesResponse;
 use Sequenzy\Sequences\Requests\GenerateSequencesRequest;
 use Sequenzy\Sequences\Types\GenerateSequencesResponse;
 use Sequenzy\Sequences\Types\GetSequencesResponse;
+use Sequenzy\Types\SequenceEnrollmentGetResponse;
 use Sequenzy\Types\SequenceEnrollmentRealignJobResponse;
 use Sequenzy\Sequences\Types\GetInboundWebhookSequencesResponse;
 use Sequenzy\Sequences\Requests\GetStatsSequencesRequest;
@@ -821,6 +822,63 @@ class SequencesClient
                     return null;
                 }
                 return GetSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Reads one enrollment token, including how it entered, which branches it already took, and the bounded recorded graph walk from ClickHouse. Use this when list enrollments shows a completed token with enteredVia unknown or sitting on the completion node and you need to know why the first branch took its else path. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Legacy node-completion metadata that stored an unredacted evaluation reason is redacted on read. Check nodeHistoryTruncated and branchDecisionsTruncated before treating either history as complete.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getEnrollment(
+     *     'sequenceId',
+     *     'enrollmentId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $enrollmentId Enrollment token ID from list sequence enrollments (enrollmentId).
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceEnrollmentGetResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getEnrollment(string $sequenceId, string $enrollmentId, ?array $options = null): ?SequenceEnrollmentGetResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/enrollments/{$enrollmentId}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceEnrollmentGetResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
