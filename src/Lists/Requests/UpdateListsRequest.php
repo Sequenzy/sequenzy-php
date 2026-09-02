@@ -8,13 +8,13 @@ use Sequenzy\Core\Json\JsonProperty;
 class UpdateListsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $description New list description. Pass null to clear it.
+     * @var ?string $description New internal list description. Never shown in hosted or embedded subscriber preferences. Pass null to clear it.
      */
     #[JsonProperty('description')]
     public ?string $description;
 
     /**
-     * @var ?bool $isPrivate Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose its name and description on that page. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
+     * @var ?bool $isPrivate Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
      */
     #[JsonProperty('isPrivate')]
     public ?bool $isPrivate;

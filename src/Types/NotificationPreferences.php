@@ -15,7 +15,7 @@ class NotificationPreferences extends JsonSerializableType
     public ?array $defaults;
 
     /**
-     * @var ?array<NotificationPreference> $notificationPreferences Every notification event with its current mode, defaults included.
+     * @var ?array<NotificationPreference> $notificationPreferences Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility.
      */
     #[JsonProperty('notificationPreferences'), ArrayType([NotificationPreference::class])]
     public ?array $notificationPreferences;

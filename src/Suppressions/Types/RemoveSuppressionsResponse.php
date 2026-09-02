@@ -39,7 +39,7 @@ class RemoveSuppressionsResponse extends JsonSerializableType
     public ?bool $removedLocalBounce;
 
     /**
-     * @var ?array<string> $removedSesRegions Always empty for company-authenticated removal; SES account-level suppressions are protected.
+     * @var ?array<string> $removedSesRegions Always empty. Sequenzy suppresses solely from its own bounce records and neither reads nor writes the email provider's suppression list. Retained for response compatibility.
      */
     #[JsonProperty('removedSesRegions'), ArrayType(['string'])]
     public ?array $removedSesRegions;

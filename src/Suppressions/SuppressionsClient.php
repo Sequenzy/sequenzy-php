@@ -55,7 +55,7 @@ class SuppressionsClient
     }
 
     /**
-     * Checks one exact recipient against Sequenzy's local bounce and complaint safeguards and the regional Amazon SES account-level suppression list. The lookup does not expose unrelated recipients from the shared SES account.
+     * Checks one exact recipient against Sequenzy's bounce and complaint safeguards. Sequenzy suppresses solely from its own bounce records; the email provider's account-level suppression list is not consulted. The lookup does not expose unrelated recipients.
      *
      * Example:
      * ```php
@@ -200,7 +200,7 @@ class SuppressionsClient
     }
 
     /**
-     * Removes one company-associated recipient's workspace-scoped soft-bounce escalation and reactivates a bounced company subscriber. Global invalid-recipient and Amazon SES account-level suppressions, other companies' scoped rows, complaints, and unsubscribes are protected.
+     * Removes one company-associated recipient's workspace-scoped soft-bounce escalation and reactivates a bounced company subscriber. Global invalid-recipient suppressions, other companies' scoped rows, complaints, and unsubscribes are protected.
      *
      * Example:
      * ```php

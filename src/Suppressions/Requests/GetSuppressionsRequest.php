@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 class GetSuppressionsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $region Optional AWS SES region. Omit to check the default region and regions used by the company's sending domains.
+     * @var ?string $region Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
      */
     public ?string $region;
 

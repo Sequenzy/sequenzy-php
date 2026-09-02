@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 class RemoveSuppressionsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $region Optional AWS SES region used to limit the remaining-suppression inspection. It never authorizes removal of an SES account-level entry.
+     * @var ?string $region Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
      */
     public ?string $region;
 

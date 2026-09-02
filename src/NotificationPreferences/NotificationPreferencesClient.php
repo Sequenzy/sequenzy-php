@@ -4,6 +4,7 @@ namespace Sequenzy\NotificationPreferences;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
+use Sequenzy\NotificationPreferences\Requests\GetNotificationPreferencesRequest;
 use Sequenzy\Types\NotificationPreferences;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
@@ -51,13 +52,16 @@ class NotificationPreferencesClient
     }
 
     /**
-     * Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event is always present; an event the user has never configured reports its default. There is no way to read another member's preferences through this API. Requires account:read.
+     * Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event available to the requesting client is present; an event the user has never configured reports its default. Default Node and Undici clients must send x-sequenzy-client to receive weekly_report. There is no way to read another member's preferences through this API. Requires account:read.
      *
      * Example:
      * ```php
-     * $client->notificationPreferences->get();
+     * $client->notificationPreferences->get(
+     *     new GetNotificationPreferencesRequest([]),
+     * );
      * ```
      *
+     * @param GetNotificationPreferencesRequest $request
      * @param ?array{
      *   baseUrl?: string,
      *   maxRetries?: int,
@@ -70,15 +74,20 @@ class NotificationPreferencesClient
      * @throws SequenzyException
      * @throws SequenzyApiException
      */
-    public function get(?array $options = null): ?NotificationPreferences
+    public function get(GetNotificationPreferencesRequest $request = new GetNotificationPreferencesRequest(), ?array $options = null): ?NotificationPreferences
     {
         $options = array_merge($this->options, $options ?? []);
+        $headers = [];
+        if ($request->sequenzyClient != null) {
+            $headers['x-sequenzy-client'] = $request->sequenzyClient;
+        }
         try {
             $response = $this->client->sendRequest(
                 new JsonApiRequest(
                     baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
                     path: "notification-preferences",
                     method: HttpMethod::GET,
+                    headers: $headers,
                 ),
                 $options,
             );
@@ -135,12 +144,17 @@ class NotificationPreferencesClient
     public function update(UpdateNotificationPreferencesRequest $request, ?array $options = null): ?NotificationPreferences
     {
         $options = array_merge($this->options, $options ?? []);
+        $headers = [];
+        if ($request->sequenzyClient != null) {
+            $headers['x-sequenzy-client'] = $request->sequenzyClient;
+        }
         try {
             $response = $this->client->sendRequest(
                 new JsonApiRequest(
                     baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
                     path: "notification-preferences",
                     method: HttpMethod::PATCH,
+                    headers: $headers,
                     body: $request,
                 ),
                 $options,

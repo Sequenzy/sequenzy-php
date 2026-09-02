@@ -9319,7 +9319,7 @@ $client->lists->create(
 <dl>
 <dd>
 
-**$description:** `?string` 
+**$description:** `?string` — Optional internal workspace metadata. Never shown in hosted or embedded subscriber preferences.
     
 </dd>
 </dl>
@@ -9327,7 +9327,7 @@ $client->lists->create(
 <dl>
 <dd>
 
-**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose their name and description on that page. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
+**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
     
 </dd>
 </dl>
@@ -9568,7 +9568,7 @@ $client->lists->update(
 <dl>
 <dd>
 
-**$description:** `?string` — New list description. Pass null to clear it.
+**$description:** `?string` — New internal list description. Never shown in hosted or embedded subscriber preferences. Pass null to clear it.
     
 </dd>
 </dl>
@@ -9576,7 +9576,7 @@ $client->lists->update(
 <dl>
 <dd>
 
-**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose its name and description on that page. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
+**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
     
 </dd>
 </dl>
@@ -10321,7 +10321,7 @@ $client->migrations->start(
 </details>
 
 ## NotificationPreferences
-<details><summary><code>$client-&gt;notificationPreferences-&gt;get() -> ?NotificationPreferences</code></summary>
+<details><summary><code>$client-&gt;notificationPreferences-&gt;get($request) -> ?NotificationPreferences</code></summary>
 <dl>
 <dd>
 
@@ -10333,7 +10333,7 @@ $client->migrations->start(
 <dl>
 <dd>
 
-Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event is always present; an event the user has never configured reports its default. There is no way to read another member's preferences through this API. Requires account:read.
+Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event available to the requesting client is present; an event the user has never configured reports its default. Default Node and Undici clients must send x-sequenzy-client to receive weekly_report. There is no way to read another member's preferences through this API. Requires account:read.
 </dd>
 </dl>
 </dd>
@@ -10348,8 +10348,25 @@ Returns the account notification settings for the API key's own user in the acti
 <dd>
 
 ```php
-$client->notificationPreferences->get();
+$client->notificationPreferences->get(
+    new GetNotificationPreferencesRequest([]),
+);
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenzyClient:** `?string` — Identifies a client that supports the complete notification event list, including weekly_report. Any non-empty value opts a default Node or Undici client into the full response.
+    
 </dd>
 </dl>
 </dd>
@@ -10407,6 +10424,14 @@ $client->notificationPreferences->update(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**$sequenzyClient:** `?string` — Identifies a client that supports the complete notification event list, including weekly_report. Any non-empty value opts a default Node or Undici client into the full response.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -17504,7 +17529,7 @@ $client->subscribers->tags->remove(
 <dl>
 <dd>
 
-Checks one exact recipient against Sequenzy's local bounce and complaint safeguards and the regional Amazon SES account-level suppression list. The lookup does not expose unrelated recipients from the shared SES account.
+Checks one exact recipient against Sequenzy's bounce and complaint safeguards. Sequenzy suppresses solely from its own bounce records; the email provider's account-level suppression list is not consulted. The lookup does not expose unrelated recipients.
 </dd>
 </dl>
 </dd>
@@ -17547,7 +17572,7 @@ $client->suppressions->get(
 <dl>
 <dd>
 
-**$region:** `?string` — Optional AWS SES region. Omit to check the default region and regions used by the company's sending domains.
+**$region:** `?string` — Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
     
 </dd>
 </dl>
@@ -17672,7 +17697,7 @@ request - read `sortBy` in the response to confirm what was applied.
 <dl>
 <dd>
 
-Removes one company-associated recipient's workspace-scoped soft-bounce escalation and reactivates a bounced company subscriber. Global invalid-recipient and Amazon SES account-level suppressions, other companies' scoped rows, complaints, and unsubscribes are protected.
+Removes one company-associated recipient's workspace-scoped soft-bounce escalation and reactivates a bounced company subscriber. Global invalid-recipient suppressions, other companies' scoped rows, complaints, and unsubscribes are protected.
 </dd>
 </dl>
 </dd>
@@ -17715,7 +17740,7 @@ $client->suppressions->remove(
 <dl>
 <dd>
 
-**$region:** `?string` — Optional AWS SES region used to limit the remaining-suppression inspection. It never authorizes removal of an SES account-level entry.
+**$region:** `?string` — Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
     
 </dd>
 </dl>
