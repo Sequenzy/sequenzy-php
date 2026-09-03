@@ -11637,6 +11637,62 @@ $client->segments->update(
 </details>
 
 ## SenderProfiles
+<details><summary><code>$client-&gt;senderProfiles-&gt;delete($id) -> ?DeleteSenderProfilesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently deletes one sender (From) profile. Refuses to delete the company's last sender or a profile used by a live campaign, active sequence (including step-level overrides), or transactional email. Eligible draft and rejected campaigns plus the account default are reassigned to the best remaining sender when needed. Requires companies:manage.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->senderProfiles->delete(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` — Sender profile ID, from GET /v1/sender-profiles.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;senderProfiles-&gt;list() -> ?ListSenderProfilesResponse</code></summary>
 <dl>
 <dd>

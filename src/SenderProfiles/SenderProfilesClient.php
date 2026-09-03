@@ -4,7 +4,7 @@ namespace Sequenzy\SenderProfiles;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\SenderProfiles\Types\ListSenderProfilesResponse;
+use Sequenzy\SenderProfiles\Types\DeleteSenderProfilesResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
 use Sequenzy\Core\Json\JsonApiRequest;
@@ -12,6 +12,7 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\SenderProfiles\Types\ListSenderProfilesResponse;
 use Sequenzy\SenderProfiles\Requests\UpdateSenderProfilesRequest;
 use Sequenzy\SenderProfiles\Types\UpdateSenderProfilesResponse;
 use Sequenzy\SenderProfiles\Requests\UpdateReplyProfileRequest;
@@ -51,6 +52,61 @@ class SenderProfilesClient
     ) {
         $this->client = $client;
         $this->options = $options ?? [];
+    }
+
+    /**
+     * Permanently deletes one sender (From) profile. Refuses to delete the company's last sender or a profile used by a live campaign, active sequence (including step-level overrides), or transactional email. Eligible draft and rejected campaigns plus the account default are reassigned to the best remaining sender when needed. Requires companies:manage.
+     *
+     * Example:
+     * ```php
+     * $client->senderProfiles->delete(
+     *     'id',
+     * );
+     * ```
+     *
+     * @param string $id Sender profile ID, from GET /v1/sender-profiles.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?DeleteSenderProfilesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function delete(string $id, ?array $options = null): ?DeleteSenderProfilesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sender-profiles/{$id}",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return DeleteSenderProfilesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 
     /**

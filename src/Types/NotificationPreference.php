@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class NotificationPreference extends JsonSerializableType
 {
     /**
-     * @var value-of<NotificationPreferenceEvent> $event Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default and only sent for weeks with more than 10 emails sent.
+     * @var value-of<NotificationPreferenceEvent> $event Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent.
      */
     #[JsonProperty('event')]
     public string $event;

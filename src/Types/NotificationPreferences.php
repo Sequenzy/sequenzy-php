@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 class NotificationPreferences extends JsonSerializableType
 {
     /**
-     * @var ?array<string, string> $defaults Mode each event uses when the user has never configured it.
+     * @var ?array<string, string> $defaults Mode each event uses when the user has never configured it, resolved for the API key's user. The workspace owner defaults to weekly_report "weekly"; invited members default to "off".
      */
     #[JsonProperty('defaults'), ArrayType(['string' => 'string'])]
     public ?array $defaults;
