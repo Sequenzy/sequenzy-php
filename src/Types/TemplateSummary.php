@@ -29,6 +29,17 @@ class TemplateSummary extends JsonSerializableType
     public ?string $id;
 
     /**
+     * True when this email is marked as a reusable master design.
+     * Master designs are offered first when a sequence step or campaign
+     * starts from an existing email, and starting from one always creates
+     * an independent copy (never a shared link).
+     *
+     * @var ?bool $isTemplate
+     */
+    #[JsonProperty('isTemplate')]
+    public ?bool $isTemplate;
+
+    /**
      * @var ?array<string> $labels Label names assigned to this template.
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
@@ -69,6 +80,7 @@ class TemplateSummary extends JsonSerializableType
      *   createdAt?: ?DateTime,
      *   emailPreset?: ?value-of<EmailPreset>,
      *   id?: ?string,
+     *   isTemplate?: ?bool,
      *   labels?: ?array<string>,
      *   localizations?: ?array<array<string, mixed>>,
      *   name?: ?string,
@@ -83,6 +95,7 @@ class TemplateSummary extends JsonSerializableType
         $this->createdAt = $values['createdAt'] ?? null;
         $this->emailPreset = $values['emailPreset'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->isTemplate = $values['isTemplate'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->localizations = $values['localizations'] ?? null;
         $this->name = $values['name'] ?? null;

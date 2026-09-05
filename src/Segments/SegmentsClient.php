@@ -170,7 +170,7 @@ class SegmentsClient
     }
 
     /**
-     * Returns the current subscriber count for a saved segment.
+     * Recalculates the active subscriber count from a saved segment's filters. Matches activeSubscriberCount from listSegments when underlying data is unchanged. Custom-attribute updates sync asynchronously and may take roughly 30–35 seconds or longer to appear, even after an import completes.
      *
      * Example:
      * ```php
@@ -225,7 +225,7 @@ class SegmentsClient
     }
 
     /**
-     * Lists saved segments and subscriber counts for the authenticated company.
+     * Lists saved segments with counts recalculated from their filters for the authenticated company. subscriberCount includes every status; activeSubscriberCount includes only active subscribers. Custom-attribute updates sync asynchronously and may take roughly 30–35 seconds or longer to appear, even after an import completes.
      *
      * Example:
      * ```php

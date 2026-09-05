@@ -15,6 +15,12 @@ class CreateTemplatesResponseTemplate extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?bool $isTemplate
+     */
+    #[JsonProperty('isTemplate')]
+    public ?bool $isTemplate;
+
+    /**
      * @var ?array<string> $labels
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
@@ -35,6 +41,7 @@ class CreateTemplatesResponseTemplate extends JsonSerializableType
     /**
      * @param array{
      *   id?: ?string,
+     *   isTemplate?: ?bool,
      *   labels?: ?array<string>,
      *   name?: ?string,
      *   subject?: ?string,
@@ -44,6 +51,7 @@ class CreateTemplatesResponseTemplate extends JsonSerializableType
         array $values = [],
     ) {
         $this->id = $values['id'] ?? null;
+        $this->isTemplate = $values['isTemplate'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->subject = $values['subject'] ?? null;

@@ -20,7 +20,7 @@ class GetAccountResponseCompaniesItem extends JsonSerializableType
     public ?string $name;
 
     /**
-     * @var ?value-of<GetAccountResponseCompaniesItemRole> $role Account-key access role. Viewer access remains read-only regardless of key scopes.
+     * @var ?value-of<GetAccountResponseCompaniesItemRole> $role Account-key access role. Viewer access remains read-only regardless of key scopes; marketer access is limited to marketing scopes (no transactional, settings, integration, webhook, team, or API-key scopes).
      */
     #[JsonProperty('role')]
     public ?string $role;

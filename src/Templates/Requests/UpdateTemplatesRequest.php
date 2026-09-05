@@ -21,6 +21,12 @@ class UpdateTemplatesRequest extends JsonSerializableType
     public ?string $html;
 
     /**
+     * @var ?bool $isTemplate Mark (true) or unmark (false) this email as a reusable master design.
+     */
+    #[JsonProperty('isTemplate')]
+    public ?bool $isTemplate;
+
+    /**
      * @var ?array<string> $label Compatibility alias for labels.
      */
     #[JsonProperty('label'), ArrayType(['string'])]
@@ -60,6 +66,7 @@ class UpdateTemplatesRequest extends JsonSerializableType
      * @param array{
      *   blocks?: ?array<array<string, mixed>>,
      *   html?: ?string,
+     *   isTemplate?: ?bool,
      *   label?: ?array<string>,
      *   labels?: ?array<string>,
      *   name?: ?string,
@@ -73,6 +80,7 @@ class UpdateTemplatesRequest extends JsonSerializableType
     ) {
         $this->blocks = $values['blocks'] ?? null;
         $this->html = $values['html'] ?? null;
+        $this->isTemplate = $values['isTemplate'] ?? null;
         $this->label = $values['label'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;

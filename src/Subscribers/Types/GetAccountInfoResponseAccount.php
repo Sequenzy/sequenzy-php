@@ -8,6 +8,12 @@ use Sequenzy\Core\Json\JsonProperty;
 class GetAccountInfoResponseAccount extends JsonSerializableType
 {
     /**
+     * @var ?value-of<GetAccountInfoResponseAccountApiKeyType> $apiKeyType API key ownership type. Workspace-bound integrations should require company so requests cannot silently select another workspace.
+     */
+    #[JsonProperty('apiKeyType')]
+    public ?string $apiKeyType;
+
+    /**
      * @var ?string $companyId
      */
     #[JsonProperty('companyId')]
@@ -21,6 +27,7 @@ class GetAccountInfoResponseAccount extends JsonSerializableType
 
     /**
      * @param array{
+     *   apiKeyType?: ?value-of<GetAccountInfoResponseAccountApiKeyType>,
      *   companyId?: ?string,
      *   companyName?: ?string,
      * } $values
@@ -28,6 +35,7 @@ class GetAccountInfoResponseAccount extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->apiKeyType = $values['apiKeyType'] ?? null;
         $this->companyId = $values['companyId'] ?? null;
         $this->companyName = $values['companyName'] ?? null;
     }

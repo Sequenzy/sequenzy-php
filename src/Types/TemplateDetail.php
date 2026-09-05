@@ -62,6 +62,7 @@ class TemplateDetail extends JsonSerializableType
      *   createdAt?: ?DateTime,
      *   emailPreset?: ?value-of<EmailPreset>,
      *   id?: ?string,
+     *   isTemplate?: ?bool,
      *   labels?: ?array<string>,
      *   localizations?: ?array<array<string, mixed>>,
      *   name?: ?string,
@@ -82,6 +83,7 @@ class TemplateDetail extends JsonSerializableType
         $this->createdAt = $values['createdAt'] ?? null;
         $this->emailPreset = $values['emailPreset'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->isTemplate = $values['isTemplate'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->localizations = $values['localizations'] ?? null;
         $this->name = $values['name'] ?? null;

@@ -48,7 +48,7 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
     public ?bool $fullAccess;
 
     /**
-     * @var ?bool $liveDeliveryBlockedByRole Whether the authenticated user's role in the selected workspace blocks sending regardless of key scopes. Personal keys held by a viewer are read-only, so widening the key's permissions does not enable delivery; the role has to change.
+     * @var ?bool $liveDeliveryBlockedByRole Whether the authenticated user's role in the selected workspace blocks every kind of sending regardless of key scopes. Personal keys held by a viewer are read-only, so widening the key's permissions does not enable delivery; the role has to change. A marketer is not blocked here because they can still send campaigns; their transactional restriction is listed in roleRestrictedScopes.
      */
     #[JsonProperty('liveDeliveryBlockedByRole')]
     public ?bool $liveDeliveryBlockedByRole;
@@ -78,6 +78,12 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
     public ?string $preset;
 
     /**
+     * @var ?array<string> $roleRestrictedScopes Scopes the authenticated user's workspace role cannot use through a personal key, such as transactional:send or team:manage for a marketer. Empty for owners, admins, and company keys.
+     */
+    #[JsonProperty('roleRestrictedScopes'), ArrayType(['string'])]
+    public ?array $roleRestrictedScopes;
+
+    /**
      * @var ?array<string> $scopes
      */
     #[JsonProperty('scopes'), ArrayType(['string'])]
@@ -102,6 +108,7 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
      *   missingLiveDeliveryScopes?: ?array<string>,
      *   missingMarketingReadScopes?: ?array<string>,
      *   preset?: ?value-of<GetAccountResponseApiKeyPermissionsPreset>,
+     *   roleRestrictedScopes?: ?array<string>,
      *   scopes?: ?array<string>,
      *   selectedScopeCount?: ?int,
      * } $values
@@ -120,6 +127,7 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
         $this->missingLiveDeliveryScopes = $values['missingLiveDeliveryScopes'] ?? null;
         $this->missingMarketingReadScopes = $values['missingMarketingReadScopes'] ?? null;
         $this->preset = $values['preset'] ?? null;
+        $this->roleRestrictedScopes = $values['roleRestrictedScopes'] ?? null;
         $this->scopes = $values['scopes'] ?? null;
         $this->selectedScopeCount = $values['selectedScopeCount'] ?? null;
     }

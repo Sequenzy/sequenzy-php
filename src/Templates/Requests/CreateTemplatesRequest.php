@@ -21,6 +21,12 @@ class CreateTemplatesRequest extends JsonSerializableType
     public ?string $html;
 
     /**
+     * @var ?bool $isTemplate Save as a reusable master design that sequence steps and campaigns can start from (always as an independent copy).
+     */
+    #[JsonProperty('isTemplate')]
+    public ?bool $isTemplate;
+
+    /**
      * @var ?array<string> $label Compatibility alias for labels.
      */
     #[JsonProperty('label'), ArrayType(['string'])]
@@ -73,6 +79,7 @@ class CreateTemplatesRequest extends JsonSerializableType
      *   name: string,
      *   blocks?: ?array<array<string, mixed>>,
      *   html?: ?string,
+     *   isTemplate?: ?bool,
      *   label?: ?array<string>,
      *   labels?: ?array<string>,
      *   previewText?: ?string,
@@ -87,6 +94,7 @@ class CreateTemplatesRequest extends JsonSerializableType
     ) {
         $this->blocks = $values['blocks'] ?? null;
         $this->html = $values['html'] ?? null;
+        $this->isTemplate = $values['isTemplate'] ?? null;
         $this->label = $values['label'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'];

@@ -21,7 +21,7 @@ class InviteTeamRequest extends JsonSerializableType
     public string $email;
 
     /**
-     * @var value-of<InviteTeamRequestRole> $role Role for the new member. Restricted members can open direct campaign links only.
+     * @var value-of<InviteTeamRequestRole> $role Role for the new member. Marketers create, edit, and send campaigns and sequences and manage subscribers but cannot access transactional emails, settings, billing, or the team. Restricted members can open direct campaign links only.
      */
     #[JsonProperty('role')]
     public string $role;

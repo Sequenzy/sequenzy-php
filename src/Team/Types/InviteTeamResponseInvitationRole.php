@@ -5,6 +5,7 @@ namespace Sequenzy\Team\Types;
 enum InviteTeamResponseInvitationRole: string
 {
     case Admin = "admin";
+    case Marketer = "marketer";
     case Viewer = "viewer";
     case Restricted = "restricted";
 }

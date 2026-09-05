@@ -137,7 +137,7 @@ class CampaignsClient
     }
 
     /**
-     * Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign.
+     * Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
      *
      * Example:
      * ```php
@@ -1249,7 +1249,7 @@ class CampaignsClient
     }
 
     /**
-     * Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow.
+     * Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
      *
      * Example:
      * ```php
