@@ -15,6 +15,12 @@ class SendTestSmsRequest extends JsonSerializableType
     public ?array $blocks;
 
     /**
+     * @var ?string $fromNumberId Verified sending number ID from GET /sms/settings. Omit to use the oldest verified company number. An invalid explicit selection returns 400 instead of falling back.
+     */
+    #[JsonProperty('fromNumberId')]
+    public ?string $fromNumberId;
+
+    /**
      * @var ?array<string> $imageUrls Up to 2 publicly reachable image URLs sent as MMS media (US/CA only).
      */
     #[JsonProperty('imageUrls'), ArrayType(['string'])]
@@ -36,6 +42,7 @@ class SendTestSmsRequest extends JsonSerializableType
      * @param array{
      *   to: string,
      *   blocks?: ?array<array<string, mixed>>,
+     *   fromNumberId?: ?string,
      *   imageUrls?: ?array<string>,
      *   text?: ?string,
      * } $values
@@ -44,6 +51,7 @@ class SendTestSmsRequest extends JsonSerializableType
         array $values,
     ) {
         $this->blocks = $values['blocks'] ?? null;
+        $this->fromNumberId = $values['fromNumberId'] ?? null;
         $this->imageUrls = $values['imageUrls'] ?? null;
         $this->text = $values['text'] ?? null;
         $this->to = $values['to'];

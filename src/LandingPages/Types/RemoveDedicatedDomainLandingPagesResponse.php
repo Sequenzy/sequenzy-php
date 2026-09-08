@@ -15,6 +15,12 @@ class RemoveDedicatedDomainLandingPagesResponse extends JsonSerializableType
     public ?LandingPageDomain $domain;
 
     /**
+     * @var ?string $message
+     */
+    #[JsonProperty('message')]
+    public ?string $message;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -23,6 +29,7 @@ class RemoveDedicatedDomainLandingPagesResponse extends JsonSerializableType
     /**
      * @param array{
      *   domain?: ?LandingPageDomain,
+     *   message?: ?string,
      *   success?: ?bool,
      * } $values
      */
@@ -30,6 +37,7 @@ class RemoveDedicatedDomainLandingPagesResponse extends JsonSerializableType
         array $values = [],
     ) {
         $this->domain = $values['domain'] ?? null;
+        $this->message = $values['message'] ?? null;
         $this->success = $values['success'] ?? null;
     }
 

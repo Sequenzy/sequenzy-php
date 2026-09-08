@@ -19,6 +19,9 @@ use Sequenzy\EmailComponents\Types\GetDefaultEmailComponentsRequestSlot;
 use Sequenzy\EmailComponents\Types\GetDefaultEmailComponentsResponse;
 use Sequenzy\EmailComponents\Requests\ListEmailComponentsRequest;
 use Sequenzy\EmailComponents\Types\ListEmailComponentsResponse;
+use Sequenzy\EmailComponents\Types\PreviewDefaultEmailComponentsRequestSlot;
+use Sequenzy\EmailComponents\Requests\PreviewDefaultEmailComponentsRequest;
+use Sequenzy\EmailComponents\Types\PreviewDefaultEmailComponentsResponse;
 use Sequenzy\EmailComponents\Types\SetDefaultEmailComponentsRequestSlot;
 use Sequenzy\EmailComponents\Requests\SetDefaultEmailComponentsRequest;
 use Sequenzy\EmailComponents\Types\SetDefaultEmailComponentsResponse;
@@ -356,7 +359,76 @@ class EmailComponentsClient
     }
 
     /**
-     * Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep the footer they were built with.
+     * Read-only affected counts and optional layout HTML. Requires the same write scopes and admin role as applying. No subscriber-specific personalization or sending.
+     *
+     * Example:
+     * ```php
+     * $client->emailComponents->previewDefault(
+     *     PreviewDefaultEmailComponentsRequestSlot::Footer->value,
+     *     new PreviewDefaultEmailComponentsRequest([
+     *         'application' => new FooterApplicationOptions([
+     *             'scopes' => [
+     *                 FooterApplicationOptionsScopesItem::Sequences->value,
+     *             ],
+     *         ]),
+     *         'blocks' => [
+     *             new EmailBlock([
+     *                 'type' => EmailBlockType::Text->value,
+     *             ]),
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param value-of<PreviewDefaultEmailComponentsRequestSlot> $slot
+     * @param PreviewDefaultEmailComponentsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PreviewDefaultEmailComponentsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function previewDefault(string $slot, PreviewDefaultEmailComponentsRequest $request, ?array $options = null): ?PreviewDefaultEmailComponentsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "email-components/defaults/{$slot}/preview",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PreviewDefaultEmailComponentsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep their footer unless application options and a valid previewToken are provided. Preview first to review selected scopes. Personal keys require admin access; keys need emails:write, each selected category write scope, and ab_tests:write for campaigns or sequences.
      *
      * Example:
      * ```php

@@ -903,7 +903,7 @@ class CampaignsClient
     }
 
     /**
-     * Creates a draft that resends a sent campaign to everyone in the same audience who didn't open it. Reuses the original audience plus a "didn't open this campaign" rule. Only available 6 hours after the campaign finishes sending, and never for imported already-sent campaigns, which have no opens in Sequenzy. The draft must be scheduled or sent separately.
+     * Creates a draft that resends a sent campaign to everyone in the same audience who didn't open it. Reuses the original audience plus a "didn't open this campaign" rule. Only available 6 hours after the campaign finishes sending, and never for imported already-sent campaigns, which have no opens in Sequenzy. The draft must be scheduled or sent separately. Every audience format stores excludedCampaignOpenerIds that manual additions cannot override, preserving inherited exclusions on repeated resends. Audience membership is evaluated live. Recreate older drafts missing this metadata from the original campaign and review before scheduling.
      *
      * Example:
      * ```php

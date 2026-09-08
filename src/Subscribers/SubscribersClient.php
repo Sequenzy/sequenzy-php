@@ -17,6 +17,7 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Types\BulkSubscriberTagRequest;
 use Sequenzy\Types\BulkSubscriberTagResponse;
+use Sequenzy\Types\SubscriberOperationResponse;
 use Sequenzy\Subscribers\Requests\CreateSubscribersRequest;
 use Sequenzy\Subscribers\Types\CreateSubscribersResponse;
 use Sequenzy\Subscribers\Requests\CreateImportSubscribersRequest;
@@ -45,6 +46,8 @@ use Sequenzy\Subscribers\Types\ListSubscribersResponse;
 use Sequenzy\Subscribers\Types\ListNotesSubscribersResponse;
 use Sequenzy\Subscribers\Requests\ListNotesByExternalIdSubscribersRequest;
 use Sequenzy\Subscribers\Types\ListNotesByExternalIdSubscribersResponse;
+use Sequenzy\Subscribers\Types\ListOperationsSubscribersResponse;
+use Sequenzy\Subscribers\Requests\SubscriberOperationStart;
 use Sequenzy\Subscribers\Requests\UpdateSubscribersRequest;
 use Sequenzy\Subscribers\Types\UpdateSubscribersResponse;
 use Sequenzy\Subscribers\Requests\UpdateByExternalIdSubscribersRequest;
@@ -277,6 +280,61 @@ class SubscribersClient
                     return null;
                 }
                 return BulkSubscriberTagResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Cancellation stops future pages and keeps applied tags. An action already in flight may finish; its contact is reported as uncertain. Terminal cancellation is idempotent.
+     *
+     * Example:
+     * ```php
+     * $client->subscribers->cancelOperation(
+     *     'id',
+     * );
+     * ```
+     *
+     * @param string $id
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SubscriberOperationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function cancelOperation(string $id, ?array $options = null): ?SubscriberOperationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "subscribers/operations/{$id}/cancel",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SubscriberOperationResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1053,6 +1111,61 @@ class SubscribersClient
     }
 
     /**
+     * Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+     *
+     * Example:
+     * ```php
+     * $client->subscribers->getOperation(
+     *     'id',
+     * );
+     * ```
+     *
+     * @param string $id
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SubscriberOperationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getOperation(string $id, ?array $options = null): ?SubscriberOperationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "subscribers/operations/{$id}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SubscriberOperationResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Records a bounded batch of up to 25 events for many subscribers. Email is required to create a contact; externalId-only rows must resolve to an existing contact. Events are grouped per contact - a contact whose rows are all more than an hour old is imported silently as history, including no double-opt-in email, while any recent row makes that contact's whole group live. Stable eventIds keep one receipt and let retries re-attempt downstream recovery idempotently.
      *
      * Example:
@@ -1324,6 +1437,120 @@ class SubscribersClient
                     return null;
                 }
                 return ListNotesByExternalIdSubscribersResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns up to twenty recent retained operations for the company. Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+     *
+     * Example:
+     * ```php
+     * $client->subscribers->listOperations();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListOperationsSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listOperations(?array $options = null): ?ListOperationsSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "subscribers/operations",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListOperationsSubscribersResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Returns immediately with a durable ID. Retry the same requestKey after an uncertain response. Active tasks have a seven-day processing deadline. Completed/failed/cancelled records are retained seven days. Inspect failures before retrying interrupted tagging; an uncertain action is never automatically replayed.
+     *
+     * Example:
+     * ```php
+     * $client->subscribers->startOperation(
+     *     new SubscriberOperationStart([
+     *         'kind' => SubscriberOperationStartKind::AddTags->value,
+     *         'requestKey' => 'requestKey',
+     *         'tags' => [
+     *             'tags',
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param SubscriberOperationStart $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SubscriberOperationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function startOperation(SubscriberOperationStart $request, ?array $options = null): ?SubscriberOperationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "subscribers/operations",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SubscriberOperationResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

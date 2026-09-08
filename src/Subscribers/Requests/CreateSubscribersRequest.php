@@ -14,7 +14,7 @@ use Sequenzy\Subscribers\Types\CreateSubscribersRequestStatus;
 class CreateSubscribersRequest extends JsonSerializableType
 {
     /**
-     * @var ?DateTime $createdAt Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated.
+     * @var ?DateTime $createdAt Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated. New-subscriber account notifications remain eligible when the signup date is at most one hour old; older dates do not notify on creation. Double opt-in confirmation can notify even for imported contacts. Your notification preferences, double opt-in and the daily cap still apply.
      */
     #[JsonProperty('createdAt'), Date(Date::TYPE_DATETIME)]
     public ?DateTime $createdAt;

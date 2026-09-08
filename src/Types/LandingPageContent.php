@@ -7,33 +7,39 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * Landing page builder JSON.
+ * Version 2 landing page builder document. Providing content on update replaces the whole document. Block IDs must be unique throughout the tree. A missing footer is appended automatically; after normalization exactly one footer and at most one form are allowed. Groups may nest at most eight levels, and every child must share its parent slot. See /api-reference/landing-pages/content for block examples and semantic validation. Form and footer blocks must stay at the root, outside groups.
  */
 class LandingPageContent extends JsonSerializableType
 {
     /**
-     * @var array<array<string, mixed>> $blocks Page blocks. Each block has a `slot`, rendered in order: `top` (full-width band above the hero), `hero`, `form` (the card beside the hero), `body`, `footer`. A `video` block embeds a pasted YouTube URL from its `url`; other providers and direct video files are not supported. It accepts an optional `aspectRatio` of 16:9, 4:3, 1:1, or 9:16. Button `url` and pricing `buttonUrl` accept an https URL or an in-page anchor: `#form` scrolls to the page's form block, `#section-<sectionId>` and `#block-<blockId>` scroll to any section or block, and `#top` returns to the top. Anchor CTAs open in the same tab.
+     * @var array<LandingPageBlock> $blocks Blocks render in slot order: top, hero, form, body, footer, preserving order within each slot. Includes nested group children. An empty array is accepted: a default footer is appended whenever no footer is present. The stored document has exactly one footer.
      */
-    #[JsonProperty('blocks'), ArrayType([['string' => 'mixed']])]
+    #[JsonProperty('blocks'), ArrayType([LandingPageBlock::class])]
     public array $blocks;
 
     /**
-     * @var ?LandingPageContentSeo $seo Search and browser metadata for the published page.
+     * @var ?LandingPageHeader $header
      */
-    #[JsonProperty('seo')]
-    public ?LandingPageContentSeo $seo;
+    #[JsonProperty('header')]
+    public ?LandingPageHeader $header;
 
     /**
-     * @var ?string $template
+     * @var ?LandingPageSeo $seo
+     */
+    #[JsonProperty('seo')]
+    public ?LandingPageSeo $seo;
+
+    /**
+     * @var ?value-of<LandingPageContentTemplate> $template
      */
     #[JsonProperty('template')]
     public ?string $template;
 
     /**
-     * @var ?LandingPageContentTheme $theme Page-wide design settings.
+     * @var ?LandingPageTheme $theme
      */
     #[JsonProperty('theme')]
-    public ?LandingPageContentTheme $theme;
+    public ?LandingPageTheme $theme;
 
     /**
      * @var int $version
@@ -43,17 +49,19 @@ class LandingPageContent extends JsonSerializableType
 
     /**
      * @param array{
-     *   blocks: array<array<string, mixed>>,
+     *   blocks: array<LandingPageBlock>,
      *   version: int,
-     *   seo?: ?LandingPageContentSeo,
-     *   template?: ?string,
-     *   theme?: ?LandingPageContentTheme,
+     *   header?: ?LandingPageHeader,
+     *   seo?: ?LandingPageSeo,
+     *   template?: ?value-of<LandingPageContentTemplate>,
+     *   theme?: ?LandingPageTheme,
      * } $values
      */
     public function __construct(
         array $values,
     ) {
         $this->blocks = $values['blocks'];
+        $this->header = $values['header'] ?? null;
         $this->seo = $values['seo'] ?? null;
         $this->template = $values['template'] ?? null;
         $this->theme = $values['theme'] ?? null;

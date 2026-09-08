@@ -8,6 +8,11 @@ use Sequenzy\Types\SequenceStatus;
 class ListSequencesRequest extends JsonSerializableType
 {
     /**
+     * @var ?string $label Alias for labels. Takes precedence if both are present.
+     */
+    public ?string $label;
+
+    /**
      * @var ?string $labels Comma-separated dashboard label names. The label alias is also accepted.
      */
     public ?string $labels;
@@ -34,6 +39,7 @@ class ListSequencesRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   label?: ?string,
      *   labels?: ?string,
      *   limit?: ?int,
      *   offset?: ?int,
@@ -44,6 +50,7 @@ class ListSequencesRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->label = $values['label'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->offset = $values['offset'] ?? null;

@@ -4,6 +4,7 @@ namespace Sequenzy\Widgets\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\SavedForm;
 use Sequenzy\Core\Types\ArrayType;
 
 class ListSavedFormsResponse extends JsonSerializableType
@@ -15,9 +16,9 @@ class ListSavedFormsResponse extends JsonSerializableType
     public string $companyId;
 
     /**
-     * @var array<ListSavedFormsResponseFormsItem> $forms
+     * @var array<SavedForm> $forms
      */
-    #[JsonProperty('forms'), ArrayType([ListSavedFormsResponseFormsItem::class])]
+    #[JsonProperty('forms'), ArrayType([SavedForm::class])]
     public array $forms;
 
     /**
@@ -27,10 +28,17 @@ class ListSavedFormsResponse extends JsonSerializableType
     public bool $success;
 
     /**
+     * @var ?string $url Forms dashboard URL.
+     */
+    #[JsonProperty('url')]
+    public ?string $url;
+
+    /**
      * @param array{
      *   companyId: string,
-     *   forms: array<ListSavedFormsResponseFormsItem>,
+     *   forms: array<SavedForm>,
      *   success: bool,
+     *   url?: ?string,
      * } $values
      */
     public function __construct(
@@ -39,6 +47,7 @@ class ListSavedFormsResponse extends JsonSerializableType
         $this->companyId = $values['companyId'];
         $this->forms = $values['forms'];
         $this->success = $values['success'];
+        $this->url = $values['url'] ?? null;
     }
 
     /**

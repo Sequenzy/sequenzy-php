@@ -3,22 +3,23 @@
 namespace Sequenzy\Widgets\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\SavedFormEmbed;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\SavedForm;
 
 class UpdateSavedFormResponse extends JsonSerializableType
 {
     /**
-     * @var ?array<string, mixed> $embed Embed recipes, present when the form is published.
+     * @var ?SavedFormEmbed $embed Included only when the updated form is published.
      */
-    #[JsonProperty('embed'), ArrayType(['string' => 'mixed'])]
-    public ?array $embed;
+    #[JsonProperty('embed')]
+    public ?SavedFormEmbed $embed;
 
     /**
-     * @var ?array<string, mixed> $form
+     * @var ?SavedForm $form
      */
-    #[JsonProperty('form'), ArrayType(['string' => 'mixed'])]
-    public ?array $form;
+    #[JsonProperty('form')]
+    public ?SavedForm $form;
 
     /**
      * @var ?string $message
@@ -34,8 +35,8 @@ class UpdateSavedFormResponse extends JsonSerializableType
 
     /**
      * @param array{
-     *   embed?: ?array<string, mixed>,
-     *   form?: ?array<string, mixed>,
+     *   embed?: ?SavedFormEmbed,
+     *   form?: ?SavedForm,
      *   message?: ?string,
      *   success?: ?bool,
      * } $values

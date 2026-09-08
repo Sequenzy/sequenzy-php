@@ -57,7 +57,19 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
     public ?bool $strictBotFilteringEnabled;
 
     /**
-     * @var ?bool $unsubscribeTrackingEnabled Whether unsubscribe links are attributed to the email that produced them.
+     * @var ?bool $transactionalClickTrackingEnabled Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalClickTrackingEnabled')]
+    public ?bool $transactionalClickTrackingEnabled;
+
+    /**
+     * @var ?bool $transactionalOpenTrackingEnabled Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalOpenTrackingEnabled')]
+    public ?bool $transactionalOpenTrackingEnabled;
+
+    /**
+     * @var ?bool $unsubscribeTrackingEnabled Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
      */
     #[JsonProperty('unsubscribeTrackingEnabled')]
     public ?bool $unsubscribeTrackingEnabled;
@@ -72,6 +84,8 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
      *   doubleOptInRedirectUrl?: ?string,
      *   openTrackingEnabled?: ?bool,
      *   strictBotFilteringEnabled?: ?bool,
+     *   transactionalClickTrackingEnabled?: ?bool,
+     *   transactionalOpenTrackingEnabled?: ?bool,
      *   unsubscribeTrackingEnabled?: ?bool,
      * } $values
      */
@@ -86,6 +100,8 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
         $this->doubleOptInRedirectUrl = $values['doubleOptInRedirectUrl'] ?? null;
         $this->openTrackingEnabled = $values['openTrackingEnabled'] ?? null;
         $this->strictBotFilteringEnabled = $values['strictBotFilteringEnabled'] ?? null;
+        $this->transactionalClickTrackingEnabled = $values['transactionalClickTrackingEnabled'] ?? null;
+        $this->transactionalOpenTrackingEnabled = $values['transactionalOpenTrackingEnabled'] ?? null;
         $this->unsubscribeTrackingEnabled = $values['unsubscribeTrackingEnabled'] ?? null;
     }
 }

@@ -68,11 +68,24 @@ class SendTransactionalRequest extends JsonSerializableType
      * several identities share the address), that identity - including its sending route - is used for
      * the send; otherwise the template or company-default identity is kept and this field only changes
      * the visible From.
+     *  Mutually exclusive with senderProfileId, fromEmail and fromName.
      *
      * @var ?string $from
      */
     #[JsonProperty('from')]
     public ?string $from;
+
+    /**
+     * @var ?string $fromEmail Address of an existing verified sender profile in this company. Mutually exclusive with senderProfileId and from. If several identities share the address, select one with fromName.
+     */
+    #[JsonProperty('fromEmail')]
+    public ?string $fromEmail;
+
+    /**
+     * @var ?string $fromName Display name selecting an existing identity on fromEmail. Requires fromEmail; mutually exclusive with senderProfileId and from. Does not create a profile.
+     */
+    #[JsonProperty('fromName')]
+    public ?string $fromName;
 
     /**
      * @var ?string $html Compatibility alias for `body`. Accepted with `subject` for direct sends and must match `body` when both are provided.
@@ -87,14 +100,28 @@ class SendTransactionalRequest extends JsonSerializableType
     public ?string $preview;
 
     /**
-     * Reply-to address. Format: "Name <email>" or just "email".
-     * Can be any valid email address. When reply tracking is disabled, this value is sent as the email's `Reply-To` header. When reply tracking is enabled, Sequenzy sends a unique trackable `Reply-To` header and stores this value as the forwarding destination for replies.
-     * When omitted, direct-content sends inherit the company default and saved-template sends prefer the template reply profile before the company default. Both fall back to the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent directly only when reply tracking is disabled.
-     *
-     * @var ?string $replyTo
+     * @var ?string $replyProfileId Existing reply profile ID. Mutually exclusive with replyTo and replyToName. Overrides the saved template and default reply identity.
+     */
+    #[JsonProperty('replyProfileId')]
+    public ?string $replyProfileId;
+
+    /**
+     * @var ?string $replyTo Reply-to address as "Name <email>" or a bare email, optionally paired with replyToName. Mutually exclusive with replyProfileId. With reply tracking enabled, Sequenzy sends a trackable Reply-To and stores this address as its forwarding destination. Without a reply override, saved-template sends prefer the template reply profile; otherwise sends prefer the effective sending-domain default, then company default, then the first company reply profile.
      */
     #[JsonProperty('replyTo')]
     public ?string $replyTo;
+
+    /**
+     * @var ?string $replyToName Display name for a bare replyTo address. Requires replyTo and is mutually exclusive with replyProfileId. Does not create a profile.
+     */
+    #[JsonProperty('replyToName')]
+    public ?string $replyToName;
+
+    /**
+     * @var ?string $senderProfileId Existing verified sender profile ID. Mutually exclusive with fromEmail, fromName and from. Selects that identity and its sending route; does not create a profile.
+     */
+    #[JsonProperty('senderProfileId')]
+    public ?string $senderProfileId;
 
     /**
      * @var ?string $slug Canonical slug of the transactional email template to use (mutually exclusive with direct content).
@@ -130,7 +157,7 @@ class SendTransactionalRequest extends JsonSerializableType
     public string|array $to;
 
     /**
-     * @var ?SendTransactionalRequestTrackingSettings $trackingSettings Per-send tracking opt-outs. Each field defaults to `true`, meaning your account's tracking settings apply; set a field to `false` to disable that tracking for this send only. These fields can only opt out; they cannot enable tracking that is disabled for your account.
+     * @var ?SendTransactionalRequestTrackingSettings $trackingSettings Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
      */
     #[JsonProperty('trackingSettings')]
     public ?SendTransactionalRequestTrackingSettings $trackingSettings;
@@ -160,9 +187,14 @@ class SendTransactionalRequest extends JsonSerializableType
      * )|null,
      *   emailType?: ?value-of<SendTransactionalRequestEmailType>,
      *   from?: ?string,
+     *   fromEmail?: ?string,
+     *   fromName?: ?string,
      *   html?: ?string,
      *   preview?: ?string,
+     *   replyProfileId?: ?string,
      *   replyTo?: ?string,
+     *   replyToName?: ?string,
+     *   senderProfileId?: ?string,
      *   slug?: ?string,
      *   subject?: ?string,
      *   subscriberExternalId?: ?string,
@@ -181,9 +213,14 @@ class SendTransactionalRequest extends JsonSerializableType
         $this->cc = $values['cc'] ?? null;
         $this->emailType = $values['emailType'] ?? null;
         $this->from = $values['from'] ?? null;
+        $this->fromEmail = $values['fromEmail'] ?? null;
+        $this->fromName = $values['fromName'] ?? null;
         $this->html = $values['html'] ?? null;
         $this->preview = $values['preview'] ?? null;
+        $this->replyProfileId = $values['replyProfileId'] ?? null;
         $this->replyTo = $values['replyTo'] ?? null;
+        $this->replyToName = $values['replyToName'] ?? null;
+        $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->slug = $values['slug'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->subscriberExternalId = $values['subscriberExternalId'] ?? null;

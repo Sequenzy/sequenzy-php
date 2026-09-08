@@ -19,6 +19,7 @@ use Sequenzy\Core\Types\ArrayType;
  * @property ?string $id
  * @property ?string $lastName
  * @property ?string $phone
+ * @property ?string $phoneCountry
  * @property ?value-of<SubscriberSmsStatus> $smsStatus
  * @property ?value-of<SubscriberStatus> $status
  * @property ?array<string> $tags
@@ -81,6 +82,12 @@ trait Subscriber
      */
     #[JsonProperty('phone')]
     public ?string $phone;
+
+    /**
+     * @var ?string $phoneCountry Two-letter ISO country code associated with the normalized phone number, or null when unavailable.
+     */
+    #[JsonProperty('phoneCountry')]
+    public ?string $phoneCountry;
 
     /**
      * @var ?value-of<SubscriberSmsStatus> $smsStatus SMS marketing consent status, independent of the email status

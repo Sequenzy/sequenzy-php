@@ -5,9 +5,6 @@ namespace Sequenzy\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Exception;
 
-/**
- * Optional typed match rule. event_received uses event_property_filter propertyFilters (stop only when an event received after enrollment matches every filter, e.g. quota_used greater_than 1) or event_property rules (stop only when the stop event's field equals the same field captured on the enrolling event); field_changed uses a field_value comparison. Tag/list defaults use entry_audience to resolve the required tag or list per enrollment. Tag entry matching requires a tag_added trigger; list entry matching requires a contact_added trigger scoped to at least one specific list.
- */
 class SequenceStopConditionMatchConfig extends JsonSerializableType
 {
     /**

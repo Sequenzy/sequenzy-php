@@ -65,6 +65,12 @@ class Subscriber extends JsonSerializableType
     public ?string $phone;
 
     /**
+     * @var ?string $phoneCountry Two-letter ISO country code associated with the normalized phone number, or null when unavailable.
+     */
+    #[JsonProperty('phoneCountry')]
+    public ?string $phoneCountry;
+
+    /**
      * @var ?value-of<SubscriberSmsStatus> $smsStatus SMS marketing consent status, independent of the email status
      */
     #[JsonProperty('smsStatus')]
@@ -111,6 +117,7 @@ class Subscriber extends JsonSerializableType
      *   id?: ?string,
      *   lastName?: ?string,
      *   phone?: ?string,
+     *   phoneCountry?: ?string,
      *   smsStatus?: ?value-of<SubscriberSmsStatus>,
      *   status?: ?value-of<SubscriberStatus>,
      *   tags?: ?array<string>,
@@ -131,6 +138,7 @@ class Subscriber extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->lastName = $values['lastName'] ?? null;
         $this->phone = $values['phone'] ?? null;
+        $this->phoneCountry = $values['phoneCountry'] ?? null;
         $this->smsStatus = $values['smsStatus'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->tags = $values['tags'] ?? null;

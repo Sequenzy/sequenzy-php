@@ -312,6 +312,8 @@ class TransactionalClient
      *
      * For callers that may retry, send a stable `Idempotency-Key` header. The same key and request returns the original `emailSendId` for 14 days without another delivery. Reusing a key with different request content returns 409.
      *
+     * Repeated identical transactional content reaching many distinct recipients can trigger a junk/list-testing review. Sending continues while review is pending or unavailable. A substantiated verdict can reject later matching deliveries before sending; these become terminal `failed` sends with an `errorMessage` beginning `Transactional content rejected:`. Read GET /email-sends/{emailSendId} for the final outcome. Failed deliveries are not held or replayed automatically, and replaying the same Idempotency-Key returns the original acceptance response. Dashboard retries of rejected deliveries also fail without sending, even after the decision expires. Correct the content or contact support before deliberately submitting a new logical send. This check does not pause the company or ban the account.
+     *
      * You can either:
      * - Provide a canonical `slug` (or compatibility alias `templateId`) to use a saved template
      * - Provide `subject` and canonical `body` (or compatibility alias `html`) to send custom content directly
@@ -332,8 +334,10 @@ class TransactionalClient
      * A successful response means the email was accepted for background processing. Transactional emails are not blocked by subscriber unsubscribe or double opt-in status. If a recipient is suppressed because of a hard bounce or spam complaint, the worker records the send as `suppressed` instead of delivering it.
      *
      * Optionally set `from` (domain must be verified) and `replyTo` addresses. When reply tracking is enabled, Sequenzy uses a unique trackable `Reply-To` header and treats the resolved reply destination as the forwarding destination for captured replies.
-     * When `replyTo` is omitted, direct-content sends inherit the company's default reply profile and saved-template sends prefer the template reply profile before the company default. Both fall back to the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent as the Reply-To header only when reply tracking is disabled.
+     * Without a reply identity override, saved-template sends prefer the template reply profile. Otherwise sends prefer the effective sending domain's default reply profile, then the company default, then the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent as the Reply-To header only when reply tracking is disabled.
      * Variables can be passed to customize the email content. Nested objects and arrays are supported for repeat blocks, such as `items`. `{{viewInBrowserUrl}}` is generated automatically for a hosted copy link. For a single recipient, Sequenzy matches an existing subscriber by `subscriberExternalId` or email and backfills stored first and last names when the corresponding request variables are omitted; explicit variables take precedence. Returns immediately with a durable `emailSendId` and the accepted `emailType`. If Sequenzy detects likely missing or unused variables before queueing, the successful response includes a non-blocking `diagnostics` warning object. Missing values do not block queueing or sending; a required variable that is not provided and has no default renders as an empty string.
+     *
+     * Select existing identities with senderProfileId or fromEmail (and optional fromName), and replyProfileId or replyTo (with optional replyToName). These inputs look up profiles rather than create them. Use emailType, not isMarketing, to choose delivery policy.
      *
      * Example:
      * ```php

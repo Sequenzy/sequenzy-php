@@ -42,6 +42,7 @@ class CreateSubscribersResponseSubscriber extends JsonSerializableType
      *   id?: ?string,
      *   lastName?: ?string,
      *   phone?: ?string,
+     *   phoneCountry?: ?string,
      *   smsStatus?: ?value-of<SubscriberSmsStatus>,
      *   status?: ?value-of<SubscriberStatus>,
      *   tags?: ?array<string>,
@@ -65,6 +66,7 @@ class CreateSubscribersResponseSubscriber extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->lastName = $values['lastName'] ?? null;
         $this->phone = $values['phone'] ?? null;
+        $this->phoneCountry = $values['phoneCountry'] ?? null;
         $this->smsStatus = $values['smsStatus'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->tags = $values['tags'] ?? null;

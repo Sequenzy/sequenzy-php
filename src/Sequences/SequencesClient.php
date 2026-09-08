@@ -1076,7 +1076,7 @@ class SequencesClient
     }
 
     /**
-     * Returns filtered, paginated automation sequences for the authenticated company.
+     * Returns matching automation sequences, newest first. Omit limit and offset to return all matches; either parameter enables pagination (default page size 50, capped at 100).
      *
      * Example:
      * ```php
@@ -1102,6 +1102,9 @@ class SequencesClient
     {
         $options = array_merge($this->options, $options ?? []);
         $query = [];
+        if ($request->label != null) {
+            $query['label'] = $request->label;
+        }
         if ($request->labels != null) {
             $query['labels'] = $request->labels;
         }

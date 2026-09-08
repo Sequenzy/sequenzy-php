@@ -3,12 +3,25 @@
 namespace Sequenzy\Transactional\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Types\TransactionalSendDiagnostics;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\TransactionalSendDiagnostics;
 use Sequenzy\Core\Types\Union;
 
 class SendTransactionalResponseOne extends JsonSerializableType
 {
+    /**
+     * @var ?array<string> $bcc Deduplicated BCC recipients; omitted when empty.
+     */
+    #[JsonProperty('bcc'), ArrayType(['string'])]
+    public ?array $bcc;
+
+    /**
+     * @var ?array<string> $cc Deduplicated CC recipients; omitted when empty.
+     */
+    #[JsonProperty('cc'), ArrayType(['string'])]
+    public ?array $cc;
+
     /**
      * @var ?TransactionalSendDiagnostics $diagnostics
      */
@@ -56,6 +69,8 @@ class SendTransactionalResponseOne extends JsonSerializableType
 
     /**
      * @param array{
+     *   bcc?: ?array<string>,
+     *   cc?: ?array<string>,
      *   diagnostics?: ?TransactionalSendDiagnostics,
      *   emailSendId?: ?string,
      *   emailType?: ?value-of<SendTransactionalResponseOneEmailType>,
@@ -71,6 +86,8 @@ class SendTransactionalResponseOne extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->bcc = $values['bcc'] ?? null;
+        $this->cc = $values['cc'] ?? null;
         $this->diagnostics = $values['diagnostics'] ?? null;
         $this->emailSendId = $values['emailSendId'] ?? null;
         $this->emailType = $values['emailType'] ?? null;

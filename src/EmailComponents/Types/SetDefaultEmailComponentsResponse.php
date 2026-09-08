@@ -3,12 +3,19 @@
 namespace Sequenzy\EmailComponents\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Types\EmailComponent;
+use Sequenzy\Types\FooterApplicationPreview;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\EmailComponent;
 use Sequenzy\Core\Types\ArrayType;
 
 class SetDefaultEmailComponentsResponse extends JsonSerializableType
 {
+    /**
+     * @var ?FooterApplicationPreview $application
+     */
+    #[JsonProperty('application')]
+    public ?FooterApplicationPreview $application;
+
     /**
      * @var ?EmailComponent $component
      */
@@ -29,6 +36,7 @@ class SetDefaultEmailComponentsResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   application?: ?FooterApplicationPreview,
      *   component?: ?EmailComponent,
      *   success?: ?bool,
      *   warnings?: ?array<string>,
@@ -37,6 +45,7 @@ class SetDefaultEmailComponentsResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->application = $values['application'] ?? null;
         $this->component = $values['component'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->warnings = $values['warnings'] ?? null;

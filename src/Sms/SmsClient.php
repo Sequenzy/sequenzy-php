@@ -12,6 +12,8 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Sms\Types\GetUsageSmsResponse;
+use Sequenzy\Sms\Types\ReleaseNumberSmsResponse;
 use Sequenzy\Sms\Requests\SendTestSmsRequest;
 use Sequenzy\Sms\Types\SendTestSmsResponse;
 use Sequenzy\Sms\Requests\UpdateNumberLabelSmsRequest;
@@ -92,6 +94,113 @@ class SmsClient
                     return null;
                 }
                 return GetSettingsSmsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Per-number outbound SMS usage for the selected company. Requires account:read. Test sends count only toward testSends, not totalSends, delivered, failed or creditsCharged. lastSentAt may include a test send. Rows are ordered by totalSends descending.
+     *
+     * Example:
+     * ```php
+     * $client->sms->getUsage();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetUsageSmsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getUsage(?array $options = null): ?GetUsageSmsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sms/usage",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetUsageSmsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Release a toll-free number and free its workspace slot. Requires companies:manage. Steps explicitly pinned to this number do not switch to another number. This action cannot reclaim the number after release.
+     *
+     * Example:
+     * ```php
+     * $client->sms->releaseNumber(
+     *     'numberId',
+     * );
+     * ```
+     *
+     * @param string $numberId SMS number ID from GET /sms/settings.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ReleaseNumberSmsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function releaseNumber(string $numberId, ?array $options = null): ?ReleaseNumberSmsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sms/numbers/{$numberId}",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ReleaseNumberSmsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

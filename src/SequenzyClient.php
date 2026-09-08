@@ -9,6 +9,7 @@ use Sequenzy\AudienceSyncs\AudienceSyncsClient;
 use Sequenzy\Campaigns\CampaignsClient;
 use Sequenzy\Companies\CompaniesClient;
 use Sequenzy\Conversations\ConversationsClient;
+use Sequenzy\EmailAiStyle\EmailAiStyleClient;
 use Sequenzy\EmailBlocks\EmailBlocksClient;
 use Sequenzy\EmailComponents\EmailComponentsClient;
 use Sequenzy\EmailDesignSystem\EmailDesignSystemClient;
@@ -82,6 +83,11 @@ class SequenzyClient
      * @var ConversationsClient $conversations
      */
     public ConversationsClient $conversations;
+
+    /**
+     * @var EmailAiStyleClient $emailAiStyle
+     */
+    public EmailAiStyleClient $emailAiStyle;
 
     /**
      * @var EmailBlocksClient $emailBlocks
@@ -309,6 +315,7 @@ class SequenzyClient
         $this->campaigns = new CampaignsClient($this->client, $this->options);
         $this->companies = new CompaniesClient($this->client, $this->options);
         $this->conversations = new ConversationsClient($this->client, $this->options);
+        $this->emailAiStyle = new EmailAiStyleClient($this->client, $this->options);
         $this->emailBlocks = new EmailBlocksClient($this->client, $this->options);
         $this->emailComponents = new EmailComponentsClient($this->client, $this->options);
         $this->emailDesignSystem = new EmailDesignSystemClient($this->client, $this->options);
