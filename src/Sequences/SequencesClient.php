@@ -35,6 +35,7 @@ use Sequenzy\Sequences\Types\GetInboundWebhookSequencesResponse;
 use Sequenzy\Sequences\Requests\GetStatsSequencesRequest;
 use Sequenzy\Sequences\Types\GetStatsSequencesResponse;
 use Sequenzy\Core\Json\JsonSerializer;
+use Sequenzy\Types\SequenceTestRunResponse;
 use Sequenzy\Sequences\Requests\ListSequencesRequest;
 use Sequenzy\Sequences\Types\ListSequencesResponse;
 use Sequenzy\Sequences\Requests\ListEnrollmentsSequencesRequest;
@@ -51,6 +52,7 @@ use Sequenzy\Sequences\Requests\SendTestEmailSequencesRequest;
 use Sequenzy\Sequences\Types\SendTestEmailSequencesResponse;
 use Sequenzy\Sequences\Requests\SimulateSequencesRequest;
 use Sequenzy\Sequences\Types\SimulateSequencesResponse;
+use Sequenzy\Sequences\Requests\StartTestRunSequencesRequest;
 use Sequenzy\Sequences\Types\UnarchiveSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceUpdateRequest;
 use Sequenzy\Sequences\Types\UpdateSequencesResponse;
@@ -1076,6 +1078,63 @@ class SequencesClient
     }
 
     /**
+     * Read status and step logs for a same-company sequence test run. Requires sequences:read and subscribers:read.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getTestRun(
+     *     'sequenceId',
+     *     'runId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param string $runId
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceTestRunResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getTestRun(string $sequenceId, string $runId, ?array $options = null): ?SequenceTestRunResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/test-runs/{$runId}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceTestRunResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Returns matching automation sequences, newest first. Omit limit and offset to return all matches; either parameter enables pagination (default page size 50, capped at 100).
      *
      * Example:
@@ -1758,6 +1817,66 @@ class SequencesClient
                     return null;
                 }
                 return SimulateSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Runs real sequence actions for one active subscriber. Emails are marked as tests. Requires sequences:activate and subscribers:read. Does not enable the sequence or record a trigger event. Ordinary failure retries are disabled; stalled-job recovery can replay actions after worker loss. Completed side effects are not rolled back. Inspect before starting another run.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->startTestRun(
+     *     'sequenceId',
+     *     new StartTestRunSequencesRequest([
+     *         'subscriberId' => 'subscriberId',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param StartTestRunSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceTestRunResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function startTestRun(string $sequenceId, StartTestRunSequencesRequest $request, ?array $options = null): ?SequenceTestRunResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/test-runs",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceTestRunResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

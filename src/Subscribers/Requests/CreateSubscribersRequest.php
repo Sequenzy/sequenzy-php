@@ -67,7 +67,7 @@ class CreateSubscribersRequest extends JsonSerializableType
     public ?string $lastName;
 
     /**
-     * @var ?array<string> $lists List IDs to add subscriber to. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
+     * @var ?array<string> $lists List IDs to add subscriber to. A nonempty array requires the lists:write scope. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
      */
     #[JsonProperty('lists'), ArrayType(['string'])]
     public ?array $lists;

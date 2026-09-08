@@ -4,8 +4,8 @@ namespace Sequenzy\Events;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\Events\Requests\GetSchemasEventsRequest;
-use Sequenzy\Events\Types\GetSchemasEventsResponse;
+use Sequenzy\Events\Requests\GetSampleEventsRequest;
+use Sequenzy\Events\Types\GetSampleEventsResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
 use Sequenzy\Core\Json\JsonApiRequest;
@@ -13,6 +13,8 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Events\Requests\GetSchemasEventsRequest;
+use Sequenzy\Events\Types\GetSchemasEventsResponse;
 
 class EventsClient
 {
@@ -48,6 +50,66 @@ class EventsClient
     ) {
         $this->client = $client;
         $this->options = $options ?? [];
+    }
+
+    /**
+     * Requires subscribers:read and company access. Reads the latest retained exact-name event across workspace subscribers, including older history. Trims surrounding whitespace; does not resolve aliases. No additional recent-only cutoff. Equal timestamps have no guaranteed tie order. Copy sample.properties into a sequence test run customVariables object; the test recipient is unchanged. This read has no side effects and can be retried safely.
+     *
+     * Example:
+     * ```php
+     * $client->events->getSample(
+     *     new GetSampleEventsRequest([
+     *         'eventName' => 'eventName',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param GetSampleEventsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetSampleEventsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getSample(GetSampleEventsRequest $request, ?array $options = null): ?GetSampleEventsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['eventName'] = $request->eventName;
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "events/sample",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetSampleEventsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 
     /**
