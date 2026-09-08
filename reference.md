@@ -16092,7 +16092,7 @@ $client->subscribers->cancelOperation(
 
 Creates a new subscriber or handles existing ones based on the `duplicateStrategy` parameter.
 
-Requires `subscribers:write`. Supplying a nonempty `lists` array also requires `lists:write`. Explicit sequence enrollment and writes that can send a double opt-in confirmation require `automations:trigger`.
+Requires `subscribers:write`, including when supplying a nonempty `lists` array. Explicit sequence enrollment and writes that can send a double opt-in confirmation require `automations:trigger`.
 
 **Duplicate Strategies:**
 - `skip` (default): Don't update existing subscribers
@@ -16198,7 +16198,7 @@ How to handle existing subscribers:
 <dl>
 <dd>
 
-**$lists:** `?array` — List IDs to add subscriber to. A nonempty array requires the lists:write scope. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
+**$lists:** `?array` — List IDs to add subscriber to, covered by subscribers:write. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
     
 </dd>
 </dl>
