@@ -116,6 +116,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?string $name;
 
     /**
+     * @var ?string $previousCompanyName Required when renameMatchingFooters is true. Current company name from GET company. A stale name returns 409; retrying a completed rename does not repeat footer changes.
+     */
+    #[JsonProperty('previousCompanyName')]
+    public ?string $previousCompanyName;
+
+    /**
      * @var ?array<string, mixed> $pricing
      */
     #[JsonProperty('pricing'), ArrayType(['string' => 'mixed'])]
@@ -132,6 +138,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('privacyPolicyUrl')]
     public ?string $privacyPolicyUrl;
+
+    /**
+     * @var ?bool $renameMatchingFooters With name and previousCompanyName, atomically rename exact matching footer company names in editable emails and saved components. Preserves custom names, body copy, sent or sending campaigns and active A/B tests. Null is not accepted. This option additionally requires emails:write, templates:write, campaigns:write, sequences:write, transactional:write and ab_tests:write; personal keys require owner/admin access.
+     */
+    #[JsonProperty('renameMatchingFooters')]
+    public ?bool $renameMatchingFooters;
 
     /**
      * @var ?string $replyProfileId Existing reply profile to make the account-wide default, and the profile replyToName renames. Mutually exclusive with replyTo.
@@ -218,9 +230,11 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   language?: ?string,
      *   logoUrl?: ?string,
      *   name?: ?string,
+     *   previousCompanyName?: ?string,
      *   pricing?: ?array<string, mixed>,
      *   primaryColor?: ?string,
      *   privacyPolicyUrl?: ?string,
+     *   renameMatchingFooters?: ?bool,
      *   replyProfileId?: ?string,
      *   replyTo?: ?string,
      *   replyToName?: ?string,
@@ -254,9 +268,11 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->language = $values['language'] ?? null;
         $this->logoUrl = $values['logoUrl'] ?? null;
         $this->name = $values['name'] ?? null;
+        $this->previousCompanyName = $values['previousCompanyName'] ?? null;
         $this->pricing = $values['pricing'] ?? null;
         $this->primaryColor = $values['primaryColor'] ?? null;
         $this->privacyPolicyUrl = $values['privacyPolicyUrl'] ?? null;
+        $this->renameMatchingFooters = $values['renameMatchingFooters'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;
         $this->replyTo = $values['replyTo'] ?? null;
         $this->replyToName = $values['replyToName'] ?? null;

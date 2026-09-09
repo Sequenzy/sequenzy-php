@@ -40,13 +40,13 @@ class UpdateByExternalIdSubscribersRequest extends JsonSerializableType
     public ?string $newExternalId;
 
     /**
-     * @var ?string $firstName
+     * @var ?string $firstName Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
      */
     #[JsonProperty('firstName')]
     public ?string $firstName;
 
     /**
-     * @var ?string $lastName
+     * @var ?string $lastName Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
      */
     #[JsonProperty('lastName')]
     public ?string $lastName;
