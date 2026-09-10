@@ -5902,7 +5902,7 @@ $client->emailAiStyle->saveEmailAiStyle(
 <dl>
 <dd>
 
-Returns the full field reference for one block type, with a minimal valid example and authoring notes.
+Returns the full field reference for one block type, with a minimal valid example and authoring notes. For line-items, includes optional itemFields mappings from display fields to relative dotted paths within each item. Omitted or blank mappings use standard field names. Mapping values must be strings of at most 200 characters.
 </dd>
 </dl>
 </dd>
@@ -7019,7 +7019,7 @@ $client->emails->updateBlocks(
 <dl>
 <dd>
 
-Gets an email delivery snapshot by ID, including queued and test sends, the stored HTML body when available, and retained ClickHouse events when the short-lived row has been cleaned up. Test sends remain hidden from sent-email history but are available through this exact-ID endpoint while their row is retained.
+Gets an email delivery snapshot by ID, including queued and test sends, the stored HTML body when available, and retained ClickHouse events when the short-lived row has been cleaned up. Test sends appear in sent-email history and are available through this exact-ID endpoint while their row is retained.
 </dd>
 </dl>
 </dd>
@@ -7075,7 +7075,7 @@ $client->emailSends->get(
 <dl>
 <dd>
 
-Lists the recent 14-day delivery history with dashboard-equivalent subject, recipient, status, type, bounce, source, pagination, and sorting filters. Successful test sends and copied-recipient bookkeeping rows are hidden; a test send that failed, bounced, or was suppressed IS listed, flagged with an `isTestEmail` value of true, because it is the only record of a test that never arrived.
+Lists the recent 14-day delivery history with dashboard-equivalent subject, recipient, status, type, bounce, source, pagination, and sorting filters. Pending, successful, and failed test sends are listed with `isTestEmail` set to true. Copied-recipient bookkeeping rows remain hidden except bounced or complained copied recipients.
 </dd>
 </dl>
 </dd>
