@@ -23,10 +23,10 @@ class Website extends JsonSerializableType
     public ?array $dkim;
 
     /**
-     * @var ?array<string, mixed> $dnsRecords The DNS records to publish and their per-record verification status (DKIM, SPF, DMARC, MAIL FROM).
+     * @var ?WebsiteDnsRecords $dnsRecords The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
      */
-    #[JsonProperty('dnsRecords'), ArrayType(['string' => 'mixed'])]
-    public ?array $dnsRecords;
+    #[JsonProperty('dnsRecords')]
+    public ?WebsiteDnsRecords $dnsRecords;
 
     /**
      * @var ?bool $dnsVerified Whether the customer DNS records are verified.
@@ -98,7 +98,7 @@ class Website extends JsonSerializableType
      * @param array{
      *   createdAt?: ?DateTime,
      *   dkim?: ?array<string, mixed>,
-     *   dnsRecords?: ?array<string, mixed>,
+     *   dnsRecords?: ?WebsiteDnsRecords,
      *   dnsVerified?: ?bool,
      *   domain?: ?string,
      *   id?: ?string,

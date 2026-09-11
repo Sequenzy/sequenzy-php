@@ -107,6 +107,7 @@ class CampaignDetail extends JsonSerializableType
      *   createdAt?: ?DateTime,
      *   emailId?: ?string,
      *   emailPreset?: ?value-of<EmailPreset>,
+     *   hasAudience?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
      *   name?: ?string,
@@ -145,6 +146,7 @@ class CampaignDetail extends JsonSerializableType
         $this->createdAt = $values['createdAt'] ?? null;
         $this->emailId = $values['emailId'] ?? null;
         $this->emailPreset = $values['emailPreset'] ?? null;
+        $this->hasAudience = $values['hasAudience'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;

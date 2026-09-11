@@ -14,6 +14,7 @@ use Sequenzy\Core\Types\ArrayType;
  * @property ?DateTime $createdAt
  * @property ?string $emailId
  * @property ?value-of<EmailPreset> $emailPreset
+ * @property ?bool $hasAudience
  * @property ?string $id
  * @property ?array<string> $labels
  * @property ?string $name
@@ -49,6 +50,12 @@ trait CampaignSummary
      */
     #[JsonProperty('emailPreset')]
     public ?string $emailPreset;
+
+    /**
+     * @var ?bool $hasAudience Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+     */
+    #[JsonProperty('hasAudience')]
+    public ?bool $hasAudience;
 
     /**
      * @var ?string $id

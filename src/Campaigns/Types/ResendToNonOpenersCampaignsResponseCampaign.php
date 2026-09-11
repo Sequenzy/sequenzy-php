@@ -75,6 +75,12 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
     public ?string $fromName;
 
     /**
+     * @var ?bool $hasAudience Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+     */
+    #[JsonProperty('hasAudience')]
+    public ?bool $hasAudience;
+
+    /**
      * @var ?string $id
      */
     #[JsonProperty('id')]
@@ -224,6 +230,7 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
      *   emailPreset?: ?value-of<EmailPreset>,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
+     *   hasAudience?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
      *   name?: ?string,
@@ -262,6 +269,7 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
         $this->emailPreset = $values['emailPreset'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
+        $this->hasAudience = $values['hasAudience'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;

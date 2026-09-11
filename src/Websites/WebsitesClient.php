@@ -219,7 +219,7 @@ class WebsitesClient
     }
 
     /**
-     * Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics.
+     * Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics. For legacy custom reply domains, once the inbound MX is verified this also prepares any required public verification TXT record in website.dnsRecords.inboundVerificationRecord. Publish that record and retry this endpoint; existing reply hostnames are preserved. Inspect dnsRecords.inboundRoutingStatus independently of readyToSend.
      *
      * Example:
      * ```php

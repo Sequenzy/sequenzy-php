@@ -15,6 +15,8 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\EmailBlocks\Requests\ListEmailBlocksRequest;
 use Sequenzy\EmailBlocks\Types\ListEmailBlocksResponse;
+use Sequenzy\EmailBlocks\Requests\PreviewCartItemsRequest;
+use Sequenzy\EmailBlocks\Types\PreviewCartItemsResponse;
 
 class EmailBlocksClient
 {
@@ -161,6 +163,62 @@ class EmailBlocksClient
                     return null;
                 }
                 return ListEmailBlocksResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Requires authentication, accepts existing restricted keys, and operates only on supplied data. Does not save or send. Safe to retry.
+     *
+     * Example:
+     * ```php
+     * $client->emailBlocks->previewCartItems(
+     *     new PreviewCartItemsRequest([]),
+     * );
+     * ```
+     *
+     * @param PreviewCartItemsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PreviewCartItemsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function previewCartItems(PreviewCartItemsRequest $request = new PreviewCartItemsRequest(), ?array $options = null): ?PreviewCartItemsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "email-blocks/line-items/assist",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PreviewCartItemsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

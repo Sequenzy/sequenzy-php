@@ -14,6 +14,8 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Campaigns\Requests\CreateCampaignsRequest;
 use Sequenzy\Campaigns\Types\CreateCampaignsResponse;
+use Sequenzy\Campaigns\Requests\CreateForAudienceCampaignsRequest;
+use Sequenzy\Campaigns\Types\CreateForAudienceCampaignsResponse;
 use Sequenzy\Campaigns\Requests\CreateGoalCampaignsRequest;
 use Sequenzy\Campaigns\Types\CreateGoalCampaignsResponse;
 use Sequenzy\Campaigns\Types\CreateShareLinkCampaignsResponse;
@@ -188,6 +190,66 @@ class CampaignsClient
                     return null;
                 }
                 return CreateCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Creates a blank draft and freezes distinct contacts from a complete contact selection or email-activity drilldown. Requires campaigns:write and subscribers:read, plus analytics:read for activity. Maximum 100,000 contacts and 8 MiB stored audience JSON. No sending domain or send permission is required for drafting. Membership is saved now; active status and email eligibility are checked again at send time. Deleted historical analytics contacts are omitted. Read, replace or clear targetLists using the existing campaign endpoints.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->createForAudience(
+     *     new CreateForAudienceCampaignsRequest([
+     *         'selection' => new CreateForAudienceCampaignsRequestSelection([
+     *             'source' => CreateForAudienceCampaignsRequestSelectionSource::Contacts->value,
+     *         ]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param CreateForAudienceCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CreateForAudienceCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createForAudience(CreateForAudienceCampaignsRequest $request, ?array $options = null): ?CreateForAudienceCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/from-audience",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CreateForAudienceCampaignsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
