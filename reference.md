@@ -7933,7 +7933,7 @@ $client->integrations->activatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only and returns an empty webhookUrl. Other providers include the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -7967,7 +7967,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
     
 </dd>
 </dl>
@@ -7991,7 +7991,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
     
 </dd>
 </dl>
@@ -8007,7 +8007,63 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$webhookSecret:** `?string` — Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;integrations-&gt;disconnect($id) -> ?DisconnectIntegrationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Disconnects Lemon Squeezy locally before removing its managed webhook. Manual webhooks remain under your control. Requires integrations:manage; personal keys require owner or admin access. A cleanupWarning means ingestion is stopped but provider cleanup failed; repeat this request to retry cleanup, including when the integration is already inactive. Other providers require the dashboard. Existing subscribers and history are retained. No request body is required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->integrations->disconnect(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` — Lemon Squeezy integration ID.
     
 </dd>
 </dl>
@@ -8399,7 +8455,7 @@ $client->integrations->listCapabilities(
 <dl>
 <dd>
 
-Queues a manual re-sync for a connected integration - customers and revenue for a payment provider (Stripe, Polar, Paddle, Dodo, Creem, Chargebee, Whop), the user backfill for Supabase, or the event-history import for PostHog and Segment. The Supabase sync reads the project, schema, and table already configured for the integration and returns 400 when none is configured. PostHog and Segment re-run their event-history imports with credentials stored at connect time and are the supported retry path for failed imports; each restarts from the beginning, already-imported events dedupe, and returns 409 while queued or syncing. Segment requires a saved Unify space ID and Profile API token and covers the most recent 14 days served by the Profile API. Terminal BullMQ failures release imports for retry. Returns immediately; poll the integration to watch syncStatus. Other providers re-sync from the dashboard. Requires the integrations:manage scope.
+Queues a manual re-sync for a connected integration - customers and revenue for a payment provider (Stripe, Polar, Paddle, Dodo, Lemon Squeezy, Creem, Chargebee, Whop), the user backfill for Supabase, or the event-history import for PostHog and Segment. The Supabase sync reads the project, schema, and table already configured for the integration and returns 400 when none is configured. PostHog and Segment re-run their event-history imports with credentials stored at connect time and are the supported retry path for failed imports; each restarts from the beginning, already-imported events dedupe, and returns 409 while queued or syncing. Segment requires a saved Unify space ID and Profile API token and covers the most recent 14 days served by the Profile API. Terminal BullMQ failures release imports for retry. Returns immediately; poll the integration to watch syncStatus. Other providers re-sync from the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>

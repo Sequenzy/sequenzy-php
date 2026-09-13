@@ -11,7 +11,7 @@ use Sequenzy\Integrations\Types\ConnectIntegrationsRequestSettings;
 class ConnectIntegrationsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
      */
     #[JsonProperty('apiKey')]
     public ?string $apiKey;
@@ -29,7 +29,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public string $provider;
 
     /**
-     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
      */
     #[JsonProperty('providerAccountId')]
     public ?string $providerAccountId;
@@ -41,7 +41,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public ?ConnectIntegrationsRequestSettings $settings;
 
     /**
-     * @var ?string $webhookSecret Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+     * @var ?string $webhookSecret Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
      */
     #[JsonProperty('webhookSecret')]
     public ?string $webhookSecret;

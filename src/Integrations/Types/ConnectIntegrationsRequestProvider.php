@@ -7,6 +7,7 @@ enum ConnectIntegrationsRequestProvider: string
     case Polar = "polar";
     case Paddle = "paddle";
     case Dodo = "dodo";
+    case LemonSqueezy = "lemon_squeezy";
     case Whop = "whop";
     case Creem = "creem";
     case Chargebee = "chargebee";

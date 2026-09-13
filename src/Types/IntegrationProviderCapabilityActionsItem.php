@@ -5,6 +5,7 @@ namespace Sequenzy\Types;
 enum IntegrationProviderCapabilityActionsItem: string
 {
     case Connect = "connect";
+    case Disconnect = "disconnect";
     case EnableSync = "enable_sync";
     case DisableSync = "disable_sync";
     case SyncNow = "sync_now";

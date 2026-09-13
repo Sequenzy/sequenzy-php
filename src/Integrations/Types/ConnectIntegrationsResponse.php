@@ -39,7 +39,19 @@ class ConnectIntegrationsResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
-     * @var ?string $webhookUrl URL to configure in the provider's webhook settings with the same secret. Empty for Attio, which is outbound-only.
+     * @var ?bool $testMode Lemon Squeezy only. Whether the connected store uses test mode.
+     */
+    #[JsonProperty('testMode')]
+    public ?bool $testMode;
+
+    /**
+     * @var ?value-of<ConnectIntegrationsResponseWebhookProvisioning> $webhookProvisioning Lemon Squeezy only. Whether Sequenzy manages the provider webhook.
+     */
+    #[JsonProperty('webhookProvisioning')]
+    public ?string $webhookProvisioning;
+
+    /**
+     * @var ?string $webhookUrl Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. Empty for Attio.
      */
     #[JsonProperty('webhookUrl')]
     public ?string $webhookUrl;
@@ -51,6 +63,8 @@ class ConnectIntegrationsResponse extends JsonSerializableType
      *   integration?: ?IntegrationSummary,
      *   revenueSyncQueued?: ?bool,
      *   success?: ?bool,
+     *   testMode?: ?bool,
+     *   webhookProvisioning?: ?value-of<ConnectIntegrationsResponseWebhookProvisioning>,
      *   webhookUrl?: ?string,
      * } $values
      */
@@ -62,6 +76,8 @@ class ConnectIntegrationsResponse extends JsonSerializableType
         $this->integration = $values['integration'] ?? null;
         $this->revenueSyncQueued = $values['revenueSyncQueued'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->testMode = $values['testMode'] ?? null;
+        $this->webhookProvisioning = $values['webhookProvisioning'] ?? null;
         $this->webhookUrl = $values['webhookUrl'] ?? null;
     }
 
