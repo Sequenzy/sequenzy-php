@@ -5,6 +5,7 @@ namespace Sequenzy\Transactional\Requests;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Traits\EmailBodyInput;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\EmailBlock;
 
 class CreateTransactionalRequest extends JsonSerializableType
@@ -16,6 +17,12 @@ class CreateTransactionalRequest extends JsonSerializableType
      */
     #[JsonProperty('enabled')]
     public ?bool $enabled;
+
+    /**
+     * @var ?array<string> $labels Company label names. Trimmed and deduplicated; missing names are created. Replaces all assignments; [] clears them. Omit to preserve assignments on update or start without labels on create. Null and blank names are rejected.
+     */
+    #[JsonProperty('labels'), ArrayType(['string'])]
+    public ?array $labels;
 
     /**
      * @var string $name
@@ -63,6 +70,7 @@ class CreateTransactionalRequest extends JsonSerializableType
      * @param array{
      *   name: string,
      *   enabled?: ?bool,
+     *   labels?: ?array<string>,
      *   previewText?: ?string,
      *   prompt?: ?string,
      *   slug?: ?string,
@@ -77,6 +85,7 @@ class CreateTransactionalRequest extends JsonSerializableType
         array $values,
     ) {
         $this->enabled = $values['enabled'] ?? null;
+        $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'];
         $this->previewText = $values['previewText'] ?? null;
         $this->prompt = $values['prompt'] ?? null;

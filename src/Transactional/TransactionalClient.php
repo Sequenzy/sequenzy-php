@@ -265,6 +265,9 @@ class TransactionalClient
         if ($request->includeMachineEngagement != null) {
             $query['includeMachineEngagement'] = $request->includeMachineEngagement;
         }
+        if ($request->label != null) {
+            $query['label'] = $request->label;
+        }
         if ($request->order != null) {
             $query['order'] = $request->order;
         }
@@ -407,7 +410,7 @@ class TransactionalClient
     }
 
     /**
-     * Updates transactional email metadata or replaces the linked email body using raw HTML or Sequenzy blocks.
+     * Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks.
      *
      * Example:
      * ```php

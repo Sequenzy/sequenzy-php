@@ -11,6 +11,12 @@ use Sequenzy\Core\Types\Date;
 class ScheduleCampaignsResponseCampaign extends JsonSerializableType
 {
     /**
+     * @var ?int $estimatedRecipientCount Estimated matching audience size after applying the saved recipient limit, or null when unavailable.
+     */
+    #[JsonProperty('estimatedRecipientCount')]
+    public ?int $estimatedRecipientCount;
+
+    /**
      * @var ?string $id
      */
     #[JsonProperty('id')]
@@ -21,6 +27,12 @@ class ScheduleCampaignsResponseCampaign extends JsonSerializableType
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
     public ?array $labels;
+
+    /**
+     * @var ?int $maxRecipients Saved recipient limit, or null to send to the whole matching audience.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
 
     /**
      * @var ?string $name
@@ -72,8 +84,10 @@ class ScheduleCampaignsResponseCampaign extends JsonSerializableType
 
     /**
      * @param array{
+     *   estimatedRecipientCount?: ?int,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   name?: ?string,
      *   previewUrl?: ?string,
      *   scheduledAt?: ?DateTime,
@@ -87,8 +101,10 @@ class ScheduleCampaignsResponseCampaign extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->estimatedRecipientCount = $values['estimatedRecipientCount'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->previewUrl = $values['previewUrl'] ?? null;
         $this->scheduledAt = $values['scheduledAt'] ?? null;

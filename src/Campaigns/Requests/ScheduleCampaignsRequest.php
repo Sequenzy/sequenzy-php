@@ -18,6 +18,12 @@ class ScheduleCampaignsRequest extends JsonSerializableType
     public ?array $listIds;
 
     /**
+     * @var ?int $maxRecipients Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied; recipients already reached count against the cap when a paused send resumes. Omit to keep the draft's saved cap, send null to clear it. The response's estimatedRecipientCount reflects the cap. For A/B tests, the cap must be at least the number of variants plus one; a smaller saved or requested cap returns 400 without changing the campaign or schedule.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
+
+    /**
      * @var ?value-of<ScheduleCampaignsRequestRecurringInterval> $recurringInterval Repeat the campaign on a cadence starting at scheduledAt. The campaign becomes a recurring template - each run is duplicated and sent automatically, re-evaluating audience membership every time. Omit or send null for a one-shot send; scheduling again without it stops the recurrence.
      */
     #[JsonProperty('recurringInterval')]
@@ -69,6 +75,7 @@ class ScheduleCampaignsRequest extends JsonSerializableType
      * @param array{
      *   scheduledAt: DateTime,
      *   listIds?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   recurringInterval?: ?value-of<ScheduleCampaignsRequestRecurringInterval>,
      *   scheduledTimezone?: ?string,
      *   sendInRecipientTimezone?: ?bool,
@@ -82,6 +89,7 @@ class ScheduleCampaignsRequest extends JsonSerializableType
         array $values,
     ) {
         $this->listIds = $values['listIds'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->recurringInterval = $values['recurringInterval'] ?? null;
         $this->scheduledAt = $values['scheduledAt'];
         $this->scheduledTimezone = $values['scheduledTimezone'] ?? null;

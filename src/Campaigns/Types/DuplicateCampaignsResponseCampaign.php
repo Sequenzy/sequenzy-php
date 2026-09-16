@@ -93,6 +93,12 @@ class DuplicateCampaignsResponseCampaign extends JsonSerializableType
     public ?array $labels;
 
     /**
+     * @var ?int $maxRecipients Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
@@ -233,6 +239,7 @@ class DuplicateCampaignsResponseCampaign extends JsonSerializableType
      *   hasAudience?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   name?: ?string,
      *   preheader?: ?string,
      *   preheaderText?: ?string,
@@ -272,6 +279,7 @@ class DuplicateCampaignsResponseCampaign extends JsonSerializableType
         $this->hasAudience = $values['hasAudience'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->preheader = $values['preheader'] ?? null;
         $this->preheaderText = $values['preheaderText'] ?? null;

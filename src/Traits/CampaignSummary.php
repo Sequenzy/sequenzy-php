@@ -17,6 +17,7 @@ use Sequenzy\Core\Types\ArrayType;
  * @property ?bool $hasAudience
  * @property ?string $id
  * @property ?array<string> $labels
+ * @property ?int $maxRecipients
  * @property ?string $name
  * @property ?string $rejectionComment
  * @property ?DateTime $scheduledAt
@@ -68,6 +69,12 @@ trait CampaignSummary
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
     public ?array $labels;
+
+    /**
+     * @var ?int $maxRecipients Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
 
     /**
      * @var ?string $name

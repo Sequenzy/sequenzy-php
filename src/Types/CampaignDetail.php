@@ -110,6 +110,7 @@ class CampaignDetail extends JsonSerializableType
      *   hasAudience?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   name?: ?string,
      *   rejectionComment?: ?string,
      *   scheduledAt?: ?DateTime,
@@ -149,6 +150,7 @@ class CampaignDetail extends JsonSerializableType
         $this->hasAudience = $values['hasAudience'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->rejectionComment = $values['rejectionComment'] ?? null;
         $this->scheduledAt = $values['scheduledAt'] ?? null;

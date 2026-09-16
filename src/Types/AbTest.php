@@ -53,6 +53,18 @@ class AbTest extends JsonSerializableType
     public ?string $name;
 
     /**
+     * @var ?AbTestPendingSampleUpdate $pendingSampleUpdate Durable campaign sample request, null when absent or applied. Retry the same testPercentage after an interrupted request; error enables explicit discard.
+     */
+    #[JsonProperty('pendingSampleUpdate')]
+    public ?AbTestPendingSampleUpdate $pendingSampleUpdate;
+
+    /**
+     * @var ?AbTestProgress $progress Present on campaign detail and settings responses. Null if the campaign is missing. Counts unique recipient deliveries across retry attempts, excluding separate test emails.
+     */
+    #[JsonProperty('progress')]
+    public ?AbTestProgress $progress;
+
+    /**
      * @var ?array<string, mixed> $settings Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, and winnerCriteria; sequence tests return testType, winnerThreshold, and winnerCriteria.
      */
     #[JsonProperty('settings'), ArrayType(['string' => 'mixed'])]
@@ -139,6 +151,8 @@ class AbTest extends JsonSerializableType
      *   id?: ?string,
      *   kind?: ?value-of<AbTestKind>,
      *   name?: ?string,
+     *   pendingSampleUpdate?: ?AbTestPendingSampleUpdate,
+     *   progress?: ?AbTestProgress,
      *   settings?: ?array<string, mixed>,
      *   status?: ?string,
      *   testDurationMinutes?: ?int,
@@ -164,6 +178,8 @@ class AbTest extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->kind = $values['kind'] ?? null;
         $this->name = $values['name'] ?? null;
+        $this->pendingSampleUpdate = $values['pendingSampleUpdate'] ?? null;
+        $this->progress = $values['progress'] ?? null;
         $this->settings = $values['settings'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->testDurationMinutes = $values['testDurationMinutes'] ?? null;

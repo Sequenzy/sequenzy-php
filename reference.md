@@ -718,7 +718,7 @@ $client->abTests->selectWinner(
 <dl>
 <dd>
 
-Updates a draft campaign test or the effective settings for a sequence test. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
+Updates a draft or testing campaign test or the effective settings for a sequence test. Live campaign duration is measured from its original start; sample changes are asynchronous and preserve committed recipients. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
 </dd>
 </dl>
 </dd>
@@ -759,7 +759,23 @@ $client->abTests->update(
 <dl>
 <dd>
 
+**$cancelSampleUpdate:** `?bool` — Discard a failed campaign sample request. Cannot be combined with testPercentage; does not undo committed sends.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$confirmLiveChange:** `?bool` — Required when sequence settings affect an active test or a test with recorded activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$expectedUpdatedAt:** `?DateTime` — Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
     
 </dd>
 </dl>
@@ -775,7 +791,7 @@ $client->abTests->update(
 <dl>
 <dd>
 
-**$testDurationMinutes:** `?int` — Campaign-only test duration.
+**$testDurationMinutes:** `?int` — Campaign-only total minutes from the original test start. An elapsed deadline queues selection immediately; paused campaigns stay paused.
     
 </dd>
 </dl>
@@ -783,7 +799,7 @@ $client->abTests->update(
 <dl>
 <dd>
 
-**$testPercentage:** `?int` — Campaign-only test audience percentage.
+**$testPercentage:** `?int` — Campaign-only integer share of the original full audience. Live changes queue a durable request; repeat the same percentage to retry.
     
 </dd>
 </dl>
@@ -799,7 +815,7 @@ $client->abTests->update(
 <dl>
 <dd>
 
-**$winnerCriteria:** `?string` — Winner metric for campaign or sequence tests.
+**$winnerCriteria:** `?string` — Winner metric for campaign or sequence tests; immutable once campaign testing starts.
     
 </dd>
 </dl>
@@ -3829,7 +3845,7 @@ $client->campaigns->getAudience(
 <dl>
 <dd>
 
-Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
+Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) and the recipient cap (maxRecipients) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
 </dd>
 </dl>
 </dd>
@@ -3909,7 +3925,7 @@ $client->campaigns->list(
 <dl>
 <dd>
 
-Lists the conversion goals attached to an email campaign. SMS campaigns are not supported.
+Lists campaign-specific goals in goals and automatically applied Settings goals in companyGoals. Both include inactive goals. Company-wide goals keep their open/click attribution window and are managed in Settings. SMS campaigns are not supported.
 </dd>
 </dl>
 </dd>
@@ -4403,6 +4419,14 @@ $client->campaigns->schedule(
 <dl>
 <dd>
 
+**$maxRecipients:** `?int` — Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied; recipients already reached count against the cap when a paused send resumes. Omit to keep the draft's saved cap, send null to clear it. The response's estimatedRecipientCount reflects the cap. For A/B tests, the cap must be at least the number of variants plus one; a smaller saved or requested cap returns 400 without changing the campaign or schedule.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$recurringInterval:** `?string` — Repeat the campaign on a cadence starting at scheduledAt. The campaign becomes a recurring template - each run is duplicated and sent automatically, re-evaluating audience membership every time. Omit or send null for a one-shot send; scheduling again without it stops the recurrence.
     
 </dd>
@@ -4738,6 +4762,14 @@ $client->campaigns->update(
 <dd>
 
 **$listIds:** `?array` — Shorthand for retargeting the draft at one or more lists. Equivalent to `targetLists` `{"type":"lists","listIds":["list_123"]}`. Mutually exclusive with targetLists and segmentId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$maxRecipients:** `?int` — Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied. Persists on the draft until schedule overrides it. Send null to remove the limit. Values outside 1-10,000,000 are rejected with 400.
     
 </dd>
 </dl>
@@ -20464,6 +20496,14 @@ $client->transactional->create(
 <dl>
 <dd>
 
+**$labels:** `?array` — Company label names. Trimmed and deduplicated; missing names are created. Replaces all assignments; [] clears them. Omit to preserve assignments on update or start without labels on create. Null and blank names are rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$name:** `string` 
     
 </dd>
@@ -20687,6 +20727,14 @@ $client->transactional->list(
 <dd>
 
 **$includeMachineEngagement:** `?bool` — Include detected bot, scanner, preview, and privacy-proxy engagement in open and click metrics.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$label:** `?string` — Filter by company label names, matching any. Repeat the parameter for multiple names; commas are literal characters. Combined with search and status. Unknown names match no templates.
     
 </dd>
 </dl>
@@ -21017,7 +21065,7 @@ the visible From.
 <dl>
 <dd>
 
-Updates transactional email metadata or replaces the linked email body using raw HTML or Sequenzy blocks.
+Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks.
 </dd>
 </dl>
 </dd>
@@ -21059,6 +21107,14 @@ $client->transactional->update(
 <dd>
 
 **$enabled:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$labels:** `?array` — Company label names. Trimmed and deduplicated; missing names are created. Replaces all assignments; [] clears them. Omit to preserve assignments on update or start without labels on create. Null and blank names are rejected.
     
 </dd>
 </dl>

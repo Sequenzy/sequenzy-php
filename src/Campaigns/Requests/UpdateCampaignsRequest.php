@@ -82,6 +82,12 @@ class UpdateCampaignsRequest extends JsonSerializableType
     public ?array $listIds;
 
     /**
+     * @var ?int $maxRecipients Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied. Persists on the draft until schedule overrides it. Send null to remove the limit. Values outside 1-10,000,000 are rejected with 400.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
+
+    /**
      * @var ?string $name Updated campaign name
      */
     #[JsonProperty('name')]
@@ -173,6 +179,7 @@ class UpdateCampaignsRequest extends JsonSerializableType
      *   label?: ?array<string>,
      *   labels?: ?array<string>,
      *   listIds?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   name?: ?string,
      *   preheaderText?: ?string,
      *   previewText?: ?string,
@@ -203,6 +210,7 @@ class UpdateCampaignsRequest extends JsonSerializableType
         $this->label = $values['label'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->listIds = $values['listIds'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->preheaderText = $values['preheaderText'] ?? null;
         $this->previewText = $values['previewText'] ?? null;

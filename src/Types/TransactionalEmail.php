@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use DateTime;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\Date;
+use Sequenzy\Core\Types\ArrayType;
 
 class TransactionalEmail extends JsonSerializableType
 {
@@ -34,6 +35,12 @@ class TransactionalEmail extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?array<string> $labels Assigned company label names. Empty when unlabelled.
+     */
+    #[JsonProperty('labels'), ArrayType(['string'])]
+    public ?array $labels;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
@@ -57,6 +64,7 @@ class TransactionalEmail extends JsonSerializableType
      *   emailId?: ?string,
      *   enabled?: ?bool,
      *   id?: ?string,
+     *   labels?: ?array<string>,
      *   name?: ?string,
      *   slug?: ?string,
      *   updatedAt?: ?DateTime,
@@ -69,6 +77,7 @@ class TransactionalEmail extends JsonSerializableType
         $this->emailId = $values['emailId'] ?? null;
         $this->enabled = $values['enabled'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->slug = $values['slug'] ?? null;
         $this->updatedAt = $values['updatedAt'] ?? null;

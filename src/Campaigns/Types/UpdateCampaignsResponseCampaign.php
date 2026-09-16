@@ -46,6 +46,12 @@ class UpdateCampaignsResponseCampaign extends JsonSerializableType
     public ?array $labels;
 
     /**
+     * @var ?int $maxRecipients Saved recipient limit, or null to send to the whole matching audience.
+     */
+    #[JsonProperty('maxRecipients')]
+    public ?int $maxRecipients;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
@@ -107,6 +113,7 @@ class UpdateCampaignsResponseCampaign extends JsonSerializableType
      *   emailPreset?: ?value-of<EmailPreset>,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   maxRecipients?: ?int,
      *   name?: ?string,
      *   previewUrl?: ?string,
      *   replyProfileId?: ?string,
@@ -127,6 +134,7 @@ class UpdateCampaignsResponseCampaign extends JsonSerializableType
         $this->emailPreset = $values['emailPreset'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->maxRecipients = $values['maxRecipients'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->previewUrl = $values['previewUrl'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;

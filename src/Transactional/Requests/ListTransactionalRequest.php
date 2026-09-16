@@ -15,6 +15,11 @@ class ListTransactionalRequest extends JsonSerializableType
     public ?bool $includeMachineEngagement;
 
     /**
+     * @var ?array<string> $label Filter by company label names, matching any. Repeat the parameter for multiple names; commas are literal characters. Combined with search and status. Unknown names match no templates.
+     */
+    public ?array $label;
+
+    /**
      * @var ?value-of<ListTransactionalRequestOrder> $order Sort direction.
      */
     public ?string $order;
@@ -37,6 +42,7 @@ class ListTransactionalRequest extends JsonSerializableType
     /**
      * @param array{
      *   includeMachineEngagement?: ?bool,
+     *   label?: ?array<string>,
      *   order?: ?value-of<ListTransactionalRequestOrder>,
      *   search?: ?string,
      *   sort?: ?value-of<ListTransactionalRequestSort>,
@@ -47,6 +53,7 @@ class ListTransactionalRequest extends JsonSerializableType
         array $values = [],
     ) {
         $this->includeMachineEngagement = $values['includeMachineEngagement'] ?? null;
+        $this->label = $values['label'] ?? null;
         $this->order = $values['order'] ?? null;
         $this->search = $values['search'] ?? null;
         $this->sort = $values['sort'] ?? null;
