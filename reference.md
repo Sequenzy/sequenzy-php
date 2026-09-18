@@ -9949,6 +9949,14 @@ $client->lists->create(
 <dl>
 <dd>
 
+**$allowMemberUnsubscribe:** `?bool` — Allow current private-list members to see its name and opt out in preferences. Defaults false on create; omission preserves on update and false disables. Null is rejected. Stored but has no effect on public lists. Does not permit private joining or rejoining.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$description:** `?string` — Optional internal workspace metadata. Never shown in hosted or embedded subscriber preferences.
     
 </dd>
@@ -9957,7 +9965,7 @@ $client->lists->create(
 <dl>
 <dd>
 
-**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
+**$isPrivate:** `?bool` — Set to true to hide the list from subscriber preferences unless allowMemberUnsubscribe is enabled for current members. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
     
 </dd>
 </dl>
@@ -10198,6 +10206,14 @@ $client->lists->update(
 <dl>
 <dd>
 
+**$allowMemberUnsubscribe:** `?bool` — Allow current private-list members to see its name and opt out in preferences. Defaults false on create; omission preserves on update and false disables. Null is rejected. Stored but has no effect on public lists. Does not permit private joining or rejoining.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$description:** `?string` — New internal list description. Never shown in hosted or embedded subscriber preferences. Pass null to clear it.
     
 </dd>
@@ -10206,7 +10222,7 @@ $client->lists->update(
 <dl>
 <dd>
 
-**$isPrivate:** `?bool` — Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
+**$isPrivate:** `?bool` — Set to true to hide the list from subscriber preferences unless allowMemberUnsubscribe is enabled for current members. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
     
 </dd>
 </dl>

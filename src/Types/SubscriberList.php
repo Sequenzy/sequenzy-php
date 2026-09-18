@@ -16,6 +16,12 @@ class SubscriberList extends JsonSerializableType
     public ?int $activeSubscriberCount;
 
     /**
+     * @var ?bool $allowMemberUnsubscribe Whether current members of a private list can see its name and unsubscribe in preferences. Does not allow joining or rejoining. No effect on public lists.
+     */
+    #[JsonProperty('allowMemberUnsubscribe')]
+    public ?bool $allowMemberUnsubscribe;
+
+    /**
      * @var ?DateTime $createdAt
      */
     #[JsonProperty('createdAt'), Date(Date::TYPE_DATETIME)]
@@ -34,7 +40,7 @@ class SubscriberList extends JsonSerializableType
     public ?string $id;
 
     /**
-     * @var ?bool $isPrivate Whether the list is private. Private lists are omitted from the hosted subscriber email preferences/unsubscribe page and cannot be subscribed to or unsubscribed from individually there. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe.
+     * @var ?bool $isPrivate Whether the list is private. Private lists are hidden unless allowMemberUnsubscribe is enabled, in which case current members can see the name and opt out. Private lists cannot be joined through preferences. Descriptions remain internal; global unsubscribe still applies.
      */
     #[JsonProperty('isPrivate')]
     public ?bool $isPrivate;
@@ -54,6 +60,7 @@ class SubscriberList extends JsonSerializableType
     /**
      * @param array{
      *   activeSubscriberCount?: ?int,
+     *   allowMemberUnsubscribe?: ?bool,
      *   createdAt?: ?DateTime,
      *   description?: ?string,
      *   id?: ?string,
@@ -66,6 +73,7 @@ class SubscriberList extends JsonSerializableType
         array $values = [],
     ) {
         $this->activeSubscriberCount = $values['activeSubscriberCount'] ?? null;
+        $this->allowMemberUnsubscribe = $values['allowMemberUnsubscribe'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
         $this->description = $values['description'] ?? null;
         $this->id = $values['id'] ?? null;
