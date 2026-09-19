@@ -23310,7 +23310,7 @@ $client->widgets->listCaptureSubmissions(
 </dl>
 </details>
 
-<details><summary><code>$client-&gt;widgets-&gt;listFormSubmissions($formId, $request) -> ?ListFormSubmissionsResponse</code></summary>
+<details><summary><code>$client-&gt;widgets-&gt;listFormSubmissions($companyIdOrFormId, $request) -> ?ListFormSubmissionsResponse</code></summary>
 <dl>
 <dd>
 
@@ -23338,7 +23338,7 @@ Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and su
 
 ```php
 $client->widgets->listFormSubmissions(
-    'formId',
+    'companyIdOrFormId',
     new ListFormSubmissionsRequest([]),
 );
 ```
@@ -23355,7 +23355,7 @@ $client->widgets->listFormSubmissions(
 <dl>
 <dd>
 
-**$formId:** `string` 
+**$companyIdOrFormId:** `string` 
     
 </dd>
 </dl>

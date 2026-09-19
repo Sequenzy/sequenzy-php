@@ -711,12 +711,12 @@ class WidgetsClient
      * Example:
      * ```php
      * $client->widgets->listFormSubmissions(
-     *     'formId',
+     *     'companyIdOrFormId',
      *     new ListFormSubmissionsRequest([]),
      * );
      * ```
      *
-     * @param string $formId
+     * @param string $companyIdOrFormId
      * @param ListFormSubmissionsRequest $request
      * @param ?array{
      *   baseUrl?: string,
@@ -730,7 +730,7 @@ class WidgetsClient
      * @throws SequenzyException
      * @throws SequenzyApiException
      */
-    public function listFormSubmissions(string $formId, ListFormSubmissionsRequest $request = new ListFormSubmissionsRequest(), ?array $options = null): ?ListFormSubmissionsResponse
+    public function listFormSubmissions(string $companyIdOrFormId, ListFormSubmissionsRequest $request = new ListFormSubmissionsRequest(), ?array $options = null): ?ListFormSubmissionsResponse
     {
         $options = array_merge($this->options, $options ?? []);
         $query = [];
@@ -753,7 +753,7 @@ class WidgetsClient
             $response = $this->client->sendRequest(
                 new JsonApiRequest(
                     baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
-                    path: "forms/{$formId}/submissions",
+                    path: "forms/{$companyIdOrFormId}/submissions",
                     method: HttpMethod::GET,
                     query: $query,
                 ),
