@@ -22,6 +22,11 @@ use Sequenzy\Widgets\Types\DuplicateSavedPopupResponse;
 use Sequenzy\Widgets\Types\GetSavedFormEmbedResponse;
 use Sequenzy\Widgets\Types\GetSavedPopupResponse;
 use Sequenzy\Widgets\Types\GetSavedPopupEmbedResponse;
+use Sequenzy\Widgets\Types\ListCaptureSubmissionsRequestSourceType;
+use Sequenzy\Widgets\Requests\ListCaptureSubmissionsRequest;
+use Sequenzy\Widgets\Types\ListCaptureSubmissionsResponse;
+use Sequenzy\Widgets\Requests\ListFormSubmissionsRequest;
+use Sequenzy\Widgets\Types\ListFormSubmissionsResponse;
 use Sequenzy\Widgets\Types\ListSavedFormsResponse;
 use Sequenzy\Widgets\Requests\ListSavedPopupsRequest;
 use Sequenzy\Widgets\Types\ListSavedPopupsResponse;
@@ -614,6 +619,156 @@ class WidgetsClient
             if ($statusCode >= 200 && $statusCode < 400) {
                 return;
             }
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Read immutable accepted answers for a form, popup or landing page. Requires subscribers:read plus widgets:read for forms/popups or landing_pages:read for landing pages. History is forward-only; deleting a subscriber, source or company removes associated records. Reads can be retried safely.
+     *
+     * Example:
+     * ```php
+     * $client->widgets->listCaptureSubmissions(
+     *     ListCaptureSubmissionsRequestSourceType::Form->value,
+     *     'sourceId',
+     *     new ListCaptureSubmissionsRequest([]),
+     * );
+     * ```
+     *
+     * @param value-of<ListCaptureSubmissionsRequestSourceType> $sourceType
+     * @param string $sourceId
+     * @param ListCaptureSubmissionsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListCaptureSubmissionsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listCaptureSubmissions(string $sourceType, string $sourceId, ListCaptureSubmissionsRequest $request = new ListCaptureSubmissionsRequest(), ?array $options = null): ?ListCaptureSubmissionsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->cursor != null) {
+            $query['cursor'] = $request->cursor;
+        }
+        if ($request->field != null) {
+            $query['field'] = $request->field;
+        }
+        if ($request->format != null) {
+            $query['format'] = $request->format;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->value != null) {
+            $query['value'] = $request->value;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "submissions/{$sourceType}/{$sourceId}",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListCaptureSubmissionsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and subscribers:read. Returns immutable accepted answers recorded since tracking began. Reads can be retried safely.
+     *
+     * Example:
+     * ```php
+     * $client->widgets->listFormSubmissions(
+     *     'formId',
+     *     new ListFormSubmissionsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $formId
+     * @param ListFormSubmissionsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListFormSubmissionsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listFormSubmissions(string $formId, ListFormSubmissionsRequest $request = new ListFormSubmissionsRequest(), ?array $options = null): ?ListFormSubmissionsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->cursor != null) {
+            $query['cursor'] = $request->cursor;
+        }
+        if ($request->field != null) {
+            $query['field'] = $request->field;
+        }
+        if ($request->format != null) {
+            $query['format'] = $request->format;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->value != null) {
+            $query['value'] = $request->value;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "forms/{$formId}/submissions",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListFormSubmissionsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
         } catch (ClientExceptionInterface $e) {
             throw new SequenzyException(message: $e->getMessage(), previous: $e);
         }

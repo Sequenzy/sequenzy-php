@@ -23204,6 +23204,209 @@ $client->widgets->getSavedSignupFormEmbedScript(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;widgets-&gt;listCaptureSubmissions($sourceType, $sourceId, $request) -> ?ListCaptureSubmissionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Read immutable accepted answers for a form, popup or landing page. Requires subscribers:read plus widgets:read for forms/popups or landing_pages:read for landing pages. History is forward-only; deleting a subscriber, source or company removes associated records. Reads can be retried safely.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->widgets->listCaptureSubmissions(
+    ListCaptureSubmissionsRequestSourceType::Form->value,
+    'sourceId',
+    new ListCaptureSubmissionsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sourceType:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sourceId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$cursor:** `?string` — nextCursor from the previous page, keeping the same filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$field:** `?string` — Exact custom attribute key; requires value. Omit both to clear filtering.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$format:** `?string` — csv adds a CSV string for this page; the response remains JSON.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$value:** `?string` — Exact scalar answer or string array member; requires field. Empty string is allowed.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;widgets-&gt;listFormSubmissions($formId, $request) -> ?ListFormSubmissionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and subscribers:read. Returns immutable accepted answers recorded since tracking began. Reads can be retried safely.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->widgets->listFormSubmissions(
+    'formId',
+    new ListFormSubmissionsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$formId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$cursor:** `?string` — nextCursor from the previous page, keeping the same filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$field:** `?string` — Exact custom attribute key; requires value. Omit both to clear filtering.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$format:** `?string` — csv adds a CSV string for this page; the response remains JSON.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$value:** `?string` — Exact scalar answer or string array member; requires field. Empty string is allowed.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;widgets-&gt;listSavedForms() -> ?ListSavedFormsResponse</code></summary>
 <dl>
 <dd>
