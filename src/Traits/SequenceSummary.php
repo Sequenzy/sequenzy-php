@@ -2,8 +2,10 @@
 
 namespace Sequenzy\Traits;
 
+use Sequenzy\Types\SequenceAudienceAutoEnroll;
 use DateTime;
 use Sequenzy\Types\SequenceEffectiveStatus;
+use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Types\SequenceSummaryPausedByUser;
 use Sequenzy\Types\SequenceSendingWindow;
 use Sequenzy\Types\SequenceStatus;
@@ -13,6 +15,7 @@ use Sequenzy\Core\Types\Date;
 
 /**
  * @property ?bool $acceptsNewEnrollments
+ * @property ?SequenceAudienceAutoEnroll $audienceAutoEnroll
  * @property ?array<string> $bccEmails
  * @property ?DateTime $createdAt
  * @property ?string $description
@@ -22,6 +25,7 @@ use Sequenzy\Core\Types\Date;
  * @property ?string $fromEmail
  * @property ?string $fromName
  * @property ?string $id
+ * @property ?SequenceKeyDates $keyDates
  * @property ?array<string> $labelIds
  * @property ?array<string> $labels
  * @property ?string $name
@@ -49,6 +53,12 @@ trait SequenceSummary
      */
     #[JsonProperty('acceptsNewEnrollments')]
     public ?bool $acceptsNewEnrollments;
+
+    /**
+     * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll
+     */
+    #[JsonProperty('audienceAutoEnroll')]
+    public ?SequenceAudienceAutoEnroll $audienceAutoEnroll;
 
     /**
      * @var ?array<string> $bccEmails Email addresses blind-copied on every email this sequence sends.
@@ -103,6 +113,12 @@ trait SequenceSummary
      */
     #[JsonProperty('id')]
     public ?string $id;
+
+    /**
+     * @var ?SequenceKeyDates $keyDates
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
 
     /**
      * @var ?array<string> $labelIds

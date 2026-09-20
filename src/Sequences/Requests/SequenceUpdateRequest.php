@@ -3,6 +3,7 @@
 namespace Sequenzy\Sequences\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\SequenceAudienceAutoEnroll;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\SequenceBranchInput;
@@ -11,6 +12,7 @@ use Sequenzy\Types\SequenceEnrollmentMode;
 use Sequenzy\Types\SequenceGraphEditInput;
 use Sequenzy\Sequences\Types\SequenceUpdateRequestInactivityBaseline;
 use Sequenzy\Types\SequenceLinearStepInsertionInput;
+use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Sequences\Types\SequenceUpdateRequestListScope;
 use Sequenzy\Types\SequenceNodeUpdateInput;
 use Sequenzy\Types\SequenceTriggerPropertyFilter;
@@ -22,6 +24,12 @@ use Sequenzy\Types\SequenceTriggerType;
 
 class SequenceUpdateRequest extends JsonSerializableType
 {
+    /**
+     * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
+     */
+    #[JsonProperty('audienceAutoEnroll')]
+    public ?SequenceAudienceAutoEnroll $audienceAutoEnroll;
+
     /**
      * @var ?array<string> $bccEmails Email addresses that receive a blind copy of every email this sequence sends, such as a customer support inbox (max 10). Set to null to remove them.
      */
@@ -135,6 +143,12 @@ class SequenceUpdateRequest extends JsonSerializableType
      */
     #[JsonProperty('integrationSlug')]
     public ?string $integrationSlug;
+
+    /**
+     * @var ?SequenceKeyDates $keyDates Replace the sequence key dates. Contacts already waiting on a key-date step are re-scheduled to the new dates. Set to null to remove them (rejected while a step still waits for one).
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
 
     /**
      * @var ?array<string> $labels Replacement dashboard label names. Missing labels are created.
@@ -282,6 +296,7 @@ class SequenceUpdateRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   audienceAutoEnroll?: ?SequenceAudienceAutoEnroll,
      *   bccEmails?: ?array<string>,
      *   branch?: ?SequenceBranchInput,
      *   confirmLiveChange?: ?bool,
@@ -301,6 +316,7 @@ class SequenceUpdateRequest extends JsonSerializableType
      *   insertSteps?: ?SequenceLinearStepInsertionInput,
      *   integrationEventKey?: ?string,
      *   integrationSlug?: ?string,
+     *   keyDates?: ?SequenceKeyDates,
      *   labels?: ?array<string>,
      *   listId?: ?string,
      *   listIds?: ?array<string>,
@@ -330,6 +346,7 @@ class SequenceUpdateRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->audienceAutoEnroll = $values['audienceAutoEnroll'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->branch = $values['branch'] ?? null;
         $this->confirmLiveChange = $values['confirmLiveChange'] ?? null;
@@ -349,6 +366,7 @@ class SequenceUpdateRequest extends JsonSerializableType
         $this->insertSteps = $values['insertSteps'] ?? null;
         $this->integrationEventKey = $values['integrationEventKey'] ?? null;
         $this->integrationSlug = $values['integrationSlug'] ?? null;
+        $this->keyDates = $values['keyDates'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->listId = $values['listId'] ?? null;
         $this->listIds = $values['listIds'] ?? null;

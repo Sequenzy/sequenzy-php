@@ -8,6 +8,7 @@ use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Sequences\Types\SequenceCreateRequestEmailStyle;
 use Sequenzy\Types\SequenceEnrollmentMode;
 use Sequenzy\Sequences\Types\SequenceCreateRequestInactivityBaseline;
+use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Sequences\Types\SequenceCreateRequestListScope;
 use Sequenzy\Types\SequenceTriggerPropertyFilter;
 use Sequenzy\Types\SequenceSendingWindow;
@@ -112,6 +113,12 @@ class SequenceCreateRequest extends JsonSerializableType
      */
     #[JsonProperty('integrationSlug')]
     public ?string $integrationSlug;
+
+    /**
+     * @var ?SequenceKeyDates $keyDates Named absolute moments for waitUntilKeyDate steps. Null clears them.
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
 
     /**
      * @var ?array<string> $labels Dashboard label names. Missing labels are created.
@@ -258,6 +265,7 @@ class SequenceCreateRequest extends JsonSerializableType
      *   inactivityBaseline?: ?value-of<SequenceCreateRequestInactivityBaseline>,
      *   integrationEventKey?: ?string,
      *   integrationSlug?: ?string,
+     *   keyDates?: ?SequenceKeyDates,
      *   labels?: ?array<string>,
      *   listId?: ?string,
      *   listIds?: ?array<string>,
@@ -299,6 +307,7 @@ class SequenceCreateRequest extends JsonSerializableType
         $this->inactivityBaseline = $values['inactivityBaseline'] ?? null;
         $this->integrationEventKey = $values['integrationEventKey'] ?? null;
         $this->integrationSlug = $values['integrationSlug'] ?? null;
+        $this->keyDates = $values['keyDates'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->listId = $values['listId'] ?? null;
         $this->listIds = $values['listIds'] ?? null;

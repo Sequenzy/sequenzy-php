@@ -5,6 +5,8 @@ namespace Sequenzy\Sequences\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\SequenceAudienceAutoEnroll;
+use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Types\SequenceSendingWindow;
 use Sequenzy\Types\SequenceStatus;
 use Sequenzy\Types\SequenceStopCondition;
@@ -22,6 +24,12 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
      */
     #[JsonProperty('addedBranchPathNodeIds'), ArrayType(['string' => ['string']])]
     public ?array $addedBranchPathNodeIds;
+
+    /**
+     * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll Present when the request changed the keep-enrolling setting.
+     */
+    #[JsonProperty('audienceAutoEnroll')]
+    public ?SequenceAudienceAutoEnroll $audienceAutoEnroll;
 
     /**
      * @var ?array<string> $bccEmails
@@ -90,6 +98,12 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
     public ?array $insertedNodeIds;
 
     /**
+     * @var ?SequenceKeyDates $keyDates Present when the request changed key dates.
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
+
+    /**
      * @var ?float $migratedRecipientCount Recipients moved off deleted steps to the next step and processed immediately.
      */
     #[JsonProperty('migratedRecipientCount')]
@@ -153,6 +167,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
      * @param array{
      *   addedBranchNodeId?: ?string,
      *   addedBranchPathNodeIds?: ?array<string, array<string>>,
+     *   audienceAutoEnroll?: ?SequenceAudienceAutoEnroll,
      *   bccEmails?: ?array<string>,
      *   completedRecipientCount?: ?float,
      *   deletedNodeId?: ?string,
@@ -164,6 +179,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
      *   insertedEmailCount?: ?float,
      *   insertedEmailIds?: ?array<string>,
      *   insertedNodeIds?: ?array<string>,
+     *   keyDates?: ?SequenceKeyDates,
      *   migratedRecipientCount?: ?float,
      *   movedNodeId?: ?string,
      *   name?: ?string,
@@ -181,6 +197,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
     ) {
         $this->addedBranchNodeId = $values['addedBranchNodeId'] ?? null;
         $this->addedBranchPathNodeIds = $values['addedBranchPathNodeIds'] ?? null;
+        $this->audienceAutoEnroll = $values['audienceAutoEnroll'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->completedRecipientCount = $values['completedRecipientCount'] ?? null;
         $this->deletedNodeId = $values['deletedNodeId'] ?? null;
@@ -192,6 +209,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
         $this->insertedEmailCount = $values['insertedEmailCount'] ?? null;
         $this->insertedEmailIds = $values['insertedEmailIds'] ?? null;
         $this->insertedNodeIds = $values['insertedNodeIds'] ?? null;
+        $this->keyDates = $values['keyDates'] ?? null;
         $this->migratedRecipientCount = $values['migratedRecipientCount'] ?? null;
         $this->movedNodeId = $values['movedNodeId'] ?? null;
         $this->name = $values['name'] ?? null;

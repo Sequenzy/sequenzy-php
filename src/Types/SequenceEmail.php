@@ -165,6 +165,12 @@ class SequenceEmail extends JsonSerializableType
     public ?SequenceWaitUntilInput $waitUntil;
 
     /**
+     * @var ?SequenceWaitUntilKeyDateInput $waitUntilKeyDate Key-date wait metadata (key, direction, missingAction, pastAction, offset) for until_key_date delays.
+     */
+    #[JsonProperty('waitUntilKeyDate')]
+    public ?SequenceWaitUntilKeyDateInput $waitUntilKeyDate;
+
+    /**
      * @var ?SequenceWaitUntilWeekdayInput $waitUntilWeekday Weekday-window metadata for dynamic wait-until-weekday delays.
      */
     #[JsonProperty('waitUntilWeekday')]
@@ -198,6 +204,7 @@ class SequenceEmail extends JsonSerializableType
      *   structuralStepNumber?: ?float,
      *   subject?: ?string,
      *   waitUntil?: ?SequenceWaitUntilInput,
+     *   waitUntilKeyDate?: ?SequenceWaitUntilKeyDateInput,
      *   waitUntilWeekday?: ?SequenceWaitUntilWeekdayInput,
      * } $values
      */
@@ -230,6 +237,7 @@ class SequenceEmail extends JsonSerializableType
         $this->structuralStepNumber = $values['structuralStepNumber'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->waitUntil = $values['waitUntil'] ?? null;
+        $this->waitUntilKeyDate = $values['waitUntilKeyDate'] ?? null;
         $this->waitUntilWeekday = $values['waitUntilWeekday'] ?? null;
     }
 

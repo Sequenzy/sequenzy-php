@@ -17,6 +17,12 @@ class SequenceSummary extends JsonSerializableType
     public ?bool $acceptsNewEnrollments;
 
     /**
+     * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll
+     */
+    #[JsonProperty('audienceAutoEnroll')]
+    public ?SequenceAudienceAutoEnroll $audienceAutoEnroll;
+
+    /**
      * @var ?array<string> $bccEmails Email addresses blind-copied on every email this sequence sends.
      */
     #[JsonProperty('bccEmails'), ArrayType(['string'])]
@@ -69,6 +75,12 @@ class SequenceSummary extends JsonSerializableType
      */
     #[JsonProperty('id')]
     public ?string $id;
+
+    /**
+     * @var ?SequenceKeyDates $keyDates
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
 
     /**
      * @var ?array<string> $labelIds
@@ -187,6 +199,7 @@ class SequenceSummary extends JsonSerializableType
     /**
      * @param array{
      *   acceptsNewEnrollments?: ?bool,
+     *   audienceAutoEnroll?: ?SequenceAudienceAutoEnroll,
      *   bccEmails?: ?array<string>,
      *   createdAt?: ?DateTime,
      *   description?: ?string,
@@ -196,6 +209,7 @@ class SequenceSummary extends JsonSerializableType
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   id?: ?string,
+     *   keyDates?: ?SequenceKeyDates,
      *   labelIds?: ?array<string>,
      *   labels?: ?array<string>,
      *   name?: ?string,
@@ -221,6 +235,7 @@ class SequenceSummary extends JsonSerializableType
         array $values = [],
     ) {
         $this->acceptsNewEnrollments = $values['acceptsNewEnrollments'] ?? null;
+        $this->audienceAutoEnroll = $values['audienceAutoEnroll'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
         $this->description = $values['description'] ?? null;
@@ -230,6 +245,7 @@ class SequenceSummary extends JsonSerializableType
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->keyDates = $values['keyDates'] ?? null;
         $this->labelIds = $values['labelIds'] ?? null;
         $this->labels = $values['labels'] ?? null;
         $this->name = $values['name'] ?? null;

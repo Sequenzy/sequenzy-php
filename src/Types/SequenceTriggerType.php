@@ -11,4 +11,5 @@ enum SequenceTriggerType: string
     case InboundWebhook = "inbound_webhook";
     case Inactivity = "inactivity";
     case Frequency = "frequency";
+    case Manual = "manual";
 }

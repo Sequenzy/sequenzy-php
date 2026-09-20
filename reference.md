@@ -12667,6 +12667,71 @@ $client->sequences->archive(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;sequences-&gt;cancelAudienceEnrollment($sequenceId, $runId) -> ?CancelAudienceEnrollmentSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Cancels a queued run immediately or asks a running run to stop after the batch it is currently enrolling. Contacts already enrolled stay in the sequence.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->cancelAudienceEnrollment(
+    'sequenceId',
+    'runId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$runId:** `string` — Audience enrollment run ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;sequences-&gt;cancelEnrollments($sequenceId, $request) -> ?SequenceEnrollmentCancelResponse</code></summary>
 <dl>
 <dd>
@@ -13024,6 +13089,14 @@ $client->sequences->create(
 <dd>
 
 **$integrationSlug:** `?string` — Integration slug for inbound_webhook triggers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$keyDates:** `?SequenceKeyDates` — Named absolute moments for waitUntilKeyDate steps. Null clears them.
     
 </dd>
 </dl>
@@ -13558,6 +13631,91 @@ $client->sequences->enable(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;sequences-&gt;enrollAudience($sequenceId, $request) -> ?EnrollAudienceSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active or waiting in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->enrollAudience(
+    'sequenceId',
+    new EnrollAudienceSequencesRequest([
+        'audience' => new SequenceAudience([
+            'type' => SequenceAudienceType::All->value,
+        ]),
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$audience:** `SequenceAudience` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$scheduledFor:** `?DateTime` — Start the run at this moment instead of now (up to one year ahead). The run is created queued with a delayed job and can be cancelled before it starts. A past value starts now.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$targetNodeId:** `?string` — Step to start contacts at. Defaults to the first step after the trigger. Cannot be a trigger node.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;sequences-&gt;enrollSubscribersIn($sequenceId, $request) -> ?EnrollSubscribersInSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -13628,6 +13786,75 @@ $client->sequences->enrollSubscribersIn(
 <dd>
 
 **$targetNodeId:** `?string` — Node to start enrollment at. Defaults to the first step after the trigger. Cannot be a trigger node.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;estimateAudienceEnrollment($sequenceId, $request) -> ?EstimateAudienceEnrollmentSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Counts the contacts matching an audience and how many of them would be enrolled. Contacts already in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before. Nothing is changed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->estimateAudienceEnrollment(
+    'sequenceId',
+    new EstimateAudienceEnrollmentSequencesRequest([
+        'audience' => new SequenceAudience([
+            'type' => SequenceAudienceType::All->value,
+        ]),
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$audience:** `SequenceAudience` 
     
 </dd>
 </dl>
@@ -13774,6 +14001,71 @@ $client->sequences->get(
 <dd>
 
 **$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;getAudienceEnrollment($sequenceId, $runId) -> ?GetAudienceEnrollmentSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Status and counters of one audience enrollment run. Poll this while status is queued or running.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->getAudienceEnrollment(
+    'sequenceId',
+    'runId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$runId:** `string` — Audience enrollment run ID.
     
 </dd>
 </dl>
@@ -14210,6 +14502,71 @@ $client->sequences->list(
 <dd>
 
 **$status:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;listAudienceEnrollments($sequenceId, $request) -> ?ListAudienceEnrollmentsSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Recent audience enrollment runs for a sequence, newest first, with their status and counters.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->listAudienceEnrollments(
+    'sequenceId',
+    new ListAudienceEnrollmentsSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` — Runs to return.
     
 </dd>
 </dl>
@@ -15221,6 +15578,14 @@ $client->sequences->update(
 <dl>
 <dd>
 
+**$audienceAutoEnroll:** `?SequenceAudienceAutoEnroll` — Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$bccEmails:** `?array` — Email addresses that receive a blind copy of every email this sequence sends, such as a customer support inbox (max 10). Set to null to remove them.
     
 </dd>
@@ -15366,6 +15731,14 @@ $client->sequences->update(
 <dd>
 
 **$integrationSlug:** `?string` — Catalog integration slug for an inbound_webhook trigger.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$keyDates:** `?SequenceKeyDates` — Replace the sequence key dates. Contacts already waiting on a key-date step are re-scheduled to the new dates. Set to null to remove them (rejected while a step still waits for one).
     
 </dd>
 </dl>

@@ -249,6 +249,12 @@ class SequenceStepInput extends JsonSerializableType
     public ?SequenceWaitUntilInput $waitUntil;
 
     /**
+     * @var ?SequenceWaitUntilKeyDateInput $waitUntilKeyDate
+     */
+    #[JsonProperty('waitUntilKeyDate')]
+    public ?SequenceWaitUntilKeyDateInput $waitUntilKeyDate;
+
+    /**
      * @var ?SequenceWaitUntilWeekdayInput $waitUntilWeekday
      */
     #[JsonProperty('waitUntilWeekday')]
@@ -296,6 +302,7 @@ class SequenceStepInput extends JsonSerializableType
      *   text?: ?string,
      *   type?: ?value-of<SequenceStepInputType>,
      *   waitUntil?: ?SequenceWaitUntilInput,
+     *   waitUntilKeyDate?: ?SequenceWaitUntilKeyDateInput,
      *   waitUntilWeekday?: ?SequenceWaitUntilWeekdayInput,
      * } $values
      */
@@ -342,6 +349,7 @@ class SequenceStepInput extends JsonSerializableType
         $this->text = $values['text'] ?? null;
         $this->type = $values['type'] ?? null;
         $this->waitUntil = $values['waitUntil'] ?? null;
+        $this->waitUntilKeyDate = $values['waitUntilKeyDate'] ?? null;
         $this->waitUntilWeekday = $values['waitUntilWeekday'] ?? null;
     }
 

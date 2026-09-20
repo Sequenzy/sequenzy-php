@@ -12,6 +12,7 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Sequences\Types\CancelAudienceEnrollmentSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentCancelRequest;
 use Sequenzy\Types\SequenceEnrollmentCancelResponse;
 use Sequenzy\Sequences\Requests\ConfigureInboundWebhookSequencesRequest;
@@ -24,11 +25,16 @@ use Sequenzy\Types\SequenceActionResponse;
 use Sequenzy\Sequences\Types\DeleteGoalSequencesResponse;
 use Sequenzy\Sequences\Requests\DuplicateSequencesRequest;
 use Sequenzy\Sequences\Types\DuplicateSequencesResponse;
+use Sequenzy\Sequences\Requests\EnrollAudienceSequencesRequest;
+use Sequenzy\Sequences\Types\EnrollAudienceSequencesResponse;
 use Sequenzy\Sequences\Requests\EnrollSubscribersInSequencesRequest;
 use Sequenzy\Sequences\Types\EnrollSubscribersInSequencesResponse;
+use Sequenzy\Sequences\Requests\EstimateAudienceEnrollmentSequencesRequest;
+use Sequenzy\Sequences\Types\EstimateAudienceEnrollmentSequencesResponse;
 use Sequenzy\Sequences\Requests\GenerateSequencesRequest;
 use Sequenzy\Sequences\Types\GenerateSequencesResponse;
 use Sequenzy\Sequences\Types\GetSequencesResponse;
+use Sequenzy\Sequences\Types\GetAudienceEnrollmentSequencesResponse;
 use Sequenzy\Types\SequenceEnrollmentGetResponse;
 use Sequenzy\Types\SequenceEnrollmentRealignJobResponse;
 use Sequenzy\Sequences\Types\GetInboundWebhookSequencesResponse;
@@ -38,6 +44,8 @@ use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Types\SequenceTestRunResponse;
 use Sequenzy\Sequences\Requests\ListSequencesRequest;
 use Sequenzy\Sequences\Types\ListSequencesResponse;
+use Sequenzy\Sequences\Requests\ListAudienceEnrollmentsSequencesRequest;
+use Sequenzy\Sequences\Types\ListAudienceEnrollmentsSequencesResponse;
 use Sequenzy\Sequences\Requests\ListEnrollmentsSequencesRequest;
 use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
@@ -137,6 +145,63 @@ class SequencesClient
                     return null;
                 }
                 return ArchiveSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Cancels a queued run immediately or asks a running run to stop after the batch it is currently enrolling. Contacts already enrolled stay in the sequence.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->cancelAudienceEnrollment(
+     *     'sequenceId',
+     *     'runId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param string $runId Audience enrollment run ID.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CancelAudienceEnrollmentSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function cancelAudienceEnrollment(string $sequenceId, string $runId, ?array $options = null): ?CancelAudienceEnrollmentSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/audience-enrollments/{$runId}/cancel",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CancelAudienceEnrollmentSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -667,6 +732,68 @@ class SequencesClient
     }
 
     /**
+     * Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active or waiting in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->enrollAudience(
+     *     'sequenceId',
+     *     new EnrollAudienceSequencesRequest([
+     *         'audience' => new SequenceAudience([
+     *             'type' => SequenceAudienceType::All->value,
+     *         ]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param EnrollAudienceSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EnrollAudienceSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function enrollAudience(string $sequenceId, EnrollAudienceSequencesRequest $request, ?array $options = null): ?EnrollAudienceSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/enroll-audience",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EnrollAudienceSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Manually enrolls active subscribers into a sequence by email or subscriber ID, starting at the first step or a specific node.
      *
      * Example:
@@ -711,6 +838,68 @@ class SequencesClient
                     return null;
                 }
                 return EnrollSubscribersInSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Counts the contacts matching an audience and how many of them would be enrolled. Contacts already in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before. Nothing is changed.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->estimateAudienceEnrollment(
+     *     'sequenceId',
+     *     new EstimateAudienceEnrollmentSequencesRequest([
+     *         'audience' => new SequenceAudience([
+     *             'type' => SequenceAudienceType::All->value,
+     *         ]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param EstimateAudienceEnrollmentSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EstimateAudienceEnrollmentSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function estimateAudienceEnrollment(string $sequenceId, EstimateAudienceEnrollmentSequencesRequest $request, ?array $options = null): ?EstimateAudienceEnrollmentSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/enroll-audience/estimate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EstimateAudienceEnrollmentSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -824,6 +1013,63 @@ class SequencesClient
                     return null;
                 }
                 return GetSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Status and counters of one audience enrollment run. Poll this while status is queued or running.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getAudienceEnrollment(
+     *     'sequenceId',
+     *     'runId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param string $runId Audience enrollment run ID.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetAudienceEnrollmentSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getAudienceEnrollment(string $sequenceId, string $runId, ?array $options = null): ?GetAudienceEnrollmentSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/audience-enrollments/{$runId}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetAudienceEnrollmentSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1196,6 +1442,68 @@ class SequencesClient
                     return null;
                 }
                 return ListSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Recent audience enrollment runs for a sequence, newest first, with their status and counters.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->listAudienceEnrollments(
+     *     'sequenceId',
+     *     new ListAudienceEnrollmentsSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param ListAudienceEnrollmentsSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListAudienceEnrollmentsSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listAudienceEnrollments(string $sequenceId, ListAudienceEnrollmentsSequencesRequest $request = new ListAudienceEnrollmentsSequencesRequest(), ?array $options = null): ?ListAudienceEnrollmentsSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/audience-enrollments",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListAudienceEnrollmentsSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

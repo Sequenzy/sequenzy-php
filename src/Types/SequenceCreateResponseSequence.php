@@ -56,6 +56,12 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?SequenceKeyDates $keyDates
+     */
+    #[JsonProperty('keyDates')]
+    public ?SequenceKeyDates $keyDates;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
@@ -113,6 +119,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
      *   enrichmentStatus?: ?string,
      *   enrollmentPaused?: ?bool,
      *   id?: ?string,
+     *   keyDates?: ?SequenceKeyDates,
      *   name?: ?string,
      *   nodeCount?: ?float,
      *   processesExistingEnrollments?: ?bool,
@@ -134,6 +141,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
         $this->enrichmentStatus = $values['enrichmentStatus'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->keyDates = $values['keyDates'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->nodeCount = $values['nodeCount'] ?? null;
         $this->processesExistingEnrollments = $values['processesExistingEnrollments'] ?? null;
