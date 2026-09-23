@@ -13696,6 +13696,14 @@ $client->sequences->enrollAudience(
 <dl>
 <dd>
 
+**$data:** `?array` — Run-level data shared by everyone in this run (a sale end time, a discount percentage, a cut-off time). Stored on the run and copied into every enrolled contact's sequence context at enrollment time; the sequence's emails and conditions read it as `{{enrollment.<field>}}` (nested paths like `{{enrollment.draw.date}}` work). Must be a JSON object of at most 8 KB, 100 top-level keys and 8 levels of nesting; keys named __proto__, constructor or prototype and strings containing NUL characters are rejected. Omit, null or {} for none. Auto-enroll syncs do not carry run data.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$scheduledFor:** `?DateTime` — Start the run at this moment instead of now (up to one year ahead). The run is created queued with a delayed job and can be cancelled before it starts. A past value starts now.
     
 </dd>

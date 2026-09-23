@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use DateTime;
 use Sequenzy\Core\Types\Date;
+use Sequenzy\Core\Types\ArrayType;
 
 /**
  * One background audience enrollment run.
@@ -35,6 +36,12 @@ class SequenceAudienceEnrollment extends JsonSerializableType
      */
     #[JsonProperty('createdAt'), Date(Date::TYPE_DATETIME)]
     public ?DateTime $createdAt;
+
+    /**
+     * @var ?array<string, mixed> $data Run-level data passed when the run was started, read by the run's emails as `{{enrollment.<field>}}`. Null when none was given.
+     */
+    #[JsonProperty('data'), ArrayType(['string' => 'mixed'])]
+    public ?array $data;
 
     /**
      * @var ?int $enrolledCount
@@ -114,6 +121,7 @@ class SequenceAudienceEnrollment extends JsonSerializableType
      *   cancelRequestedAt?: ?DateTime,
      *   completedAt?: ?DateTime,
      *   createdAt?: ?DateTime,
+     *   data?: ?array<string, mixed>,
      *   enrolledCount?: ?int,
      *   error?: ?string,
      *   estimatedCount?: ?int,
@@ -135,6 +143,7 @@ class SequenceAudienceEnrollment extends JsonSerializableType
         $this->cancelRequestedAt = $values['cancelRequestedAt'] ?? null;
         $this->completedAt = $values['completedAt'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
+        $this->data = $values['data'] ?? null;
         $this->enrolledCount = $values['enrolledCount'] ?? null;
         $this->error = $values['error'] ?? null;
         $this->estimatedCount = $values['estimatedCount'] ?? null;
