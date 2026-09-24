@@ -54,7 +54,7 @@ class WebsitesClient
     }
 
     /**
-     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup.
+     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup. A domain belongs to exactly one company, so confirm the target company before adding it.
      *
      * Example:
      * ```php

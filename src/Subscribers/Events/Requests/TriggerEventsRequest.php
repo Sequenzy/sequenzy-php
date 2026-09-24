@@ -3,13 +3,24 @@
 namespace Sequenzy\Subscribers\Events\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Subscribers\Events\Types\TriggerEventsRequestAccountAttributes;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\Union;
 use Sequenzy\Core\Types\ArrayType;
 use DateTime;
 use Sequenzy\Core\Types\Date;
 
 class TriggerEventsRequest extends JsonSerializableType
 {
+    /**
+     * @var (
+     *    string
+     *   |TriggerEventsRequestAccountAttributes
+     * )|null $account Attach the contact to an account (your customer's organization, unrelated to your Sequenzy account). Pass the account's externalId as a string, or an object with externalId plus optional name, domain, role (owner, admin, member) and attributes. The account is created when missing and its context is added to the event as `event.account.*`. Only used once the workspace has Accounts on (it has at least one account, or Accounts was turned on in the dashboard). Before that, the field is ignored in any shape and the response includes `accountIgnored`.
+     */
+    #[JsonProperty('account'), Union('string', TriggerEventsRequestAccountAttributes::class, 'null')]
+    public string|TriggerEventsRequestAccountAttributes|null $account;
+
     /**
      * @var ?array<string, mixed> $customAttributes Optional attributes to set on the subscriber if created
      */
@@ -67,6 +78,10 @@ class TriggerEventsRequest extends JsonSerializableType
     /**
      * @param array{
      *   event: string,
+     *   account?: (
+     *    string
+     *   |TriggerEventsRequestAccountAttributes
+     * )|null,
      *   customAttributes?: ?array<string, mixed>,
      *   email?: ?string,
      *   eventId?: ?string,
@@ -80,6 +95,7 @@ class TriggerEventsRequest extends JsonSerializableType
     public function __construct(
         array $values,
     ) {
+        $this->account = $values['account'] ?? null;
         $this->customAttributes = $values['customAttributes'] ?? null;
         $this->email = $values['email'] ?? null;
         $this->event = $values['event'];

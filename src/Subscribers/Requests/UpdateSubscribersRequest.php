@@ -77,6 +77,12 @@ class UpdateSubscribersRequest extends JsonSerializableType
     public ?array $tags;
 
     /**
+     * @var ?string $timezone IANA timezone identifier such as America/New_York, stored as a native profile field and used for recipient-local campaign delivery. An invalid identifier returns 400 VALIDATION_ERROR. Omit to keep unchanged, or send null to clear.
+     */
+    #[JsonProperty('timezone')]
+    public ?string $timezone;
+
+    /**
      * @param array{
      *   customAttributes?: ?array<string, mixed>,
      *   customAttributesStrategy?: ?value-of<UpdateSubscribersRequestCustomAttributesStrategy>,
@@ -89,6 +95,7 @@ class UpdateSubscribersRequest extends JsonSerializableType
      *   smsConsent?: ?bool,
      *   status?: ?value-of<UpdateSubscribersRequestStatus>,
      *   tags?: ?array<string>,
+     *   timezone?: ?string,
      * } $values
      */
     public function __construct(
@@ -105,5 +112,6 @@ class UpdateSubscribersRequest extends JsonSerializableType
         $this->smsConsent = $values['smsConsent'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->tags = $values['tags'] ?? null;
+        $this->timezone = $values['timezone'] ?? null;
     }
 }

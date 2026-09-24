@@ -4,6 +4,7 @@ namespace Sequenzy;
 
 use Sequenzy\AbTests\AbTestsClient;
 use Sequenzy\Account\AccountClient;
+use Sequenzy\Accounts\AccountsClient;
 use Sequenzy\Analytics\AnalyticsClient;
 use Sequenzy\AudienceSyncs\AudienceSyncsClient;
 use Sequenzy\Campaigns\CampaignsClient;
@@ -58,6 +59,11 @@ class SequenzyClient
      * @var AccountClient $account
      */
     public AccountClient $account;
+
+    /**
+     * @var AccountsClient $accounts
+     */
+    public AccountsClient $accounts;
 
     /**
      * @var AnalyticsClient $analytics
@@ -310,6 +316,7 @@ class SequenzyClient
 
         $this->abTests = new AbTestsClient($this->client, $this->options);
         $this->account = new AccountClient($this->client, $this->options);
+        $this->accounts = new AccountsClient($this->client, $this->options);
         $this->analytics = new AnalyticsClient($this->client, $this->options);
         $this->audienceSyncs = new AudienceSyncsClient($this->client, $this->options);
         $this->campaigns = new CampaignsClient($this->client, $this->options);

@@ -36,7 +36,7 @@ class CreateAbTestsRequest extends JsonSerializableType
     public ?string $name;
 
     /**
-     * @var ?int $testDurationMinutes Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients.
+     * @var ?int $testDurationMinutes Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients, once one variant leads on human opens or clicks.
      */
     #[JsonProperty('testDurationMinutes')]
     public ?int $testDurationMinutes;

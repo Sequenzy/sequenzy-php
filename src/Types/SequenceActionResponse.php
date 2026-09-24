@@ -4,6 +4,7 @@ namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
 
 class SequenceActionResponse extends JsonSerializableType
 {
@@ -62,6 +63,12 @@ class SequenceActionResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
+     * @var ?array<string> $warnings Enable only. Non-blocking readiness warnings, such as empty branch paths or a `contact_added` trigger with no list, which enrolls every contact added to the company. Absent when there is nothing to report.
+     */
+    #[JsonProperty('warnings'), ArrayType(['string'])]
+    public ?array $warnings;
+
+    /**
      * @param array{
      *   acceptsNewEnrollments?: ?bool,
      *   effectiveStatus?: ?value-of<SequenceEffectiveStatus>,
@@ -72,6 +79,7 @@ class SequenceActionResponse extends JsonSerializableType
      *   sequenceId?: ?string,
      *   status?: ?value-of<SequenceStatus>,
      *   success?: ?bool,
+     *   warnings?: ?array<string>,
      * } $values
      */
     public function __construct(
@@ -86,6 +94,7 @@ class SequenceActionResponse extends JsonSerializableType
         $this->sequenceId = $values['sequenceId'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->warnings = $values['warnings'] ?? null;
     }
 
     /**

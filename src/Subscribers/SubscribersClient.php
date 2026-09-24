@@ -43,6 +43,8 @@ use Sequenzy\Subscribers\Requests\ImportEventsSubscribersRequest;
 use Sequenzy\Subscribers\Types\ImportEventsSubscribersResponse;
 use Sequenzy\Subscribers\Requests\ListSubscribersRequest;
 use Sequenzy\Subscribers\Types\ListSubscribersResponse;
+use Sequenzy\Subscribers\Requests\ListAttributesSubscribersRequest;
+use Sequenzy\Subscribers\Types\ListAttributesSubscribersResponse;
 use Sequenzy\Subscribers\Types\ListNotesSubscribersResponse;
 use Sequenzy\Subscribers\Requests\ListNotesByExternalIdSubscribersRequest;
 use Sequenzy\Subscribers\Types\ListNotesByExternalIdSubscribersResponse;
@@ -1324,6 +1326,66 @@ class SubscribersClient
                     return null;
                 }
                 return ListSubscribersResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the custom attribute names in use across the account, so you can reuse existing names and value types when creating or updating subscribers. Value types and examples come from up to 100 recent contacts with custom attributes. Names that only older contacts carry come from the account-wide attribute index, which returns up to the 500 most widely used names, and are included with sampledContacts 0 and the type of their indexed example (a boolean is reported for an example of "true" or "false"). Reserved profile fields (email, first and last name) and internal attributes are not listed. Requires subscribers:read.
+     *
+     * Example:
+     * ```php
+     * $client->subscribers->listAttributes(
+     *     new ListAttributesSubscribersRequest([]),
+     * );
+     * ```
+     *
+     * @param ListAttributesSubscribersRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListAttributesSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listAttributes(ListAttributesSubscribersRequest $request = new ListAttributesSubscribersRequest(), ?array $options = null): ?ListAttributesSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->includeNested != null) {
+            $query['includeNested'] = $request->includeNested;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "subscribers/attributes",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListAttributesSubscribersResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

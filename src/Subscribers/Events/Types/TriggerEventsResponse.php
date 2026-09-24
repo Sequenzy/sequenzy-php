@@ -9,6 +9,18 @@ use Sequenzy\Core\Types\ArrayType;
 class TriggerEventsResponse extends JsonSerializableType
 {
     /**
+     * @var ?TriggerEventsResponseAccount $account Present when `account` attached the contact to an account.
+     */
+    #[JsonProperty('account')]
+    public ?TriggerEventsResponseAccount $account;
+
+    /**
+     * @var ?TriggerEventsResponseAccountIgnored $accountIgnored Present when the request included `account` but the workspace has not turned Accounts on, so the field was ignored. Create an account with POST /accounts or turn Accounts on in the dashboard.
+     */
+    #[JsonProperty('accountIgnored')]
+    public ?TriggerEventsResponseAccountIgnored $accountIgnored;
+
+    /**
      * @var ?bool $duplicate Present and true when a live event's supplied eventId was already recorded for this contact and event name. Nothing was written and no side effects ran; event holds the existing event. Historical responses use duplicates instead.
      */
     #[JsonProperty('duplicate')]
@@ -70,6 +82,8 @@ class TriggerEventsResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   account?: ?TriggerEventsResponseAccount,
+     *   accountIgnored?: ?TriggerEventsResponseAccountIgnored,
      *   duplicate?: ?bool,
      *   duplicates?: ?int,
      *   event?: ?TriggerEventsResponseEvent,
@@ -85,6 +99,8 @@ class TriggerEventsResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->account = $values['account'] ?? null;
+        $this->accountIgnored = $values['accountIgnored'] ?? null;
         $this->duplicate = $values['duplicate'] ?? null;
         $this->duplicates = $values['duplicates'] ?? null;
         $this->event = $values['event'] ?? null;

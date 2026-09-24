@@ -21,7 +21,7 @@ class UpdateSequencesResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
-     * @var ?array<string> $warnings
+     * @var ?array<string> $warnings Non-blocking advisories about the update. Besides block and sender advisories, this names request fields that were ignored (such as `triggerConfig` or a non-object step `delay`) and `contact_added` list IDs not found in the company, which block enabling. Absent when there is nothing to report.
      */
     #[JsonProperty('warnings'), ArrayType(['string'])]
     public ?array $warnings;

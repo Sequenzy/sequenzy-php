@@ -55,7 +55,7 @@ trait SequenceCreateResponse
     public ?bool $success;
 
     /**
-     * @var ?array<string> $warnings
+     * @var ?array<string> $warnings Non-blocking advisories about a created sequence. Besides block and sender-identity advisories, POST /sequences reports request fields that were ignored (such as a nested `triggerConfig`, `delay: 2`, `delayDays` or a body `companyId` that differs from the selected company), `contact_added` list IDs not found in the company, and a `contact_added` trigger sent with no list and no `listScope`. The sequence is still created as a draft; fix these before enabling it. Absent when there is nothing to report.
      */
     #[JsonProperty('warnings'), ArrayType(['string'])]
     public ?array $warnings;
