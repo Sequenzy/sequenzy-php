@@ -46,7 +46,7 @@ trait SendingStatus
     public ?string $pauseReason;
 
     /**
-     * @var ?value-of<SendingStatusPauseReasonKind> $pauseReasonKind Only high_hard_bounce_rate can be cleared through the resume endpoint.
+     * @var ?value-of<SendingStatusPauseReasonKind> $pauseReasonKind Only high_hard_bounce_rate can be cleared through the resume endpoint. over_email_limit lifts automatically once the account has email allowance again.
      */
     #[JsonProperty('pauseReasonKind')]
     public ?string $pauseReasonKind;

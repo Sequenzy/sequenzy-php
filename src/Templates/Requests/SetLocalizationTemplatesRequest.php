@@ -22,6 +22,12 @@ class SetLocalizationTemplatesRequest extends JsonSerializableType
     public ?string $html;
 
     /**
+     * @var ?bool $keepEdits Protect this translation like a dashboard edit. It is marked as edited (editedAt), automatic translation on save keeps it, and it becomes stale instead of being replaced when the original changes. Without it, the stored content is retranslated on the next save when automatic translation is on, and any earlier edit flag is cleared.
+     */
+    #[JsonProperty('keepEdits')]
+    public ?bool $keepEdits;
+
+    /**
      * @var ?string $previewText Optional localized inbox preview text.
      */
     #[JsonProperty('previewText')]
@@ -38,6 +44,7 @@ class SetLocalizationTemplatesRequest extends JsonSerializableType
      *   subject: string,
      *   blocks?: ?array<EmailBlock>,
      *   html?: ?string,
+     *   keepEdits?: ?bool,
      *   previewText?: ?string,
      * } $values
      */
@@ -46,6 +53,7 @@ class SetLocalizationTemplatesRequest extends JsonSerializableType
     ) {
         $this->blocks = $values['blocks'] ?? null;
         $this->html = $values['html'] ?? null;
+        $this->keepEdits = $values['keepEdits'] ?? null;
         $this->previewText = $values['previewText'] ?? null;
         $this->subject = $values['subject'];
     }

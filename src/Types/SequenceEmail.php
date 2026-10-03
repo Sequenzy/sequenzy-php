@@ -159,7 +159,7 @@ class SequenceEmail extends JsonSerializableType
     public ?string $subject;
 
     /**
-     * @var ?SequenceWaitUntilInput $waitUntil Date-field wait metadata for dynamic wait-until-date delays.
+     * @var ?SequenceWaitUntilInput $waitUntil Date-field wait metadata (field, source, direction, missingAction, pastAction, offset) for dynamic wait-until-date delays.
      */
     #[JsonProperty('waitUntil')]
     public ?SequenceWaitUntilInput $waitUntil;

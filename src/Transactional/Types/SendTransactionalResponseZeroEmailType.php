@@ -2,7 +2,7 @@
 
 namespace Sequenzy\Transactional\Types;
 
-enum SendTransactionalResponseTransactionalEmailType: string
+enum SendTransactionalResponseZeroEmailType: string
 {
     case Marketing = "marketing";
     case Transactional = "transactional";

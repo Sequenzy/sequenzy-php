@@ -15,13 +15,21 @@ class SyncLocalizationsTemplatesRequest extends JsonSerializableType
     public ?array $locales;
 
     /**
+     * @var ?bool $skipEdited Keep translations someone edited instead of retranslating them. Kept locales are returned in skippedLocales.
+     */
+    #[JsonProperty('skipEdited')]
+    public ?bool $skipEdited;
+
+    /**
      * @param array{
      *   locales?: ?array<string>,
+     *   skipEdited?: ?bool,
      * } $values
      */
     public function __construct(
         array $values = [],
     ) {
         $this->locales = $values['locales'] ?? null;
+        $this->skipEdited = $values['skipEdited'] ?? null;
     }
 }

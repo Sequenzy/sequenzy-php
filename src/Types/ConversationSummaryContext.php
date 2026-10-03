@@ -8,13 +8,13 @@ use Sequenzy\Core\Json\JsonProperty;
 class ConversationSummaryContext extends JsonSerializableType
 {
     /**
-     * @var ?string $label Campaign or sequence name.
+     * @var ?string $label Campaign or sequence name, "Transactional", or "Inbox".
      */
     #[JsonProperty('label')]
     public ?string $label;
 
     /**
-     * @var ?string $type Originating email type (campaign, sequence, transactional, or unknown).
+     * @var ?string $type Where the conversation started: campaign, sequence, or transactional for replies to those emails, inbox for email sent to the company inbox address, or unknown.
      */
     #[JsonProperty('type')]
     public ?string $type;

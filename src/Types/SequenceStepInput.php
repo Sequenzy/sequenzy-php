@@ -39,6 +39,12 @@ class SequenceStepInput extends JsonSerializableType
     public ?array $blocks;
 
     /**
+     * @var ?string $body Push steps only. Notification message; merge tags work.
+     */
+    #[JsonProperty('body')]
+    public ?string $body;
+
+    /**
      * @var ?array<string> $ccEmails Addresses CC'd on this email step. Send an empty array to clear them.
      */
     #[JsonProperty('ccEmails'), ArrayType(['string'])]
@@ -129,13 +135,25 @@ class SequenceStepInput extends JsonSerializableType
     public ?string $html;
 
     /**
+     * @var ?string $iconUrl Push steps only. Optional https web push icon.
+     */
+    #[JsonProperty('iconUrl')]
+    public ?string $iconUrl;
+
+    /**
+     * @var ?string $imageUrl Push steps only. Optional https image.
+     */
+    #[JsonProperty('imageUrl')]
+    public ?string $imageUrl;
+
+    /**
      * @var ?array<string> $imageUrls SMS steps only. Up to 2 publicly reachable image URLs sent as MMS media.
      */
     #[JsonProperty('imageUrls'), ArrayType(['string'])]
     public ?array $imageUrls;
 
     /**
-     * @var ?value-of<SequenceStepInputIneligibleAction> $ineligibleAction SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+     * @var ?value-of<SequenceStepInputIneligibleAction> $ineligibleAction SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
      */
     #[JsonProperty('ineligibleAction')]
     public ?string $ineligibleAction;
@@ -189,6 +207,12 @@ class SequenceStepInput extends JsonSerializableType
     public ?array $planIds;
 
     /**
+     * @var ?array<value-of<SequenceStepInputPlatformsItem>> $platforms Push steps only. Limit delivery to these platforms; omit for all.
+     */
+    #[JsonProperty('platforms'), ArrayType(['string'])]
+    public ?array $platforms;
+
+    /**
      * @var ?string $previewText Optional email preview text.
      */
     #[JsonProperty('previewText')]
@@ -237,10 +261,22 @@ class SequenceStepInput extends JsonSerializableType
     public ?string $text;
 
     /**
-     * @var ?value-of<SequenceStepInputType> $type Step type. Omit or use email for email content; use sms for a native SMS step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
+     * @var ?string $title Push steps only. Notification title; merge tags work.
+     */
+    #[JsonProperty('title')]
+    public ?string $title;
+
+    /**
+     * @var ?value-of<SequenceStepInputType> $type Step type. Omit or use email for email content; use sms for a native SMS step; use push for a push notification step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
      */
     #[JsonProperty('type')]
     public ?string $type;
+
+    /**
+     * @var ?string $url Push steps only. Link opened on tap - an https URL or an app deep link.
+     */
+    #[JsonProperty('url')]
+    public ?string $url;
 
     /**
      * @var ?SequenceWaitUntilInput $waitUntil
@@ -267,6 +303,7 @@ class SequenceStepInput extends JsonSerializableType
      *   attachments?: ?array<UrlAttachment>,
      *   bccEmails?: ?array<string>,
      *   blocks?: ?array<EmailBlock>,
+     *   body?: ?string,
      *   ccEmails?: ?array<string>,
      *   codePrefix?: ?string,
      *   config?: ?SubscriberUpdateConfig,
@@ -282,6 +319,8 @@ class SequenceStepInput extends JsonSerializableType
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   html?: ?string,
+     *   iconUrl?: ?string,
+     *   imageUrl?: ?string,
      *   imageUrls?: ?array<string>,
      *   ineligibleAction?: ?value-of<SequenceStepInputIneligibleAction>,
      *   isTransactional?: ?bool,
@@ -292,6 +331,7 @@ class SequenceStepInput extends JsonSerializableType
      *   nodeType?: ?value-of<SequenceStepInputNodeType>,
      *   percentOff?: ?float,
      *   planIds?: ?array<string>,
+     *   platforms?: ?array<value-of<SequenceStepInputPlatformsItem>>,
      *   previewText?: ?string,
      *   provider?: ?value-of<SequenceStepInputProvider>,
      *   replyProfileId?: ?string,
@@ -300,7 +340,9 @@ class SequenceStepInput extends JsonSerializableType
      *   senderProfileId?: ?string,
      *   subject?: ?string,
      *   text?: ?string,
+     *   title?: ?string,
      *   type?: ?value-of<SequenceStepInputType>,
+     *   url?: ?string,
      *   waitUntil?: ?SequenceWaitUntilInput,
      *   waitUntilKeyDate?: ?SequenceWaitUntilKeyDateInput,
      *   waitUntilWeekday?: ?SequenceWaitUntilWeekdayInput,
@@ -314,6 +356,7 @@ class SequenceStepInput extends JsonSerializableType
         $this->attachments = $values['attachments'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
+        $this->body = $values['body'] ?? null;
         $this->ccEmails = $values['ccEmails'] ?? null;
         $this->codePrefix = $values['codePrefix'] ?? null;
         $this->config = $values['config'] ?? null;
@@ -329,6 +372,8 @@ class SequenceStepInput extends JsonSerializableType
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->html = $values['html'] ?? null;
+        $this->iconUrl = $values['iconUrl'] ?? null;
+        $this->imageUrl = $values['imageUrl'] ?? null;
         $this->imageUrls = $values['imageUrls'] ?? null;
         $this->ineligibleAction = $values['ineligibleAction'] ?? null;
         $this->isTransactional = $values['isTransactional'] ?? null;
@@ -339,6 +384,7 @@ class SequenceStepInput extends JsonSerializableType
         $this->nodeType = $values['nodeType'] ?? null;
         $this->percentOff = $values['percentOff'] ?? null;
         $this->planIds = $values['planIds'] ?? null;
+        $this->platforms = $values['platforms'] ?? null;
         $this->previewText = $values['previewText'] ?? null;
         $this->provider = $values['provider'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;
@@ -347,7 +393,9 @@ class SequenceStepInput extends JsonSerializableType
         $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->text = $values['text'] ?? null;
+        $this->title = $values['title'] ?? null;
         $this->type = $values['type'] ?? null;
+        $this->url = $values['url'] ?? null;
         $this->waitUntil = $values['waitUntil'] ?? null;
         $this->waitUntilKeyDate = $values['waitUntilKeyDate'] ?? null;
         $this->waitUntilWeekday = $values['waitUntilWeekday'] ?? null;

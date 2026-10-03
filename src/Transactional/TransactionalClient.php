@@ -18,7 +18,7 @@ use Sequenzy\Transactional\Types\GetTransactionalResponse;
 use Sequenzy\Transactional\Requests\ListTransactionalRequest;
 use Sequenzy\Transactional\Types\ListTransactionalResponse;
 use Sequenzy\Transactional\Requests\SendTransactionalRequest;
-use Sequenzy\Transactional\Types\SendTransactionalResponseTransactional;
+use Sequenzy\Transactional\Types\SendTransactionalResponseZero;
 use Sequenzy\Transactional\Types\SendTransactionalResponseOne;
 use Sequenzy\Core\Json\JsonDecoder;
 use Sequenzy\Core\Types\Union;
@@ -124,7 +124,7 @@ class TransactionalClient
      *
      * Already-sent deliveries are untouched: send history, stats, and stored HTML live on the deliveries themselves.
      *
-     * The email content is kept as a reusable template and returned as `deleted.emailId`; pass that to `DELETE /api/v1/templates/{templateId}` to remove the content too. To stop sends without losing the template, update it with `enabled: false` instead.
+     * The email content is kept as a reusable template and returned as `deleted.emailId`; pass that to `DELETE /api/v1/templates/{templateId}` to remove the content too. Code-managed emails (`managedBy: code`) are the exception: their content snapshot is deleted with them, so the returned `emailId` no longer exists. To stop sends without losing the template, update it with `enabled: false` instead.
      *
      * Requires an API key with the `transactional:delete` scope.
      *
@@ -323,6 +323,13 @@ class TransactionalClient
      *
      * If both a canonical field and its alias are provided, `slug` must match `templateId` and `body` must match `html`.
      *
+     * **Tracking direct-content sends:**
+     * - Set `trackAs` on a direct-content send (for example `weekly-report`) to count it under one code-managed transactional email. The first send with a new value creates it with `managedBy: code`; later sends with the same value link to it. The value may use up to 255 ASCII letters, digits, spaces and `. _ - : /`, and is normalized like a slug (`Weekly Report` and `weekly-report` are the same email). Other values, including empty ones, return 400 `INVALID_TRACK_AS`.
+     * - Opens, clicks, bounces and the other transactional stats then aggregate on that email, and it appears in `GET /transactional` next to your saved templates. Its subject, preview text and HTML are a snapshot of a recent send, refreshed at most every 10 minutes and stored before variable substitution.
+     * - Disabling the code-managed email makes further sends with that `trackAs` fail with 400 `TRACKED_EMAIL_DISABLED` until you enable it again. Deleting it lets the next send recreate it with fresh stats.
+     * - `trackAs` cannot be combined with `slug`/`templateId`, cannot reuse the slug of a template managed in the dashboard, and a company can have at most 100 code-managed emails. Use a stable name for an email type, never per-recipient values. Code-managed emails cannot be sent by `slug`.
+     * - The email is created after the send passes request validation, so an invalid send does not create it. A send that fails later, for example on an `Idempotency-Key` conflict, can still leave the newly created email with no sends.
+     *
      * **Recipients:**
      * - `to` can be a single email or an array of up to 50 emails
      * - Duplicate emails are automatically deduplicated
@@ -330,7 +337,7 @@ class TransactionalClient
      *
      * **Attachments:**
      * - Attachments can be provided as Base64-encoded content or URLs
-     * - Maximum 10 attachments and 7MB total per email
+     * - Maximum 10 attachments and 15MB total per email
      * - Any file type supported (PDFs, images, documents, etc.)
      * - Set `contentId` on an attachment to embed it as an inline image referenced from the HTML as `<img src="cid:VALUE">`
      *
@@ -365,13 +372,13 @@ class TransactionalClient
      *   bodyProperties?: array<string, mixed>,
      * } $options
      * @return (
-     *    SendTransactionalResponseTransactional
+     *    SendTransactionalResponseZero
      *   |SendTransactionalResponseOne
      * )|null
      * @throws SequenzyException
      * @throws SequenzyApiException
      */
-    public function send(SendTransactionalRequest $request, ?array $options = null): SendTransactionalResponseTransactional|SendTransactionalResponseOne|null
+    public function send(SendTransactionalRequest $request, ?array $options = null): SendTransactionalResponseZero|SendTransactionalResponseOne|null
     {
         $options = array_merge($this->options, $options ?? []);
         $headers = [];
@@ -395,7 +402,7 @@ class TransactionalClient
                 if (empty($json)) {
                     return null;
                 }
-                return JsonDecoder::decodeUnion($json, new Union(SendTransactionalResponseTransactional::class, SendTransactionalResponseOne::class)); // @phpstan-ignore-line
+                return JsonDecoder::decodeUnion($json, new Union(SendTransactionalResponseZero::class, SendTransactionalResponseOne::class)); // @phpstan-ignore-line
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -410,7 +417,7 @@ class TransactionalClient
     }
 
     /**
-     * Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks.
+     * Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks. Code-managed emails (`managedBy: code`, created by sends with `trackAs`) accept only `name`, `enabled` and `labels`; their content comes from each send, so `subject`, `previewText`, `html` and `blocks` return 400.
      *
      * Example:
      * ```php

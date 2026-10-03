@@ -8,6 +8,12 @@ use Sequenzy\Core\Json\JsonProperty;
 class SelectWinnerAbTestsRequest extends JsonSerializableType
 {
     /**
+     * @var ?bool $confirmLiveChange Sequence tests only. Required as true when the sequence is active. Campaign tests ignore it.
+     */
+    #[JsonProperty('confirmLiveChange')]
+    public ?bool $confirmLiveChange;
+
+    /**
      * @var string $variantId Variant to select as the winner.
      */
     #[JsonProperty('variantId')]
@@ -16,11 +22,13 @@ class SelectWinnerAbTestsRequest extends JsonSerializableType
     /**
      * @param array{
      *   variantId: string,
+     *   confirmLiveChange?: ?bool,
      * } $values
      */
     public function __construct(
         array $values,
     ) {
+        $this->confirmLiveChange = $values['confirmLiveChange'] ?? null;
         $this->variantId = $values['variantId'];
     }
 }

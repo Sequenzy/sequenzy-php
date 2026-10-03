@@ -3,6 +3,7 @@
 namespace Sequenzy\Traits;
 
 use DateTime;
+use Sequenzy\Types\TransactionalEmailManagedBy;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\Date;
 use Sequenzy\Core\Types\ArrayType;
@@ -13,6 +14,7 @@ use Sequenzy\Core\Types\ArrayType;
  * @property ?bool $enabled
  * @property ?string $id
  * @property ?array<string> $labels
+ * @property ?value-of<TransactionalEmailManagedBy> $managedBy
  * @property ?string $name
  * @property ?string $slug
  * @property ?DateTime $updatedAt
@@ -48,6 +50,12 @@ trait TransactionalEmail
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
     public ?array $labels;
+
+    /**
+     * @var ?value-of<TransactionalEmailManagedBy> $managedBy `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+     */
+    #[JsonProperty('managedBy')]
+    public ?string $managedBy;
 
     /**
      * @var ?string $name

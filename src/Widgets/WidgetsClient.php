@@ -956,7 +956,9 @@ class WidgetsClient
     }
 
     /**
-     * Submit a saved popup without an API key. The popup's stored content is the source of truth for audience targeting, duplicate handling, custom fields, and success behavior.
+     * Submit a saved popup without an API key. The popup's stored content is the source of truth for audience targeting, duplicate handling, resubscribe behavior, custom fields, and success behavior.
+     *
+     * A contact who unsubscribed from all email is resubscribed and their target list memberships are restored. When the popup's `resubscribeBehavior` is `double_opt_in`, or workspace double opt-in is on, they receive a confirmation email instead. The response does not reveal which case applied.
      *
      * Example:
      * ```php
@@ -1021,6 +1023,8 @@ class WidgetsClient
      * When the path value is a saved form ID, the form's stored settings are used for audience targeting and success behavior. When the path value is a company ID, this endpoint uses the legacy company-level form behavior.
      *
      * Omit `lists` to use the workspace default lists setting, provide `lists=` to add the subscriber to no lists, or provide comma-separated list IDs for specific lists. Provide stable `tags` IDs to apply existing tags to the subscriber.
+     *
+     * Submitting again is a fresh opt-in. A contact who unsubscribed from all email is resubscribed and their target list memberships are restored, whatever the `duplicateStrategy`. When the saved form's `resubscribeBehavior` is `double_opt_in`, or workspace double opt-in is on, they receive a confirmation email instead and are resubscribed when they confirm. Contacts whose address bounced or who marked your email as spam are not resubscribed. The response is the same in every case, so it does not reveal whether an address was subscribed.
      *
      * Example:
      * ```php

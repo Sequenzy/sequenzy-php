@@ -39,6 +39,12 @@ class SubmitSavedPopupRequest extends JsonSerializableType
     public ?string $phone;
 
     /**
+     * @var ?string $sequenzyToken Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+     */
+    #[JsonProperty('sequenzyToken')]
+    public ?string $sequenzyToken;
+
+    /**
      * @var ?string $website Honeypot field. Leave empty.
      */
     #[JsonProperty('website')]
@@ -51,6 +57,7 @@ class SubmitSavedPopupRequest extends JsonSerializableType
      *   firstName?: ?string,
      *   lastName?: ?string,
      *   phone?: ?string,
+     *   sequenzyToken?: ?string,
      *   website?: ?string,
      * } $values
      */
@@ -62,6 +69,7 @@ class SubmitSavedPopupRequest extends JsonSerializableType
         $this->firstName = $values['firstName'] ?? null;
         $this->lastName = $values['lastName'] ?? null;
         $this->phone = $values['phone'] ?? null;
+        $this->sequenzyToken = $values['sequenzyToken'] ?? null;
         $this->website = $values['website'] ?? null;
     }
 }

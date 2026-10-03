@@ -7,4 +7,5 @@ enum ConversationMessageType: string
     case Inbound = "inbound";
     case Outbound = "outbound";
     case Note = "note";
+    case System = "system";
 }

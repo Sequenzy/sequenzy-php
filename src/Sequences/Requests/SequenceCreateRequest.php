@@ -73,6 +73,12 @@ class SequenceCreateRequest extends JsonSerializableType
     public ?string $eventName;
 
     /**
+     * @var ?bool $frequencyCapEnabled Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
+     */
+    #[JsonProperty('frequencyCapEnabled')]
+    public ?bool $frequencyCapEnabled;
+
+    /**
      * @var ?string $fromEmail From address for every email in this sequence. Its domain must be configured and verified.
      */
     #[JsonProperty('fromEmail')]
@@ -181,7 +187,7 @@ class SequenceCreateRequest extends JsonSerializableType
     public ?string $replyToName;
 
     /**
-     * @var ?string $segmentId Segment ID for segment_entered triggers.
+     * @var ?string $segmentId Segment ID for segment_entered and segment_exited triggers.
      */
     #[JsonProperty('segmentId')]
     public ?string $segmentId;
@@ -258,6 +264,7 @@ class SequenceCreateRequest extends JsonSerializableType
      *   enrollmentFieldPath?: ?string,
      *   enrollmentMode?: ?value-of<SequenceEnrollmentMode>,
      *   eventName?: ?string,
+     *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   goal?: ?string,
@@ -300,6 +307,7 @@ class SequenceCreateRequest extends JsonSerializableType
         $this->enrollmentFieldPath = $values['enrollmentFieldPath'] ?? null;
         $this->enrollmentMode = $values['enrollmentMode'] ?? null;
         $this->eventName = $values['eventName'] ?? null;
+        $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->goal = $values['goal'] ?? null;

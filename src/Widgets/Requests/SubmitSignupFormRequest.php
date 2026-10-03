@@ -10,7 +10,7 @@ use Sequenzy\Core\Types\ArrayType;
 class SubmitSignupFormRequest extends JsonSerializableType
 {
     /**
-     * @var ?value-of<SubmitSignupFormRequestDuplicateStrategy> $duplicateStrategy How to handle an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder.
+     * @var ?value-of<SubmitSignupFormRequestDuplicateStrategy> $duplicateStrategy How to handle profile fields of an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder. Does not affect whether an unsubscribed contact is resubscribed.
      */
     public ?string $duplicateStrategy;
 
@@ -84,6 +84,12 @@ class SubmitSignupFormRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?string $sequenzyToken Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+     */
+    #[JsonProperty('sequenzyToken')]
+    public ?string $sequenzyToken;
+
+    /**
      * @var ?array<string> $tagIds Existing tag IDs to apply to the subscriber
      */
     #[JsonProperty('tagIds'), ArrayType(['string'])]
@@ -110,6 +116,7 @@ class SubmitSignupFormRequest extends JsonSerializableType
      *   listIds?: ?array<string>,
      *   phone?: ?string,
      *   redirectUrl?: ?string,
+     *   sequenzyToken?: ?string,
      *   tagIds?: ?array<string>,
      *   website?: ?string,
      * } $values
@@ -130,6 +137,7 @@ class SubmitSignupFormRequest extends JsonSerializableType
         $this->listIds = $values['listIds'] ?? null;
         $this->phone = $values['phone'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->sequenzyToken = $values['sequenzyToken'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->website = $values['website'] ?? null;
     }

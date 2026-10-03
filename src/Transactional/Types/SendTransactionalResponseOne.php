@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\TransactionalSendDiagnostics;
+use Sequenzy\Types\TransactionalSendIgnoredHeadersItem;
 use Sequenzy\Core\Types\Union;
 
 class SendTransactionalResponseOne extends JsonSerializableType
@@ -47,6 +48,12 @@ class SendTransactionalResponseOne extends JsonSerializableType
     public ?bool $idempotentReplay;
 
     /**
+     * @var ?array<TransactionalSendIgnoredHeadersItem> $ignoredHeaders
+     */
+    #[JsonProperty('ignoredHeaders'), ArrayType([TransactionalSendIgnoredHeadersItem::class])]
+    public ?array $ignoredHeaders;
+
+    /**
      * @var ?string $jobId Legacy queue identifier retained for response compatibility.
      */
     #[JsonProperty('jobId')]
@@ -68,6 +75,12 @@ class SendTransactionalResponseOne extends JsonSerializableType
     public string|array|null $to;
 
     /**
+     * @var ?SendTransactionalResponseOneTransactional $transactional Code-managed transactional email the send is counted under. Present only when the request set `trackAs`.
+     */
+    #[JsonProperty('transactional')]
+    public ?SendTransactionalResponseOneTransactional $transactional;
+
+    /**
      * @param array{
      *   bcc?: ?array<string>,
      *   cc?: ?array<string>,
@@ -75,12 +88,14 @@ class SendTransactionalResponseOne extends JsonSerializableType
      *   emailSendId?: ?string,
      *   emailType?: ?value-of<SendTransactionalResponseOneEmailType>,
      *   idempotentReplay?: ?bool,
+     *   ignoredHeaders?: ?array<TransactionalSendIgnoredHeadersItem>,
      *   jobId?: ?string,
      *   success?: ?bool,
      *   to?: (
      *    string
      *   |array<string>
      * )|null,
+     *   transactional?: ?SendTransactionalResponseOneTransactional,
      * } $values
      */
     public function __construct(
@@ -92,9 +107,11 @@ class SendTransactionalResponseOne extends JsonSerializableType
         $this->emailSendId = $values['emailSendId'] ?? null;
         $this->emailType = $values['emailType'] ?? null;
         $this->idempotentReplay = $values['idempotentReplay'] ?? null;
+        $this->ignoredHeaders = $values['ignoredHeaders'] ?? null;
         $this->jobId = $values['jobId'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->to = $values['to'] ?? null;
+        $this->transactional = $values['transactional'] ?? null;
     }
 
     /**

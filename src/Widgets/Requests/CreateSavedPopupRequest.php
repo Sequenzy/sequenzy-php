@@ -9,6 +9,7 @@ use Sequenzy\Widgets\Types\CreateSavedPopupRequestDuplicateStrategy;
 use Sequenzy\Types\SavedPopupFrequency;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestPlacement;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestPresentation;
+use Sequenzy\Widgets\Types\CreateSavedPopupRequestResubscribeBehavior;
 use Sequenzy\Types\SavedPopupSchedule;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestStatus;
 use Sequenzy\Types\SavedPopupTargeting;
@@ -85,6 +86,12 @@ class CreateSavedPopupRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?value-of<CreateSavedPopupRequestResubscribeBehavior> $resubscribeBehavior What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+     */
+    #[JsonProperty('resubscribeBehavior')]
+    public ?string $resubscribeBehavior;
+
+    /**
      * @var ?SavedPopupSchedule $schedule
      */
     #[JsonProperty('schedule')]
@@ -151,6 +158,7 @@ class CreateSavedPopupRequest extends JsonSerializableType
      *   placement?: ?value-of<CreateSavedPopupRequestPlacement>,
      *   presentation?: ?value-of<CreateSavedPopupRequestPresentation>,
      *   redirectUrl?: ?string,
+     *   resubscribeBehavior?: ?value-of<CreateSavedPopupRequestResubscribeBehavior>,
      *   schedule?: ?SavedPopupSchedule,
      *   status?: ?value-of<CreateSavedPopupRequestStatus>,
      *   successMessage?: ?string,
@@ -176,6 +184,7 @@ class CreateSavedPopupRequest extends JsonSerializableType
         $this->placement = $values['placement'] ?? null;
         $this->presentation = $values['presentation'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
         $this->schedule = $values['schedule'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;

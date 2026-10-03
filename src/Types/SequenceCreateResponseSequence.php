@@ -50,6 +50,12 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     public ?bool $enrollmentPaused;
 
     /**
+     * @var ?bool $frequencyCapEnabled Whether email steps respect the company frequency cap.
+     */
+    #[JsonProperty('frequencyCapEnabled')]
+    public ?bool $frequencyCapEnabled;
+
+    /**
      * @var ?string $id
      */
     #[JsonProperty('id')]
@@ -118,6 +124,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
      *   emailCount?: ?float,
      *   enrichmentStatus?: ?string,
      *   enrollmentPaused?: ?bool,
+     *   frequencyCapEnabled?: ?bool,
      *   id?: ?string,
      *   keyDates?: ?SequenceKeyDates,
      *   name?: ?string,
@@ -140,6 +147,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
         $this->emailCount = $values['emailCount'] ?? null;
         $this->enrichmentStatus = $values['enrichmentStatus'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
+        $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->keyDates = $values['keyDates'] ?? null;
         $this->name = $values['name'] ?? null;

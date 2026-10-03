@@ -13,6 +13,8 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Websites\Requests\ConfigureSendingDomainTrackingRequest;
+use Sequenzy\Websites\Types\ConfigureSendingDomainTrackingResponse;
 use Sequenzy\Websites\Types\GetWebsitesResponse;
 use Sequenzy\Websites\Types\ListWebsitesResponse;
 use Sequenzy\Websites\Types\VerifySendingDomainResponse;
@@ -54,7 +56,7 @@ class WebsitesClient
     }
 
     /**
-     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup. A domain belongs to exactly one company, so confirm the target company before adding it.
+     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it on its root (links.<root>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
      *
      * Example:
      * ```php
@@ -98,6 +100,66 @@ class WebsitesClient
                     return null;
                 }
                 return AddWebsitesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Deprecated: tracking is company-wide; use PUT /tracking-domain. Sets <trackingPrefix>.<domain> as the company tracking domain when the company has none. Publish the returned tracking.cnameRecord; sending never waits for it, and links use the shared Sequenzy tracking domain until it verifies. Repeating the company's current tracking hostname is a no-op. A different value is accepted but changes nothing, and the response message says so; it never replaces the company setting.
+     *
+     * Example:
+     * ```php
+     * $client->websites->configureSendingDomainTracking(
+     *     'domain',
+     *     new ConfigureSendingDomainTrackingRequest([
+     *         'trackingPrefix' => 'trackingPrefix',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $domain Configured sending domain
+     * @param ConfigureSendingDomainTrackingRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ConfigureSendingDomainTrackingResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function configureSendingDomainTracking(string $domain, ConfigureSendingDomainTrackingRequest $request, ?array $options = null): ?ConfigureSendingDomainTrackingResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "websites/{$domain}",
+                    method: HttpMethod::PATCH,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ConfigureSendingDomainTrackingResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

@@ -24,7 +24,7 @@ class SendTransactionalRequest extends JsonSerializableType
      *
      * Set `contentId` to embed the file as an inline image the HTML references with `<img src="cid:VALUE">` instead of attaching it.
      *
-     * Maximum 10 attachments and 7MB total per email.
+     * Maximum 10 attachments and 15MB total per email.
      *
      * @var ?array<Attachment> $attachments
      */
@@ -86,6 +86,12 @@ class SendTransactionalRequest extends JsonSerializableType
      */
     #[JsonProperty('fromName')]
     public ?string $fromName;
+
+    /**
+     * @var ?array<string, string> $headers Extra email headers as header name to string value, up to 50 applied. Names use letters, digits and hyphens (max 100 characters); values are one line of printable ASCII and each `Name: value` line fits in 998 characters. A transactional send can carry your own `List-Unsubscribe`, plus `List-Unsubscribe-Post: List-Unsubscribe=One-Click` for RFC 8058 one-click unsubscribe; unsubscribes through your link are not suppressed in Sequenzy. Marketing sends always use Sequenzy's signed unsubscribe headers, so `List-Unsubscribe`, `List-Unsubscribe-Post`, `Precedence` and `Feedback-ID` are not applied. Headers Sequenzy manages (From, Sender, To, Cc, Bcc, Reply-To, Subject, Date, Message-ID, MIME-Version, Return-Path, Received, Received-SPF, Delivered-To, DKIM-Signature, Authentication-Results, and names starting with Content-, X-Sequenzy-, X-SES-, ARC- or Resent-) are never applied. A header that cannot be applied never fails the request; it is listed in the response `ignoredHeaders`. Names match case-insensitively; when names differ only in case, only the first one is considered, even if it is not applied. A retry of a failed delivery (dashboard or outage recovery) resends without these headers.
+     */
+    #[JsonProperty('headers'), ArrayType(['string' => 'string'])]
+    public ?array $headers;
 
     /**
      * @var ?string $html Compatibility alias for `body`. Accepted with `subject` for direct sends and must match `body` when both are provided.
@@ -157,6 +163,12 @@ class SendTransactionalRequest extends JsonSerializableType
     public string|array $to;
 
     /**
+     * @var ?string $trackAs Direct content only. Names the email type so its sends are counted under one code-managed transactional email, created on first use. Up to 255 ASCII letters, digits, spaces and `. _ - : /`, including at least one letter or digit; it is normalized like a slug. Cannot be combined with `slug`/`templateId`.
+     */
+    #[JsonProperty('trackAs')]
+    public ?string $trackAs;
+
+    /**
      * @var ?SendTransactionalRequestTrackingSettings $trackingSettings Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
      */
     #[JsonProperty('trackingSettings')]
@@ -189,6 +201,7 @@ class SendTransactionalRequest extends JsonSerializableType
      *   from?: ?string,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
+     *   headers?: ?array<string, string>,
      *   html?: ?string,
      *   preview?: ?string,
      *   replyProfileId?: ?string,
@@ -199,6 +212,7 @@ class SendTransactionalRequest extends JsonSerializableType
      *   subject?: ?string,
      *   subscriberExternalId?: ?string,
      *   templateId?: ?string,
+     *   trackAs?: ?string,
      *   trackingSettings?: ?SendTransactionalRequestTrackingSettings,
      *   variables?: ?array<string, mixed>,
      * } $values
@@ -215,6 +229,7 @@ class SendTransactionalRequest extends JsonSerializableType
         $this->from = $values['from'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
+        $this->headers = $values['headers'] ?? null;
         $this->html = $values['html'] ?? null;
         $this->preview = $values['preview'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;
@@ -226,6 +241,7 @@ class SendTransactionalRequest extends JsonSerializableType
         $this->subscriberExternalId = $values['subscriberExternalId'] ?? null;
         $this->templateId = $values['templateId'] ?? null;
         $this->to = $values['to'];
+        $this->trackAs = $values['trackAs'] ?? null;
         $this->trackingSettings = $values['trackingSettings'] ?? null;
         $this->variables = $values['variables'] ?? null;
     }

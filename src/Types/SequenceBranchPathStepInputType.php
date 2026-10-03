@@ -6,6 +6,7 @@ enum SequenceBranchPathStepInputType: string
 {
     case Email = "email";
     case Sms = "sms";
+    case Push = "push";
     case Delay = "delay";
     case CreateDiscount = "create_discount";
     case Discount = "discount";

@@ -41,6 +41,12 @@ class TransactionalEmail extends JsonSerializableType
     public ?array $labels;
 
     /**
+     * @var ?value-of<TransactionalEmailManagedBy> $managedBy `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+     */
+    #[JsonProperty('managedBy')]
+    public ?string $managedBy;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
@@ -65,6 +71,7 @@ class TransactionalEmail extends JsonSerializableType
      *   enabled?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   managedBy?: ?value-of<TransactionalEmailManagedBy>,
      *   name?: ?string,
      *   slug?: ?string,
      *   updatedAt?: ?DateTime,
@@ -78,6 +85,7 @@ class TransactionalEmail extends JsonSerializableType
         $this->enabled = $values['enabled'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->managedBy = $values['managedBy'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->slug = $values['slug'] ?? null;
         $this->updatedAt = $values['updatedAt'] ?? null;

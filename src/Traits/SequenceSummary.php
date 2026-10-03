@@ -22,6 +22,7 @@ use Sequenzy\Core\Types\Date;
  * @property ?value-of<SequenceEffectiveStatus> $effectiveStatus
  * @property ?string $effectiveStatusSummary
  * @property ?bool $enrollmentPaused
+ * @property ?bool $frequencyCapEnabled
  * @property ?string $fromEmail
  * @property ?string $fromName
  * @property ?string $id
@@ -95,6 +96,12 @@ trait SequenceSummary
      */
     #[JsonProperty('enrollmentPaused')]
     public ?bool $enrollmentPaused;
+
+    /**
+     * @var ?bool $frequencyCapEnabled Whether email steps respect the company frequency cap.
+     */
+    #[JsonProperty('frequencyCapEnabled')]
+    public ?bool $frequencyCapEnabled;
 
     /**
      * @var ?string $fromEmail

@@ -157,7 +157,7 @@ class CreateCampaignsRequest extends JsonSerializableType
     public ?array $targetLists;
 
     /**
-     * @var ?string $templateId Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks.
+     * @var ?string $templateId Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks. The content snapshot of a code-managed transactional email (created by sends with `trackAs`) is rejected with 400, because it holds one recipient's real content.
      */
     #[JsonProperty('templateId')]
     public ?string $templateId;

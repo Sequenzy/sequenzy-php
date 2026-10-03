@@ -55,6 +55,7 @@ class TransactionalEmailDetails extends JsonSerializableType
      *   enabled?: ?bool,
      *   id?: ?string,
      *   labels?: ?array<string>,
+     *   managedBy?: ?value-of<TransactionalEmailManagedBy>,
      *   name?: ?string,
      *   slug?: ?string,
      *   updatedAt?: ?DateTime,
@@ -74,6 +75,7 @@ class TransactionalEmailDetails extends JsonSerializableType
         $this->enabled = $values['enabled'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->managedBy = $values['managedBy'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->slug = $values['slug'] ?? null;
         $this->updatedAt = $values['updatedAt'] ?? null;

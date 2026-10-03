@@ -6,9 +6,10 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\TransactionalSendDiagnostics;
+use Sequenzy\Types\TransactionalSendIgnoredHeadersItem;
 use Sequenzy\Core\Types\Union;
 
-class SendTransactionalResponseTransactional extends JsonSerializableType
+class SendTransactionalResponseZero extends JsonSerializableType
 {
     /**
      * @var ?array<string> $bcc Deduplicated BCC recipients; omitted when empty.
@@ -35,7 +36,7 @@ class SendTransactionalResponseTransactional extends JsonSerializableType
     public ?string $emailSendId;
 
     /**
-     * @var ?value-of<SendTransactionalResponseTransactionalEmailType> $emailType Delivery policy accepted for the queued email.
+     * @var ?value-of<SendTransactionalResponseZeroEmailType> $emailType Delivery policy accepted for the queued email.
      */
     #[JsonProperty('emailType')]
     public ?string $emailType;
@@ -45,6 +46,12 @@ class SendTransactionalResponseTransactional extends JsonSerializableType
      */
     #[JsonProperty('idempotentReplay')]
     public ?bool $idempotentReplay;
+
+    /**
+     * @var ?array<TransactionalSendIgnoredHeadersItem> $ignoredHeaders
+     */
+    #[JsonProperty('ignoredHeaders'), ArrayType([TransactionalSendIgnoredHeadersItem::class])]
+    public ?array $ignoredHeaders;
 
     /**
      * @var ?string $jobId Legacy queue identifier retained for response compatibility.
@@ -68,10 +75,10 @@ class SendTransactionalResponseTransactional extends JsonSerializableType
     public string|array|null $to;
 
     /**
-     * @var ?SendTransactionalResponseTransactionalTransactional $transactional
+     * @var ?SendTransactionalResponseZeroTransactional $transactional
      */
     #[JsonProperty('transactional')]
-    public ?SendTransactionalResponseTransactionalTransactional $transactional;
+    public ?SendTransactionalResponseZeroTransactional $transactional;
 
     /**
      * @param array{
@@ -79,15 +86,16 @@ class SendTransactionalResponseTransactional extends JsonSerializableType
      *   cc?: ?array<string>,
      *   diagnostics?: ?TransactionalSendDiagnostics,
      *   emailSendId?: ?string,
-     *   emailType?: ?value-of<SendTransactionalResponseTransactionalEmailType>,
+     *   emailType?: ?value-of<SendTransactionalResponseZeroEmailType>,
      *   idempotentReplay?: ?bool,
+     *   ignoredHeaders?: ?array<TransactionalSendIgnoredHeadersItem>,
      *   jobId?: ?string,
      *   success?: ?bool,
      *   to?: (
      *    string
      *   |array<string>
      * )|null,
-     *   transactional?: ?SendTransactionalResponseTransactionalTransactional,
+     *   transactional?: ?SendTransactionalResponseZeroTransactional,
      * } $values
      */
     public function __construct(
@@ -99,6 +107,7 @@ class SendTransactionalResponseTransactional extends JsonSerializableType
         $this->emailSendId = $values['emailSendId'] ?? null;
         $this->emailType = $values['emailType'] ?? null;
         $this->idempotentReplay = $values['idempotentReplay'] ?? null;
+        $this->ignoredHeaders = $values['ignoredHeaders'] ?? null;
         $this->jobId = $values['jobId'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->to = $values['to'] ?? null;

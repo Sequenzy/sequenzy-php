@@ -12,6 +12,12 @@ use Sequenzy\AbTests\Types\UpdateAbTestsRequestWinnerCriteria;
 class UpdateAbTestsRequest extends JsonSerializableType
 {
     /**
+     * @var ?bool $autoSelectWinner Sequence-only. True picks the leading variant once winnerThreshold is reached; false keeps splitting until a winner is selected. Resume sets it to false.
+     */
+    #[JsonProperty('autoSelectWinner')]
+    public ?bool $autoSelectWinner;
+
+    /**
      * @var ?bool $cancelSampleUpdate Discard a failed campaign sample request. Cannot be combined with testPercentage; does not undo committed sends.
      */
     #[JsonProperty('cancelSampleUpdate')]
@@ -67,6 +73,7 @@ class UpdateAbTestsRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   autoSelectWinner?: ?bool,
      *   cancelSampleUpdate?: ?bool,
      *   confirmLiveChange?: ?bool,
      *   expectedUpdatedAt?: ?DateTime,
@@ -81,6 +88,7 @@ class UpdateAbTestsRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->autoSelectWinner = $values['autoSelectWinner'] ?? null;
         $this->cancelSampleUpdate = $values['cancelSampleUpdate'] ?? null;
         $this->confirmLiveChange = $values['confirmLiveChange'] ?? null;
         $this->expectedUpdatedAt = $values['expectedUpdatedAt'] ?? null;

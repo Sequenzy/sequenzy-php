@@ -1,18 +1,12 @@
 <?php
 
-namespace Sequenzy\Transactional\Types;
+namespace Sequenzy\WarehouseSync\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
-class SendTransactionalResponseTransactionalTransactional extends JsonSerializableType
+class PreviewWarehouseQueryResponseColumnsItem extends JsonSerializableType
 {
-    /**
-     * @var ?string $id
-     */
-    #[JsonProperty('id')]
-    public ?string $id;
-
     /**
      * @var ?string $name
      */
@@ -20,24 +14,22 @@ class SendTransactionalResponseTransactionalTransactional extends JsonSerializab
     public ?string $name;
 
     /**
-     * @var ?string $slug
+     * @var ?string $type Warehouse type name.
      */
-    #[JsonProperty('slug')]
-    public ?string $slug;
+    #[JsonProperty('type')]
+    public ?string $type;
 
     /**
      * @param array{
-     *   id?: ?string,
      *   name?: ?string,
-     *   slug?: ?string,
+     *   type?: ?string,
      * } $values
      */
     public function __construct(
         array $values = [],
     ) {
-        $this->id = $values['id'] ?? null;
         $this->name = $values['name'] ?? null;
-        $this->slug = $values['slug'] ?? null;
+        $this->type = $values['type'] ?? null;
     }
 
     /**

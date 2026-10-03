@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use DateTime;
 use Sequenzy\Core\Types\Date;
+use Sequenzy\Types\AbTestSignificance;
 use Sequenzy\Core\Types\ArrayType;
 
 class GetStatsAbTestsResponse extends JsonSerializableType
@@ -27,6 +28,12 @@ class GetStatsAbTestsResponse extends JsonSerializableType
      */
     #[JsonProperty('period')]
     public ?string $period;
+
+    /**
+     * @var ?AbTestSignificance $significance
+     */
+    #[JsonProperty('significance')]
+    public ?AbTestSignificance $significance;
 
     /**
      * @var ?DateTime $start
@@ -57,6 +64,7 @@ class GetStatsAbTestsResponse extends JsonSerializableType
      *   abTestId?: ?string,
      *   end?: ?DateTime,
      *   period?: ?string,
+     *   significance?: ?AbTestSignificance,
      *   start?: ?DateTime,
      *   stats?: ?array<string, mixed>,
      *   success?: ?bool,
@@ -69,6 +77,7 @@ class GetStatsAbTestsResponse extends JsonSerializableType
         $this->abTestId = $values['abTestId'] ?? null;
         $this->end = $values['end'] ?? null;
         $this->period = $values['period'] ?? null;
+        $this->significance = $values['significance'] ?? null;
         $this->start = $values['start'] ?? null;
         $this->stats = $values['stats'] ?? null;
         $this->success = $values['success'] ?? null;

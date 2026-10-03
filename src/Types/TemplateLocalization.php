@@ -23,6 +23,12 @@ class TemplateLocalization extends JsonSerializableType
     public ?DateTime $createdAt;
 
     /**
+     * @var ?DateTime $editedAt When this translation was last edited in the dashboard or stored with keepEdits. Automatic translation on save keeps edited translations and marks them stale when the original changes. Null otherwise.
+     */
+    #[JsonProperty('editedAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $editedAt;
+
+    /**
      * @var ?string $lastError
      */
     #[JsonProperty('lastError')]
@@ -74,6 +80,7 @@ class TemplateLocalization extends JsonSerializableType
      * @param array{
      *   blocks?: ?array<EmailBlock>,
      *   createdAt?: ?DateTime,
+     *   editedAt?: ?DateTime,
      *   lastError?: ?string,
      *   locale?: ?string,
      *   previewText?: ?string,
@@ -89,6 +96,7 @@ class TemplateLocalization extends JsonSerializableType
     ) {
         $this->blocks = $values['blocks'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
+        $this->editedAt = $values['editedAt'] ?? null;
         $this->lastError = $values['lastError'] ?? null;
         $this->locale = $values['locale'] ?? null;
         $this->previewText = $values['previewText'] ?? null;

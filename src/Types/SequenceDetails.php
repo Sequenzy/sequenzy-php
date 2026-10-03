@@ -88,6 +88,7 @@ class SequenceDetails extends JsonSerializableType
      *   effectiveStatus?: ?value-of<SequenceEffectiveStatus>,
      *   effectiveStatusSummary?: ?string,
      *   enrollmentPaused?: ?bool,
+     *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   id?: ?string,
@@ -135,6 +136,7 @@ class SequenceDetails extends JsonSerializableType
         $this->effectiveStatus = $values['effectiveStatus'] ?? null;
         $this->effectiveStatusSummary = $values['effectiveStatusSummary'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
+        $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->id = $values['id'] ?? null;

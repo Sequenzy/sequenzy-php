@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Widgets\Types\UpdateSavedFormRequestDuplicateStrategy;
+use Sequenzy\Widgets\Types\UpdateSavedFormRequestResubscribeBehavior;
 
 class UpdateSavedFormRequest extends JsonSerializableType
 {
@@ -58,6 +59,12 @@ class UpdateSavedFormRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?value-of<UpdateSavedFormRequestResubscribeBehavior> $resubscribeBehavior What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+     */
+    #[JsonProperty('resubscribeBehavior')]
+    public ?string $resubscribeBehavior;
+
+    /**
      * @var ?string $successMessage
      */
     #[JsonProperty('successMessage')]
@@ -85,6 +92,7 @@ class UpdateSavedFormRequest extends JsonSerializableType
      *   listIds?: ?array<string>,
      *   name?: ?string,
      *   redirectUrl?: ?string,
+     *   resubscribeBehavior?: ?value-of<UpdateSavedFormRequestResubscribeBehavior>,
      *   successMessage?: ?string,
      *   tagIds?: ?array<string>,
      *   theme?: ?array<string, mixed>,
@@ -101,6 +109,7 @@ class UpdateSavedFormRequest extends JsonSerializableType
         $this->listIds = $values['listIds'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->theme = $values['theme'] ?? null;

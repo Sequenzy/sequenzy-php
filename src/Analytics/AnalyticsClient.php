@@ -4,18 +4,22 @@ namespace Sequenzy\Analytics;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\Analytics\Requests\GetCampaignMetricsRequest;
-use Sequenzy\Analytics\Types\GetCampaignMetricsResponse;
+use Sequenzy\Analytics\Requests\GetCampaignEmailClientMetricsRequest;
+use Sequenzy\Analytics\Types\GetCampaignEmailClientMetricsResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
-use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Core\Json\JsonApiRequest;
 use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Analytics\Requests\GetCampaignMetricsRequest;
+use Sequenzy\Analytics\Types\GetCampaignMetricsResponse;
+use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Analytics\Requests\GetCampaignStatsLegacyRequest;
 use Sequenzy\Analytics\Types\GetCampaignStatsLegacyResponse;
+use Sequenzy\Analytics\Requests\GetEmailClientMetricsRequest;
+use Sequenzy\Analytics\Types\GetEmailClientMetricsResponse;
 use Sequenzy\Analytics\Requests\GetMetricsRequest;
 use Sequenzy\Analytics\Types\GetMetricsResponse;
 use Sequenzy\Analytics\Requests\GetRecipientsRequest;
@@ -72,6 +76,71 @@ class AnalyticsClient
     ) {
         $this->client = $client;
         $this->options = $options ?? [];
+    }
+
+    /**
+     * Returns the mail clients and device types that opened a campaign, as shares of its unique opens. Each email send counts once, attributed to the client of its first open. Covers the whole campaign.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getCampaignEmailClientMetrics(
+     *     'campaignId',
+     *     new GetCampaignEmailClientMetricsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Email campaign ID.
+     * @param GetCampaignEmailClientMetricsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetCampaignEmailClientMetricsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getCampaignEmailClientMetrics(string $campaignId, GetCampaignEmailClientMetricsRequest $request = new GetCampaignEmailClientMetricsRequest(), ?array $options = null): ?GetCampaignEmailClientMetricsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->mailboxProvider != null) {
+            $query['mailboxProvider'] = $request->mailboxProvider;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/campaigns/{$campaignId}/clients",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetCampaignEmailClientMetricsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 
     /**
@@ -209,6 +278,81 @@ class AnalyticsClient
                     return null;
                 }
                 return GetCampaignStatsLegacyResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns the mail clients and device types that opened your emails, as shares of unique opens. Each email send counts once, attributed to the client of its first open. Defaults to the last 90 days.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getEmailClientMetrics(
+     *     new GetEmailClientMetricsRequest([]),
+     * );
+     * ```
+     *
+     * @param GetEmailClientMetricsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetEmailClientMetricsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getEmailClientMetrics(GetEmailClientMetricsRequest $request = new GetEmailClientMetricsRequest(), ?array $options = null): ?GetEmailClientMetricsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->emailType != null) {
+            $query['emailType'] = $request->emailType;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->mailboxProvider != null) {
+            $query['mailboxProvider'] = $request->mailboxProvider;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/clients",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetEmailClientMetricsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

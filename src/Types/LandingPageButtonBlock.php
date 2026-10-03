@@ -26,7 +26,7 @@ class LandingPageButtonBlock extends JsonSerializableType
     public string $slot;
 
     /**
-     * @var string $text
+     * @var string $text Plain text or inline HTML (bold, italic, links, colors). At most 80 visible characters; formatting markup does not count toward that limit.
      */
     #[JsonProperty('text')]
     public string $text;

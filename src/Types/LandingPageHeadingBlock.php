@@ -17,7 +17,7 @@ class LandingPageHeadingBlock extends JsonSerializableType
     public ?string $align;
 
     /**
-     * @var string $content
+     * @var string $content Plain text or inline HTML (bold, italic, links, colors). At most 180 visible characters; formatting markup does not count toward that limit.
      */
     #[JsonProperty('content')]
     public string $content;

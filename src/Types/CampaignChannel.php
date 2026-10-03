@@ -6,4 +6,5 @@ enum CampaignChannel: string
 {
     case Email = "email";
     case Sms = "sms";
+    case Push = "push";
 }

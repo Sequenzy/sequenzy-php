@@ -46,6 +46,12 @@ class ConversationSummary extends JsonSerializableType
     public ?string $lastMessageBy;
 
     /**
+     * @var ?ConversationSummaryLastMessagePreview $lastMessagePreview Plain-text preview of the latest subscriber or team reply, with quoted history, signatures and markup removed and truncated to 200 characters. Internal notes are not included. Null when no reply has readable text.
+     */
+    #[JsonProperty('lastMessagePreview')]
+    public ?ConversationSummaryLastMessagePreview $lastMessagePreview;
+
+    /**
      * @var ?int $messageCount
      */
     #[JsonProperty('messageCount')]
@@ -89,6 +95,7 @@ class ConversationSummary extends JsonSerializableType
      *   id?: ?string,
      *   lastMessageAt?: ?DateTime,
      *   lastMessageBy?: ?string,
+     *   lastMessagePreview?: ?ConversationSummaryLastMessagePreview,
      *   messageCount?: ?int,
      *   status?: ?value-of<ConversationSummaryStatus>,
      *   subject?: ?string,
@@ -106,6 +113,7 @@ class ConversationSummary extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->lastMessageAt = $values['lastMessageAt'] ?? null;
         $this->lastMessageBy = $values['lastMessageBy'] ?? null;
+        $this->lastMessagePreview = $values['lastMessagePreview'] ?? null;
         $this->messageCount = $values['messageCount'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->subject = $values['subject'] ?? null;

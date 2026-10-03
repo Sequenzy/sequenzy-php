@@ -26,10 +26,24 @@ class CreateCompaniesResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
+     * @var ?string $welcomeAutomationId
+     */
+    #[JsonProperty('welcomeAutomationId')]
+    public ?string $welcomeAutomationId;
+
+    /**
+     * @var ?string $welcomeEnrichmentJobId
+     */
+    #[JsonProperty('welcomeEnrichmentJobId')]
+    public ?string $welcomeEnrichmentJobId;
+
+    /**
      * @param array{
      *   company?: ?CreateCompaniesResponseCompany,
      *   message?: ?string,
      *   success?: ?bool,
+     *   welcomeAutomationId?: ?string,
+     *   welcomeEnrichmentJobId?: ?string,
      * } $values
      */
     public function __construct(
@@ -38,6 +52,8 @@ class CreateCompaniesResponse extends JsonSerializableType
         $this->company = $values['company'] ?? null;
         $this->message = $values['message'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->welcomeAutomationId = $values['welcomeAutomationId'] ?? null;
+        $this->welcomeEnrichmentJobId = $values['welcomeEnrichmentJobId'] ?? null;
     }
 
     /**

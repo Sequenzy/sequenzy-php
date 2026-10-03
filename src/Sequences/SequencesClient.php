@@ -19,6 +19,8 @@ use Sequenzy\Sequences\Requests\ConfigureInboundWebhookSequencesRequest;
 use Sequenzy\Sequences\Types\ConfigureInboundWebhookSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceCreateRequest;
 use Sequenzy\Types\SequenceCreateResponse;
+use Sequenzy\Sequences\Requests\CreateFromExampleSequencesRequest;
+use Sequenzy\Sequences\Types\CreateFromExampleSequencesResponse;
 use Sequenzy\Sequences\Requests\CreateGoalSequencesRequest;
 use Sequenzy\Sequences\Types\CreateGoalSequencesResponse;
 use Sequenzy\Types\SequenceActionResponse;
@@ -380,6 +382,62 @@ class SequencesClient
                     return null;
                 }
                 return SequenceCreateResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->createFromExample(
+     *     new CreateFromExampleSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param CreateFromExampleSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CreateFromExampleSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createFromExample(CreateFromExampleSequencesRequest $request = new CreateFromExampleSequencesRequest(), ?array $options = null): ?CreateFromExampleSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/from-example",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CreateFromExampleSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

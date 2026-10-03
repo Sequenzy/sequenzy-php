@@ -50,7 +50,7 @@ trait TrackingSettings
     public ?TrackingSettingsTracking $tracking;
 
     /**
-     * @var ?TrackingSettingsTrackingDomain $trackingDomain Null when click links use the shared Sequenzy tracking domain.
+     * @var ?TrackingSettingsTrackingDomain $trackingDomain Company tracking domain, used by every sending domain for tracked links and opens. Null when links use the shared Sequenzy tracking domain; links also use it while the tracking domain is not verified. Manage it with the Tracking Domain endpoints.
      */
     #[JsonProperty('trackingDomain')]
     public ?TrackingSettingsTrackingDomain $trackingDomain;

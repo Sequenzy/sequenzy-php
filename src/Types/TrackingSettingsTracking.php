@@ -26,7 +26,7 @@ class TrackingSettingsTracking extends JsonSerializableType
     public ?bool $openTrackingEnabled;
 
     /**
-     * @var ?bool $strictBotFilteringEnabled Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
+     * @var ?bool $strictBotFilteringEnabled Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
      */
     #[JsonProperty('strictBotFilteringEnabled')]
     public ?bool $strictBotFilteringEnabled;

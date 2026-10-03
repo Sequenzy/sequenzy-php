@@ -39,6 +39,7 @@ class TemplateUpdateError extends JsonSerializableType
      * @param array{
      *   error: string,
      *   code?: ?string,
+     *   issues?: ?array<InputIssue>,
      *   retryable?: ?bool,
      *   success?: ?bool,
      *   abTests?: ?array<TemplateAbTestReference>,
@@ -52,6 +53,7 @@ class TemplateUpdateError extends JsonSerializableType
     ) {
         $this->code = $values['code'] ?? null;
         $this->error = $values['error'];
+        $this->issues = $values['issues'] ?? null;
         $this->retryable = $values['retryable'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->abTests = $values['abTests'] ?? null;

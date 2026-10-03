@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * URL-backed email attachment. The file is fetched from the URL at send time (max 10 attachments and 7MB total per email). For event-triggered sequences, path may be an event merge tag such as {{event.file_url}} that resolves to a public URL for each enrollment. Base64 content is not supported here.
+ * URL-backed email attachment. The file is fetched from the URL at send time (max 10 attachments and 15MB total per email). For event-triggered sequences, path may be an event merge tag such as {{event.file_url}} that resolves to a public URL for each enrollment. Base64 content is not supported here.
  */
 class UrlAttachment extends JsonSerializableType
 {

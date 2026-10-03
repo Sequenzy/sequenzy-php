@@ -97,6 +97,12 @@ class SequenceUpdateRequest extends JsonSerializableType
     public ?string $eventName;
 
     /**
+     * @var ?bool $frequencyCapEnabled Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact already at the cap, and the contact continues to the next step. Transactional steps are never skipped. Omit to leave it unchanged.
+     */
+    #[JsonProperty('frequencyCapEnabled')]
+    public ?bool $frequencyCapEnabled;
+
+    /**
      * @var ?string $fromEmail From address for every email in this sequence. Its domain must be configured and verified.
      */
     #[JsonProperty('fromEmail')]
@@ -217,7 +223,7 @@ class SequenceUpdateRequest extends JsonSerializableType
     public ?string $replyToName;
 
     /**
-     * @var ?string $segmentId Segment ID for a replacement segment_entered trigger.
+     * @var ?string $segmentId Segment ID for a replacement segment_entered or segment_exited trigger.
      */
     #[JsonProperty('segmentId')]
     public ?string $segmentId;
@@ -308,6 +314,7 @@ class SequenceUpdateRequest extends JsonSerializableType
      *   enrollmentMode?: ?value-of<SequenceEnrollmentMode>,
      *   enrollmentPaused?: ?bool,
      *   eventName?: ?string,
+     *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   graphEdit?: ?SequenceGraphEditInput,
@@ -358,6 +365,7 @@ class SequenceUpdateRequest extends JsonSerializableType
         $this->enrollmentMode = $values['enrollmentMode'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
         $this->eventName = $values['eventName'] ?? null;
+        $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->graphEdit = $values['graphEdit'] ?? null;

@@ -11,9 +11,9 @@ use Sequenzy\Core\Types\Date;
 class ConversationMessage extends JsonSerializableType
 {
     /**
-     * @var ?array<array<string, mixed>> $attachments
+     * @var ?array<ConversationAttachment> $attachments
      */
-    #[JsonProperty('attachments'), ArrayType([['string' => 'mixed']])]
+    #[JsonProperty('attachments'), ArrayType([ConversationAttachment::class])]
     public ?array $attachments;
 
     /**
@@ -41,7 +41,7 @@ class ConversationMessage extends JsonSerializableType
     public ?DateTime $createdAt;
 
     /**
-     * @var ?string $deliveryStatus pending, sent, or failed for outbound messages. Null for notes.
+     * @var ?string $deliveryStatus pending, sent, or failed for outbound messages and forwards. Null for notes.
      */
     #[JsonProperty('deliveryStatus')]
     public ?string $deliveryStatus;
@@ -83,14 +83,14 @@ class ConversationMessage extends JsonSerializableType
     public ?string $subject;
 
     /**
-     * @var ?value-of<ConversationMessageType> $type
+     * @var ?value-of<ConversationMessageType> $type inbound for received email, outbound for team replies, note for internal notes, and system for recorded forwards.
      */
     #[JsonProperty('type')]
     public ?string $type;
 
     /**
      * @param array{
-     *   attachments?: ?array<array<string, mixed>>,
+     *   attachments?: ?array<ConversationAttachment>,
      *   bodyHtml?: ?string,
      *   bodyText?: ?string,
      *   conversationId?: ?string,

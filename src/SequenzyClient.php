@@ -10,6 +10,7 @@ use Sequenzy\AudienceSyncs\AudienceSyncsClient;
 use Sequenzy\Campaigns\CampaignsClient;
 use Sequenzy\Companies\CompaniesClient;
 use Sequenzy\Conversations\ConversationsClient;
+use Sequenzy\DataExports\DataExportsClient;
 use Sequenzy\EmailAiStyle\EmailAiStyleClient;
 use Sequenzy\EmailBlocks\EmailBlocksClient;
 use Sequenzy\EmailComponents\EmailComponentsClient;
@@ -18,6 +19,7 @@ use Sequenzy\Emails\EmailsClient;
 use Sequenzy\EmailSends\EmailSendsClient;
 use Sequenzy\Events\EventsClient;
 use Sequenzy\Feedback\FeedbackClient;
+use Sequenzy\FrequencyCap\FrequencyCapClient;
 use Sequenzy\Generation\GenerationClient;
 use Sequenzy\Integrations\IntegrationsClient;
 use Sequenzy\LandingPages\LandingPagesClient;
@@ -27,6 +29,8 @@ use Sequenzy\Migrations\MigrationsClient;
 use Sequenzy\NotificationPreferences\NotificationPreferencesClient;
 use Sequenzy\Orders\OrdersClient;
 use Sequenzy\Products\ProductsClient;
+use Sequenzy\Push\PushClient;
+use Sequenzy\References\ReferencesClient;
 use Sequenzy\Segments\SegmentsClient;
 use Sequenzy\SenderProfiles\SenderProfilesClient;
 use Sequenzy\SendingStatus\SendingStatusClient;
@@ -39,8 +43,10 @@ use Sequenzy\SyncRules\SyncRulesClient;
 use Sequenzy\Tags\TagsClient;
 use Sequenzy\Team\TeamClient;
 use Sequenzy\Templates\TemplatesClient;
+use Sequenzy\TrackingDomain\TrackingDomainClient;
 use Sequenzy\TrackingSettings\TrackingSettingsClient;
 use Sequenzy\Transactional\TransactionalClient;
+use Sequenzy\WarehouseSync\WarehouseSyncClient;
 use Sequenzy\Webhooks\WebhooksClient;
 use Sequenzy\Websites\WebsitesClient;
 use Sequenzy\WebTrackingKeys\WebTrackingKeysClient;
@@ -91,6 +97,11 @@ class SequenzyClient
     public ConversationsClient $conversations;
 
     /**
+     * @var DataExportsClient $dataExports
+     */
+    public DataExportsClient $dataExports;
+
+    /**
      * @var EmailAiStyleClient $emailAiStyle
      */
     public EmailAiStyleClient $emailAiStyle;
@@ -129,6 +140,11 @@ class SequenzyClient
      * @var FeedbackClient $feedback
      */
     public FeedbackClient $feedback;
+
+    /**
+     * @var FrequencyCapClient $frequencyCap
+     */
+    public FrequencyCapClient $frequencyCap;
 
     /**
      * @var GenerationClient $generation
@@ -174,6 +190,16 @@ class SequenzyClient
      * @var ProductsClient $products
      */
     public ProductsClient $products;
+
+    /**
+     * @var PushClient $push
+     */
+    public PushClient $push;
+
+    /**
+     * @var ReferencesClient $references
+     */
+    public ReferencesClient $references;
 
     /**
      * @var SegmentsClient $segments
@@ -236,6 +262,11 @@ class SequenzyClient
     public TemplatesClient $templates;
 
     /**
+     * @var TrackingDomainClient $trackingDomain
+     */
+    public TrackingDomainClient $trackingDomain;
+
+    /**
      * @var TrackingSettingsClient $trackingSettings
      */
     public TrackingSettingsClient $trackingSettings;
@@ -244,6 +275,11 @@ class SequenzyClient
      * @var TransactionalClient $transactional
      */
     public TransactionalClient $transactional;
+
+    /**
+     * @var WarehouseSyncClient $warehouseSync
+     */
+    public WarehouseSyncClient $warehouseSync;
 
     /**
      * @var WebhooksClient $webhooks
@@ -322,6 +358,7 @@ class SequenzyClient
         $this->campaigns = new CampaignsClient($this->client, $this->options);
         $this->companies = new CompaniesClient($this->client, $this->options);
         $this->conversations = new ConversationsClient($this->client, $this->options);
+        $this->dataExports = new DataExportsClient($this->client, $this->options);
         $this->emailAiStyle = new EmailAiStyleClient($this->client, $this->options);
         $this->emailBlocks = new EmailBlocksClient($this->client, $this->options);
         $this->emailComponents = new EmailComponentsClient($this->client, $this->options);
@@ -330,6 +367,7 @@ class SequenzyClient
         $this->emailSends = new EmailSendsClient($this->client, $this->options);
         $this->events = new EventsClient($this->client, $this->options);
         $this->feedback = new FeedbackClient($this->client, $this->options);
+        $this->frequencyCap = new FrequencyCapClient($this->client, $this->options);
         $this->generation = new GenerationClient($this->client, $this->options);
         $this->integrations = new IntegrationsClient($this->client, $this->options);
         $this->landingPages = new LandingPagesClient($this->client, $this->options);
@@ -339,6 +377,8 @@ class SequenzyClient
         $this->notificationPreferences = new NotificationPreferencesClient($this->client, $this->options);
         $this->orders = new OrdersClient($this->client, $this->options);
         $this->products = new ProductsClient($this->client, $this->options);
+        $this->push = new PushClient($this->client, $this->options);
+        $this->references = new ReferencesClient($this->client, $this->options);
         $this->segments = new SegmentsClient($this->client, $this->options);
         $this->senderProfiles = new SenderProfilesClient($this->client, $this->options);
         $this->sendingStatus = new SendingStatusClient($this->client, $this->options);
@@ -351,8 +391,10 @@ class SequenzyClient
         $this->tags = new TagsClient($this->client, $this->options);
         $this->team = new TeamClient($this->client, $this->options);
         $this->templates = new TemplatesClient($this->client, $this->options);
+        $this->trackingDomain = new TrackingDomainClient($this->client, $this->options);
         $this->trackingSettings = new TrackingSettingsClient($this->client, $this->options);
         $this->transactional = new TransactionalClient($this->client, $this->options);
+        $this->warehouseSync = new WarehouseSyncClient($this->client, $this->options);
         $this->webhooks = new WebhooksClient($this->client, $this->options);
         $this->websites = new WebsitesClient($this->client, $this->options);
         $this->webTrackingKeys = new WebTrackingKeysClient($this->client, $this->options);

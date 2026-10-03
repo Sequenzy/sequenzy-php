@@ -18,6 +18,12 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     public ?array $blocks;
 
     /**
+     * @var ?string $body Push steps only. Notification message; merge tags work.
+     */
+    #[JsonProperty('body')]
+    public ?string $body;
+
+    /**
      * @var ?SequencePathStepConfig $config
      */
     #[JsonProperty('config')]
@@ -60,13 +66,25 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     public ?string $html;
 
     /**
+     * @var ?string $iconUrl Push steps only. Optional https web push icon.
+     */
+    #[JsonProperty('iconUrl')]
+    public ?string $iconUrl;
+
+    /**
+     * @var ?string $imageUrl Push steps only. Optional https image.
+     */
+    #[JsonProperty('imageUrl')]
+    public ?string $imageUrl;
+
+    /**
      * @var ?array<string> $imageUrls SMS steps only. Up to 2 publicly reachable image URLs sent as MMS media.
      */
     #[JsonProperty('imageUrls'), ArrayType(['string'])]
     public ?array $imageUrls;
 
     /**
-     * @var ?value-of<SequenceBranchPathStepInputIneligibleAction> $ineligibleAction SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+     * @var ?value-of<SequenceBranchPathStepInputIneligibleAction> $ineligibleAction SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
      */
     #[JsonProperty('ineligibleAction')]
     public ?string $ineligibleAction;
@@ -88,6 +106,12 @@ class SequenceBranchPathStepInput extends JsonSerializableType
      */
     #[JsonProperty('nodeType')]
     public ?string $nodeType;
+
+    /**
+     * @var ?array<value-of<SequenceBranchPathStepInputPlatformsItem>> $platforms Push steps only. Limit delivery to these platforms; omit for all.
+     */
+    #[JsonProperty('platforms'), ArrayType(['string'])]
+    public ?array $platforms;
 
     /**
      * @var ?string $previewText Email preview text.
@@ -132,10 +156,22 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     public ?string $text;
 
     /**
-     * @var ?value-of<SequenceBranchPathStepInputType> $type Step type. Omit for email steps, use sms for a native SMS step, or use delay for a standalone wait.
+     * @var ?string $title Push steps only. Notification title; merge tags work.
+     */
+    #[JsonProperty('title')]
+    public ?string $title;
+
+    /**
+     * @var ?value-of<SequenceBranchPathStepInputType> $type Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
      */
     #[JsonProperty('type')]
     public ?string $type;
+
+    /**
+     * @var ?string $url Push steps only. Link opened on tap - an https URL or an app deep link.
+     */
+    #[JsonProperty('url')]
+    public ?string $url;
 
     /**
      * @var ?SequenceWaitUntilInput $waitUntil
@@ -158,6 +194,7 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     /**
      * @param array{
      *   blocks?: ?array<EmailBlock>,
+     *   body?: ?string,
      *   config?: ?SequencePathStepConfig,
      *   delay?: ?SequenceDelayInput,
      *   delayMs?: ?float,
@@ -165,11 +202,14 @@ class SequenceBranchPathStepInput extends JsonSerializableType
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   html?: ?string,
+     *   iconUrl?: ?string,
+     *   imageUrl?: ?string,
      *   imageUrls?: ?array<string>,
      *   ineligibleAction?: ?value-of<SequenceBranchPathStepInputIneligibleAction>,
      *   label?: ?string,
      *   name?: ?string,
      *   nodeType?: ?value-of<SequenceBranchPathStepInputNodeType>,
+     *   platforms?: ?array<value-of<SequenceBranchPathStepInputPlatformsItem>>,
      *   previewText?: ?string,
      *   replyProfileId?: ?string,
      *   replyTo?: ?string,
@@ -177,7 +217,9 @@ class SequenceBranchPathStepInput extends JsonSerializableType
      *   senderProfileId?: ?string,
      *   subject?: ?string,
      *   text?: ?string,
+     *   title?: ?string,
      *   type?: ?value-of<SequenceBranchPathStepInputType>,
+     *   url?: ?string,
      *   waitUntil?: ?SequenceWaitUntilInput,
      *   waitUntilKeyDate?: ?SequenceWaitUntilKeyDateInput,
      *   waitUntilWeekday?: ?SequenceWaitUntilWeekdayInput,
@@ -187,6 +229,7 @@ class SequenceBranchPathStepInput extends JsonSerializableType
         array $values = [],
     ) {
         $this->blocks = $values['blocks'] ?? null;
+        $this->body = $values['body'] ?? null;
         $this->config = $values['config'] ?? null;
         $this->delay = $values['delay'] ?? null;
         $this->delayMs = $values['delayMs'] ?? null;
@@ -194,11 +237,14 @@ class SequenceBranchPathStepInput extends JsonSerializableType
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->html = $values['html'] ?? null;
+        $this->iconUrl = $values['iconUrl'] ?? null;
+        $this->imageUrl = $values['imageUrl'] ?? null;
         $this->imageUrls = $values['imageUrls'] ?? null;
         $this->ineligibleAction = $values['ineligibleAction'] ?? null;
         $this->label = $values['label'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->nodeType = $values['nodeType'] ?? null;
+        $this->platforms = $values['platforms'] ?? null;
         $this->previewText = $values['previewText'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;
         $this->replyTo = $values['replyTo'] ?? null;
@@ -206,7 +252,9 @@ class SequenceBranchPathStepInput extends JsonSerializableType
         $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->text = $values['text'] ?? null;
+        $this->title = $values['title'] ?? null;
         $this->type = $values['type'] ?? null;
+        $this->url = $values['url'] ?? null;
         $this->waitUntil = $values['waitUntil'] ?? null;
         $this->waitUntilKeyDate = $values['waitUntilKeyDate'] ?? null;
         $this->waitUntilWeekday = $values['waitUntilWeekday'] ?? null;

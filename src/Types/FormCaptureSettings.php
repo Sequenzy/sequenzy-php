@@ -39,6 +39,12 @@ class FormCaptureSettings extends JsonSerializableType
     public string $redirectUrl;
 
     /**
+     * @var value-of<FormCaptureSettingsResubscribeBehavior> $resubscribeBehavior What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
+     */
+    #[JsonProperty('resubscribeBehavior')]
+    public string $resubscribeBehavior;
+
+    /**
      * @var array<string> $tagIds
      */
     #[JsonProperty('tagIds'), ArrayType(['string'])]
@@ -51,6 +57,7 @@ class FormCaptureSettings extends JsonSerializableType
      *   listIds: array<string>,
      *   listMode: value-of<FormCaptureSettingsListMode>,
      *   redirectUrl: string,
+     *   resubscribeBehavior: value-of<FormCaptureSettingsResubscribeBehavior>,
      *   tagIds: array<string>,
      * } $values
      */
@@ -62,6 +69,7 @@ class FormCaptureSettings extends JsonSerializableType
         $this->listIds = $values['listIds'];
         $this->listMode = $values['listMode'];
         $this->redirectUrl = $values['redirectUrl'];
+        $this->resubscribeBehavior = $values['resubscribeBehavior'];
         $this->tagIds = $values['tagIds'];
     }
 

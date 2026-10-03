@@ -4,6 +4,7 @@ namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
 
 class Error extends JsonSerializableType
 {
@@ -18,6 +19,12 @@ class Error extends JsonSerializableType
      */
     #[JsonProperty('error')]
     public string $error;
+
+    /**
+     * @var ?array<InputIssue> $issues Field-level problems with the request, when the endpoint reports them. Up to ten entries; `error` summarizes the first three.
+     */
+    #[JsonProperty('issues'), ArrayType([InputIssue::class])]
+    public ?array $issues;
 
     /**
      * @var ?bool $retryable Whether retrying the request can recover from the error.
@@ -35,6 +42,7 @@ class Error extends JsonSerializableType
      * @param array{
      *   error: string,
      *   code?: ?string,
+     *   issues?: ?array<InputIssue>,
      *   retryable?: ?bool,
      *   success?: ?bool,
      * } $values
@@ -44,6 +52,7 @@ class Error extends JsonSerializableType
     ) {
         $this->code = $values['code'] ?? null;
         $this->error = $values['error'];
+        $this->issues = $values['issues'] ?? null;
         $this->retryable = $values['retryable'] ?? null;
         $this->success = $values['success'] ?? null;
     }

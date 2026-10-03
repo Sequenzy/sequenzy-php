@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for event/date-field waits, mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
+ * Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for a date from the trigger event or a contact attribute (untilDateSource), mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
  */
 class SequenceDelayInput extends JsonSerializableType
 {
@@ -66,10 +66,22 @@ class SequenceDelayInput extends JsonSerializableType
     public ?string $pastAction;
 
     /**
-     * @var ?string $untilDateField Event/subscriber date field path to wait until when mode is until_date.
+     * @var ?value-of<SequenceDelayInputSource> $source Alias for untilDateSource.
+     */
+    #[JsonProperty('source')]
+    public ?string $source;
+
+    /**
+     * @var ?string $untilDateField Date field path to wait until when mode is until_date, read from the source chosen by untilDateSource.
      */
     #[JsonProperty('untilDateField')]
     public ?string $untilDateField;
+
+    /**
+     * @var ?value-of<SequenceDelayInputUntilDateSource> $untilDateSource Where untilDateField is read from when mode is until_date. event reads the trigger event properties; attribute reads the contact's custom attributes when the step is reached. Defaults to event.
+     */
+    #[JsonProperty('untilDateSource')]
+    public ?string $untilDateSource;
 
     /**
      * @var ?array<string> $untilDays Weekdays the wait may release on when mode is until_weekday.
@@ -102,7 +114,7 @@ class SequenceDelayInput extends JsonSerializableType
     public ?string $untilOffsetDirection;
 
     /**
-     * @var ?value-of<SequenceDelayInputUntilPastAction> $untilPastAction For until_key_date, what a late enrollee does when the moment already passed. Defaults to skip.
+     * @var ?value-of<SequenceDelayInputUntilPastAction> $untilPastAction For until_key_date and until_date, what a late enrollee does when the moment already passed. continue moves on immediately, skip skips the following email and action steps until the next wait, condition or branch, exit ends the enrollment. Defaults to skip for until_key_date and continue for until_date.
      */
     #[JsonProperty('untilPastAction')]
     public ?string $untilPastAction;
@@ -130,7 +142,9 @@ class SequenceDelayInput extends JsonSerializableType
      *   missingAction?: ?value-of<SequenceDelayInputMissingAction>,
      *   mode?: ?value-of<SequenceDelayInputMode>,
      *   pastAction?: ?value-of<SequenceDelayInputPastAction>,
+     *   source?: ?value-of<SequenceDelayInputSource>,
      *   untilDateField?: ?string,
+     *   untilDateSource?: ?value-of<SequenceDelayInputUntilDateSource>,
      *   untilDays?: ?array<string>,
      *   untilEndTime?: ?string,
      *   untilKeyDate?: ?string,
@@ -153,7 +167,9 @@ class SequenceDelayInput extends JsonSerializableType
         $this->missingAction = $values['missingAction'] ?? null;
         $this->mode = $values['mode'] ?? null;
         $this->pastAction = $values['pastAction'] ?? null;
+        $this->source = $values['source'] ?? null;
         $this->untilDateField = $values['untilDateField'] ?? null;
+        $this->untilDateSource = $values['untilDateSource'] ?? null;
         $this->untilDays = $values['untilDays'] ?? null;
         $this->untilEndTime = $values['untilEndTime'] ?? null;
         $this->untilKeyDate = $values['untilKeyDate'] ?? null;

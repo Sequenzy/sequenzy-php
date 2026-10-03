@@ -70,6 +70,12 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?string $sequenzyToken Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+     */
+    #[JsonProperty('sequenzyToken')]
+    public ?string $sequenzyToken;
+
+    /**
      * @var ?array<string> $tagIds Ignored for saved forms. Stored form settings are used.
      */
     #[JsonProperty('tagIds'), ArrayType(['string'])]
@@ -99,6 +105,7 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
      *   listIdsBracketed?: ?array<string>,
      *   phone?: ?string,
      *   redirectUrl?: ?string,
+     *   sequenzyToken?: ?string,
      *   tagIds?: ?array<string>,
      *   tagIdsBracketed?: ?array<string>,
      *   website?: ?string,
@@ -117,6 +124,7 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
         $this->listIdsBracketed = $values['listIdsBracketed'] ?? null;
         $this->phone = $values['phone'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->sequenzyToken = $values['sequenzyToken'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->tagIdsBracketed = $values['tagIdsBracketed'] ?? null;
         $this->website = $values['website'] ?? null;

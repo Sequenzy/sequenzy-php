@@ -8,7 +8,13 @@ use Sequenzy\Core\Json\JsonProperty;
 class DeleteTransactionalResponseDeleted extends JsonSerializableType
 {
     /**
-     * @var ?string $emailId The email content kept as a reusable template. Delete it separately with `DELETE /api/v1/templates/{templateId}`.
+     * @var ?bool $emailDeleted True when the content was deleted with the email (code-managed emails, whose content is a snapshot of a real send). False when it was kept as a reusable template.
+     */
+    #[JsonProperty('emailDeleted')]
+    public ?bool $emailDeleted;
+
+    /**
+     * @var ?string $emailId The email content kept as a reusable template. Delete it separately with `DELETE /api/v1/templates/{templateId}`. For a code-managed email this id no longer exists; see `emailDeleted`.
      */
     #[JsonProperty('emailId')]
     public ?string $emailId;
@@ -33,6 +39,7 @@ class DeleteTransactionalResponseDeleted extends JsonSerializableType
 
     /**
      * @param array{
+     *   emailDeleted?: ?bool,
      *   emailId?: ?string,
      *   id?: ?string,
      *   name?: ?string,
@@ -42,6 +49,7 @@ class DeleteTransactionalResponseDeleted extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->emailDeleted = $values['emailDeleted'] ?? null;
         $this->emailId = $values['emailId'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->name = $values['name'] ?? null;

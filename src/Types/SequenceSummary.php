@@ -59,6 +59,12 @@ class SequenceSummary extends JsonSerializableType
     public ?bool $enrollmentPaused;
 
     /**
+     * @var ?bool $frequencyCapEnabled Whether email steps respect the company frequency cap.
+     */
+    #[JsonProperty('frequencyCapEnabled')]
+    public ?bool $frequencyCapEnabled;
+
+    /**
      * @var ?string $fromEmail
      */
     #[JsonProperty('fromEmail')]
@@ -206,6 +212,7 @@ class SequenceSummary extends JsonSerializableType
      *   effectiveStatus?: ?value-of<SequenceEffectiveStatus>,
      *   effectiveStatusSummary?: ?string,
      *   enrollmentPaused?: ?bool,
+     *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   id?: ?string,
@@ -242,6 +249,7 @@ class SequenceSummary extends JsonSerializableType
         $this->effectiveStatus = $values['effectiveStatus'] ?? null;
         $this->effectiveStatusSummary = $values['effectiveStatusSummary'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
+        $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->id = $values['id'] ?? null;

@@ -7,6 +7,7 @@ enum SequenceBranchPathStepInputNodeType: string
     case LogicDelay = "logic_delay";
     case ActionEmail = "action_email";
     case ActionSms = "action_sms";
+    case ActionPush = "action_push";
     case ActionCreateDiscount = "action_create_discount";
     case ActionAddTag = "action_add_tag";
     case ActionRemoveTag = "action_remove_tag";

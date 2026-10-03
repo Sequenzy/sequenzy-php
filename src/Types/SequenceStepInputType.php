@@ -6,6 +6,7 @@ enum SequenceStepInputType: string
 {
     case Email = "email";
     case Sms = "sms";
+    case Push = "push";
     case CreateDiscount = "create_discount";
     case Discount = "discount";
     case UpdateSubscriber = "update_subscriber";

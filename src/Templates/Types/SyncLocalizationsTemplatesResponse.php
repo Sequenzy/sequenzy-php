@@ -21,6 +21,12 @@ class SyncLocalizationsTemplatesResponse extends JsonSerializableType
     public ?int $queuedVariantCount;
 
     /**
+     * @var ?array<string> $skippedLocales Requested locales kept because someone edited them. Only returned when skipEdited is true.
+     */
+    #[JsonProperty('skippedLocales'), ArrayType(['string'])]
+    public ?array $skippedLocales;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -36,6 +42,7 @@ class SyncLocalizationsTemplatesResponse extends JsonSerializableType
      * @param array{
      *   queuedLocales?: ?array<string>,
      *   queuedVariantCount?: ?int,
+     *   skippedLocales?: ?array<string>,
      *   success?: ?bool,
      *   templateId?: ?string,
      * } $values
@@ -45,6 +52,7 @@ class SyncLocalizationsTemplatesResponse extends JsonSerializableType
     ) {
         $this->queuedLocales = $values['queuedLocales'] ?? null;
         $this->queuedVariantCount = $values['queuedVariantCount'] ?? null;
+        $this->skippedLocales = $values['skippedLocales'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->templateId = $values['templateId'] ?? null;
     }

@@ -13,6 +13,8 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Templates\Requests\CreateFromExampleTemplatesRequest;
+use Sequenzy\Templates\Types\CreateFromExampleTemplatesResponse;
 use Sequenzy\Templates\Types\CreateShareLinkTemplatesResponse;
 use Sequenzy\Templates\Types\DeleteTemplatesResponse;
 use Sequenzy\Templates\Types\GetTemplatesResponse;
@@ -109,6 +111,62 @@ class TemplatesClient
                     return null;
                 }
                 return CreateTemplatesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Remixes a public email from the Sequenzy email gallery into a new email template for your company. The new email keeps the example's exact layout and design; AI rewrites every piece of text for your company and your logo, brand color and website links are swapped in. It is saved as an HTML template. The example brand is never named, and none of its copy, offers or claims are reused. Its legal footer is removed; your own compliant footer is added when you send. Generation usually takes 5 to 20 seconds. Nothing is saved when generation fails; every successful call creates another template. Requires `templates:write`.
+     *
+     * Example:
+     * ```php
+     * $client->templates->createFromExample(
+     *     new CreateFromExampleTemplatesRequest([]),
+     * );
+     * ```
+     *
+     * @param CreateFromExampleTemplatesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CreateFromExampleTemplatesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createFromExample(CreateFromExampleTemplatesRequest $request = new CreateFromExampleTemplatesRequest(), ?array $options = null): ?CreateFromExampleTemplatesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "templates/from-example",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CreateFromExampleTemplatesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -288,7 +346,7 @@ class TemplatesClient
     }
 
     /**
-     * Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
+     * Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Content snapshots of code-managed transactional emails (created by sends with `trackAs`) are not listed and cannot be used as `templateId`. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
      *
      * Example:
      * ```php

@@ -3,13 +3,19 @@
 namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use DateTime;
 use Sequenzy\Core\Json\JsonProperty;
+use DateTime;
 use Sequenzy\Core\Types\Date;
 use Sequenzy\Core\Types\ArrayType;
 
 class Website extends JsonSerializableType
 {
+    /**
+     * @var ?WebsiteBounceRecords $bounceRecords How the bounce subdomain is published. With style cname (domains added since the single CNAME shipped), publish cnameRecord instead of the spf.record and mailFrom.mxRecord records, which verification keeps checking through the CNAME. With style mx_txt (domains added earlier), publish those two records. The style is set when the domain is added.
+     */
+    #[JsonProperty('bounceRecords')]
+    public ?WebsiteBounceRecords $bounceRecords;
+
     /**
      * @var ?DateTime $createdAt
      */
@@ -23,7 +29,7 @@ class Website extends JsonSerializableType
     public ?array $dkim;
 
     /**
-     * @var ?WebsiteDnsRecords $dnsRecords The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+     * @var ?WebsiteDnsRecords $dnsRecords The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
      */
     #[JsonProperty('dnsRecords')]
     public ?WebsiteDnsRecords $dnsRecords;
@@ -95,7 +101,14 @@ class Website extends JsonSerializableType
     public ?string $status;
 
     /**
+     * @var ?WebsiteTracking $tracking Link tracking for this domain. Every sending domain uses the company tracking domain, which never gates verification or sending; until it verifies, links use the shared Sequenzy tracking domain. Manage it with the Tracking Domain endpoints.
+     */
+    #[JsonProperty('tracking')]
+    public ?WebsiteTracking $tracking;
+
+    /**
      * @param array{
+     *   bounceRecords?: ?WebsiteBounceRecords,
      *   createdAt?: ?DateTime,
      *   dkim?: ?array<string, mixed>,
      *   dnsRecords?: ?WebsiteDnsRecords,
@@ -110,11 +123,13 @@ class Website extends JsonSerializableType
      *   readyToSend?: ?bool,
      *   spf?: ?array<string, mixed>,
      *   status?: ?value-of<WebsiteStatus>,
+     *   tracking?: ?WebsiteTracking,
      * } $values
      */
     public function __construct(
         array $values = [],
     ) {
+        $this->bounceRecords = $values['bounceRecords'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
         $this->dkim = $values['dkim'] ?? null;
         $this->dnsRecords = $values['dnsRecords'] ?? null;
@@ -129,6 +144,7 @@ class Website extends JsonSerializableType
         $this->readyToSend = $values['readyToSend'] ?? null;
         $this->spf = $values['spf'] ?? null;
         $this->status = $values['status'] ?? null;
+        $this->tracking = $values['tracking'] ?? null;
     }
 
     /**

@@ -26,6 +26,8 @@ use Sequenzy\AbTests\Requests\ListAbTestsRequest;
 use Sequenzy\AbTests\Types\ListAbTestsResponse;
 use Sequenzy\AbTests\Requests\RestartAbTestsRequest;
 use Sequenzy\AbTests\Types\RestartAbTestsResponse;
+use Sequenzy\AbTests\Requests\ResumeAbTestsRequest;
+use Sequenzy\AbTests\Types\ResumeAbTestsResponse;
 use Sequenzy\AbTests\Requests\SelectWinnerAbTestsRequest;
 use Sequenzy\AbTests\Types\SelectWinnerAbTestsResponse;
 use Sequenzy\AbTests\Requests\UpdateAbTestsRequest;
@@ -360,7 +362,7 @@ class AbTestsClient
     }
 
     /**
-     * Returns aggregate and per-variant engagement stats for an A/B test.
+     * Returns aggregate and per-variant engagement stats for an A/B test, plus the statistical significance of the test's winner metric.
      *
      * Example:
      * ```php
@@ -549,7 +551,65 @@ class AbTestsClient
     }
 
     /**
-     * Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+     * Clears the winner of a sequence A/B test so contacts reaching the step are split across its variants again, keeping the results collected so far. Automatic winner selection is turned off for the test, so it keeps splitting until a winner is selected. Requires the sequences:write scope and, while the sequence is active, confirmLiveChange.
+     *
+     * Example:
+     * ```php
+     * $client->abTests->resume(
+     *     'abTestId',
+     *     new ResumeAbTestsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $abTestId
+     * @param ResumeAbTestsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ResumeAbTestsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function resume(string $abTestId, ResumeAbTestsRequest $request = new ResumeAbTestsRequest(), ?array $options = null): ?ResumeAbTestsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "ab-tests/{$abTestId}/resume",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ResumeAbTestsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience. For a sequence A/B test, selects or changes the winner that future contacts reaching the step receive, including a winner picked automatically; contacts who already got a variant keep it. Campaign tests require the campaigns:send scope; sequence tests require sequences:write and, while the sequence is active, confirmLiveChange.
      *
      * Example:
      * ```php

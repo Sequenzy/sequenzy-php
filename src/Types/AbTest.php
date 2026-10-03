@@ -17,6 +17,12 @@ class AbTest extends JsonSerializableType
     public ?string $automationNodeId;
 
     /**
+     * @var ?bool $autoSelectWinner Whether a winner is picked automatically once winnerThreshold is reached and one variant leads. False after testing is resumed; contacts are then split until a winner is selected. Present for sequence tests.
+     */
+    #[JsonProperty('autoSelectWinner')]
+    public ?bool $autoSelectWinner;
+
+    /**
      * @var ?string $campaignId
      */
     #[JsonProperty('campaignId')]
@@ -145,6 +151,7 @@ class AbTest extends JsonSerializableType
     /**
      * @param array{
      *   automationNodeId?: ?string,
+     *   autoSelectWinner?: ?bool,
      *   campaignId?: ?string,
      *   companyId?: ?string,
      *   createdAt?: ?DateTime,
@@ -172,6 +179,7 @@ class AbTest extends JsonSerializableType
         array $values = [],
     ) {
         $this->automationNodeId = $values['automationNodeId'] ?? null;
+        $this->autoSelectWinner = $values['autoSelectWinner'] ?? null;
         $this->campaignId = $values['campaignId'] ?? null;
         $this->companyId = $values['companyId'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;

@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Widgets\Types\CreateSavedFormRequestDuplicateStrategy;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Widgets\Types\CreateSavedFormRequestResubscribeBehavior;
 
 class CreateSavedFormRequest extends JsonSerializableType
 {
@@ -52,6 +53,12 @@ class CreateSavedFormRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?value-of<CreateSavedFormRequestResubscribeBehavior> $resubscribeBehavior What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+     */
+    #[JsonProperty('resubscribeBehavior')]
+    public ?string $resubscribeBehavior;
+
+    /**
      * @var ?bool $showFirstName
      */
     #[JsonProperty('showFirstName')]
@@ -90,6 +97,7 @@ class CreateSavedFormRequest extends JsonSerializableType
      *   duplicateStrategy?: ?value-of<CreateSavedFormRequestDuplicateStrategy>,
      *   headline?: ?string,
      *   redirectUrl?: ?string,
+     *   resubscribeBehavior?: ?value-of<CreateSavedFormRequestResubscribeBehavior>,
      *   showFirstName?: ?bool,
      *   showLastName?: ?bool,
      *   successMessage?: ?string,
@@ -107,6 +115,7 @@ class CreateSavedFormRequest extends JsonSerializableType
         $this->listIds = $values['listIds'];
         $this->name = $values['name'];
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
         $this->showFirstName = $values['showFirstName'] ?? null;
         $this->showLastName = $values['showLastName'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;

@@ -417,7 +417,7 @@ $client->abTests->get(
 <dl>
 <dd>
 
-Returns aggregate and per-variant engagement stats for an A/B test.
+Returns aggregate and per-variant engagement stats for an A/B test, plus the statistical significance of the test's winner metric.
 </dd>
 </dl>
 </dd>
@@ -639,6 +639,71 @@ $client->abTests->restart(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;abTests-&gt;resume($abTestId, $request) -> ?ResumeAbTestsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Clears the winner of a sequence A/B test so contacts reaching the step are split across its variants again, keeping the results collected so far. Automatic winner selection is turned off for the test, so it keeps splitting until a winner is selected. Requires the sequences:write scope and, while the sequence is active, confirmLiveChange.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->abTests->resume(
+    'abTestId',
+    new ResumeAbTestsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$abTestId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$confirmLiveChange:** `?bool` — Required as true when the sequence is active.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;abTests-&gt;selectWinner($abTestId, $request) -> ?SelectWinnerAbTestsResponse</code></summary>
 <dl>
 <dd>
@@ -651,7 +716,7 @@ $client->abTests->restart(
 <dl>
 <dd>
 
-Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience. For a sequence A/B test, selects or changes the winner that future contacts reaching the step receive, including a winner picked automatically; contacts who already got a variant keep it. Campaign tests require the campaigns:send scope; sequence tests require sequences:write and, while the sequence is active, confirmLiveChange.
 </dd>
 </dl>
 </dd>
@@ -687,6 +752,14 @@ $client->abTests->selectWinner(
 <dd>
 
 **$abTestId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$confirmLiveChange:** `?bool` — Sequence tests only. Required as true when the sequence is active. Campaign tests ignore it.
     
 </dd>
 </dl>
@@ -752,6 +825,14 @@ $client->abTests->update(
 <dd>
 
 **$abTestId:** `string` — A/B test ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$autoSelectWinner:** `?bool` — Sequence-only. True picks the leading variant once winnerThreshold is reached; false keeps splitting until a winner is selected. Resume sets it to false.
     
 </dd>
 </dl>
@@ -2520,6 +2601,79 @@ $client->accounts->upsert(
 </details>
 
 ## Analytics
+<details><summary><code>$client-&gt;analytics-&gt;getCampaignEmailClientMetrics($campaignId, $request) -> ?GetCampaignEmailClientMetricsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the mail clients and device types that opened a campaign, as shares of its unique opens. Each email send counts once, attributed to the client of its first open. Covers the whole campaign.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getCampaignEmailClientMetrics(
+    'campaignId',
+    new GetCampaignEmailClientMetricsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Email campaign ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` — Include detected scanner, preview, and tracked asset opens.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mailboxProvider:** `?string` — Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;analytics-&gt;getCampaignMetrics($campaignId, $request) -> ?GetCampaignMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -2695,6 +2849,102 @@ $client->analytics->getCampaignStatsLegacy(
 <dd>
 
 **$period:** `?string` — Sliding time window. Ignored when `start` and `end` are provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;getEmailClientMetrics($request) -> ?GetEmailClientMetricsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the mail clients and device types that opened your emails, as shares of unique opens. Each email send counts once, attributed to the client of its first open. Defaults to the last 90 days.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getEmailClientMetrics(
+    new GetEmailClientMetricsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$emailType:** `?string` — Structural email type filter. Marketer-role personal keys see campaign and sequence email only and cannot request transactional.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` — Include detected scanner, preview, and tracked asset opens.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mailboxProvider:** `?string` — Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Sliding window over open times. Ignored when start/end are provided.
     
 </dd>
 </dl>
@@ -4480,7 +4730,7 @@ $client->campaigns->create(
 <dl>
 <dd>
 
-**$templateId:** `?string` — Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks.
+**$templateId:** `?string` — Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks. The content snapshot of a code-managed transactional email (created by sends with `trackAs`) is rejected with 400, because it holds one recipient's real content.
     
 </dd>
 </dl>
@@ -6136,7 +6386,7 @@ $client->campaigns->updateGoal(
 <dl>
 <dd>
 
-Creates a company workspace and queues brand processing for its website. Requires a personal account key (seq_user_...). Company-scoped keys (seq_live_... and legacy ek_... keys) are bound to a single company and are rejected with 403, because they could never access the workspace they created.
+Creates a company workspace, optionally without a website, and can queue the onboarding welcome sequence. Requires a personal account key (seq_user_...). Company-scoped keys (seq_live_... and legacy ek_... keys) are bound to a single company and are rejected with 403, because they could never access the workspace they created.
 </dd>
 </dl>
 </dd>
@@ -6152,9 +6402,7 @@ Creates a company workspace and queues brand processing for its website. Require
 
 ```php
 $client->companies->create(
-    new CreateCompaniesRequest([
-        'domain' => 'domain',
-    ]),
+    new CreateCompaniesRequest([]),
 );
 ```
 </dd>
@@ -6170,7 +6418,15 @@ $client->companies->create(
 <dl>
 <dd>
 
-**$domain:** `string` — Company website domain or URL.
+**$description:** `?string` — Optional business description used as context for welcome-sequence generation. Without a website, a non-null value that is not a string of up to 500 characters returns 400; with a domain it is ignored, and website processing may replace the stored description.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$domain:** `?string` — Company website domain or URL. Required unless noWebsite is true. When both are sent, the domain is used.
     
 </dd>
 </dl>
@@ -6179,6 +6435,22 @@ $client->companies->create(
 <dd>
 
 **$name:** `?string` — Company display name. If omitted, Sequenzy derives it from the domain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$noWebsite:** `?bool` — Create a ready workspace without a website. Requires name when no domain is sent. Ignored when a non-blank domain is sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$withWelcomeSequence:** `?bool` — Set true to create a draft four-email welcome sequence and queue its generation. Defaults to false; any other value is treated as false.
     
 </dd>
 </dl>
@@ -6607,6 +6879,159 @@ $client->companies->update(
 </details>
 
 ## Conversations
+<details><summary><code>$client-&gt;conversations-&gt;bulkUpdateStatus($request) -> ?BulkUpdateStatusConversationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Opens or closes up to 100 conversations in one request. Only conversations whose status changes are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->bulkUpdateStatus(
+    new BulkUpdateStatusConversationsRequest([
+        'conversationIds' => [
+            'conversationIds',
+        ],
+        'status' => BulkUpdateStatusConversationsRequestStatus::Open->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$conversationIds:** `array` — Conversation IDs to update, up to 100. Whitespace is trimmed and blank or repeated IDs are ignored; at least one non-blank ID is required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$status:** `string` — New status for every listed conversation.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;conversations-&gt;forwardMessage($conversationId, $messageId, $request) -> ?ForwardMessageConversationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Emails a copy of one received or sent message, with its stored attachments up to 15 MB in total (files left out are listed in the forwarded email), to another address. The forward is recorded in the conversation as a system message whose deliveryStatus moves from pending to sent or failed. It does not change the conversation's status, unread state, or last activity. Notes cannot be forwarded.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->forwardMessage(
+    'conversationId',
+    'messageId',
+    new ForwardMessageConversationsRequest([
+        'to' => 'to',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$conversationId:** `string` — Conversation ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$messageId:** `string` — ID of the message to forward.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$senderProfileId:** `?string` — Sender profile to forward from. Its sending domain must be verified. When omitted, the company default sender is used.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$to:** `string` — One email address to forward the message to.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;conversations-&gt;get($conversationId) -> ?GetConversationsResponse</code></summary>
 <dl>
 <dd>
@@ -6619,7 +7044,7 @@ $client->companies->update(
 <dl>
 <dd>
 
-Returns one conversation with all messages, originating campaign or sequence context, and subscriber details.
+Returns one conversation with all messages, originating campaign or sequence context, and subscriber details. Stored attachments include a signed downloadUrl valid for one hour.
 </dd>
 </dl>
 </dd>
@@ -6663,6 +7088,45 @@ $client->conversations->get(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;conversations-&gt;getInboxAddress() -> ?GetInboxAddressResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the address anyone can email to reach this company's inbox, the same address on verified custom inbound domains, whether receiving is on, whether attachments are stored, and how long received email is kept.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->getInboxAddress();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;conversations-&gt;list($request) -> ?ListConversationsResponse</code></summary>
 <dl>
 <dd>
@@ -6675,7 +7139,7 @@ $client->conversations->get(
 <dl>
 <dd>
 
-Lists inbox conversations with subscriber replies, filtered by status, unread flag, or search term.
+Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, or search term.
 </dd>
 </dl>
 </dd>
@@ -6807,6 +7271,62 @@ $client->conversations->markRead(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;conversations-&gt;markUnread($conversationId) -> ?MarkUnreadConversationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets the conversation's unread flag and marks its latest received message unread.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->markUnread(
+    'conversationId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$conversationId:** `string` — Conversation ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;conversations-&gt;sendMessage($conversationId, $request) -> ?SendMessageConversationsResponse</code></summary>
 <dl>
 <dd>
@@ -6860,6 +7380,14 @@ $client->conversations->sendMessage(
 <dl>
 <dd>
 
+**$attachments:** `?array` — Files to attach, up to 10 and 15 MB total after decoding. Requires attachment storage on the server (see Get Inbox Address).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$bodyHtml:** `?string` — HTML body. Outbound messages require bodyText or bodyHtml.
     
 </dd>
@@ -6876,6 +7404,14 @@ $client->conversations->sendMessage(
 <dl>
 <dd>
 
+**$senderProfileId:** `?string` — Sender profile to send an outbound reply from. Its sending domain must be verified. Ignored for notes. When omitted, the reply is sent from the API key owner's email address, which must be on one of your verified sending domains.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$subject:** `?string` — Message subject. Defaults to the conversation subject.
     
 </dd>
@@ -6885,6 +7421,70 @@ $client->conversations->sendMessage(
 <dd>
 
 **$type:** `?string` — outbound sends an email reply, note adds an internal team note.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;conversations-&gt;updateInboxAddress($request) -> ?UpdateInboxAddressResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets a branded inbox address `{localPart}@inbound.{domain}` on one of your verified sending domains, or clears it when both fields are null. The address starts receiving once the domain's inbound MX record is verified; the default address keeps working. Returns the same body as Get Inbox Address.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->updateInboxAddress(
+    new UpdateInboxAddressRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `?string` — A verified sending domain of the company, such as `acme.com`. Null to clear.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$localPart:** `?string` — Name before the @, such as `support`. Letters, numbers, dots, dashes and underscores, starting and ending with a letter or number. Stored in lowercase. Null to clear.
     
 </dd>
 </dl>
@@ -6952,6 +7552,614 @@ $client->conversations->updateStatus(
 <dd>
 
 **$status:** `string` — New conversation status.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Data Exports
+<details><summary><code>$client-&gt;dataExports-&gt;createDataExport($request) -> ?CreateDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds an S3, Google Cloud Storage or S3-compatible bucket as a data export destination. Sequenzy first writes a small test file under the path prefix; the request fails with 400 when that write fails. The first export starts immediately and later exports follow the frequency. Requires data_exports:write, subscribers:read and analytics:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->createDataExport(
+    new CreateDataExportRequest([
+        'accessKeyId' => 'accessKeyId',
+        'bucket' => 'bucket',
+        'name' => 'name',
+        'provider' => CreateDataExportRequestProvider::S3->value,
+        'secretAccessKey' => 'secretAccessKey',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$accessKeyId:** `string` — Access key ID (GCS HMAC access ID).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$bucket:** `string` — Bucket name, not a URL.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$datasets:** `?array` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$endpoint:** `?string` — HTTPS origin of an S3-compatible service (R2, MinIO, Backblaze). Must resolve to a public address. Not allowed for gcs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$frequency:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$pathPrefix:** `?string` — Folder inside the bucket. Leading and trailing slashes are removed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$provider:** `string` — s3 for Amazon S3 or any S3-compatible service; gcs for Google Cloud Storage (HMAC keys).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$region:** `?string` — Bucket region. Required for Amazon S3 without a custom endpoint; defaults to auto otherwise.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$secretAccessKey:** `string` — Secret access key. Stored encrypted and never returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$startFrom:** `?DateTime` — Include events recorded since this time, at most 30 days ago. Defaults to now.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;deleteDataExport($id) -> ?DeleteDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops exporting to the destination and deletes its run history. Files already written stay in the bucket.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->deleteDataExport(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;getDataExport($id) -> ?GetDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one data export with status and per-dataset progress.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->getDataExport(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;listDataExportRuns($id, $request) -> ?ListDataExportRunsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists recent runs from the last 14 days, newest first.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->listDataExportRuns(
+    'id',
+    new ListDataExportRunsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;listDataExports() -> ?ListDataExportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists data export destinations with status, per-dataset progress and the last error. Credentials are never returned. Requires the data_exports:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->listDataExports();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;runDataExport($id) -> ?RunDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues an export immediately instead of waiting for the schedule. If a run is already queued or running, no second run starts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->runDataExport(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;testDataExport($id) -> ?TestDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Writes a small test file with the stored credentials.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->testDataExport(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;dataExports-&gt;updateDataExport($id, $request) -> ?UpdateDataExportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Renames, changes datasets or frequency, pauses or resumes, moves the destination, or rotates credentials. Location and credential changes are verified with a test write first. Newly added event datasets start from the time of the change. Changing the bucket or prefix continues from the current progress in the new location.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->dataExports->updateDataExport(
+    'id',
+    new UpdateDataExportRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$accessKeyId:** `?string` — Must be sent together with secretAccessKey.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$bucket:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$datasets:** `?array` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$endpoint:** `?string` — Send null or an empty string to clear a custom endpoint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$frequency:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$isEnabled:** `?bool` — false pauses the export, true resumes it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$pathPrefix:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$region:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$secretAccessKey:** `?string` — Must be sent together with accessKeyId.
     
 </dd>
 </dl>
@@ -8824,6 +10032,144 @@ $client->feedback->submit(
 <dd>
 
 **$userIntent:** `?string` — For bug or wrong-outcome reports - the user's request, verbatim or closely paraphrased. Omit personal data not needed to reproduce the problem.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## FrequencyCap
+<details><summary><code>$client-&gt;frequencyCap-&gt;clearFrequencyCap() -> ?ClearFrequencyCapResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Turns the company frequency cap off. Sequences keep their frequencyCapEnabled setting, but nothing is skipped until a cap is set again. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->frequencyCap->clearFrequencyCap();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;frequencyCap-&gt;getFrequencyCap() -> ?GetFrequencyCapResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the company frequency cap, or null when none is set. Only sequences with frequencyCapEnabled respect it; their email steps are skipped for a contact already at the cap. Campaigns count toward the cap but always send. Transactional emails never count. Requires the account:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->frequencyCap->getFrequencyCap();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;frequencyCap-&gt;setFrequencyCap($request) -> ?SetFrequencyCapResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets or replaces the company frequency cap. It applies from the next email step onward in sequences with frequencyCapEnabled. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->frequencyCap->setFrequencyCap(
+    new FrequencyCap([
+        'maxEmails' => 1,
+        'windowHours' => 16,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$request:** `FrequencyCap` 
     
 </dd>
 </dl>
@@ -13145,6 +14491,1568 @@ $client->products->upsert(
 </dl>
 </details>
 
+## Push
+<details><summary><code>$client-&gt;push-&gt;cancelPushCampaign($campaignId) -> ?CancelPushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops a scheduled or sending push campaign. Contacts who have not been sent the push yet are skipped; delivered notifications cannot be recalled. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->cancelPushCampaign(
+    'campaignId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;clearApnsCredentials() -> ?ClearApnsCredentialsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes the APNs key. iOS devices stop receiving push until a key is saved again; registered devices are kept. Requires the integrations:manage scope and edit access to the workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->clearApnsCredentials();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;clearFcmCredentials() -> ?ClearFcmCredentialsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes the Firebase service account. Android devices stop receiving push until a key is uploaded again; registered devices are kept. Requires the integrations:manage scope and edit access to the workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->clearFcmCredentials();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;createPushCampaign($request) -> ?CreatePushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a push campaign draft. Content and audience can be set now or later. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->createPushCampaign(
+    new CreatePushCampaignRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$body:** `?string` — Notification message. Merge tags are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$iconUrl:** `?string` — Optional https icon for web push. Defaults to the workspace icon.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$imageUrl:** `?string` — Optional https image shown in the notification.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$platforms:** `?array` — Limit delivery to these platforms. Omit or pass an empty array for every platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$targetLists:** `?array` — Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...]}. Only contacts with an active push device receive the campaign.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$title:** `?string` — Notification title. Merge tags such as {{FIRST_NAME|there}} are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Link opened on tap. An https URL, an app deep link (myapp://...), or a merge tag. Browsers only open https links. null clears it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;deletePushDevice($deviceId) -> ?DeletePushDeviceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Marks a device unsubscribed so it stops receiving push. The device can register again from your site or app. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->deletePushDevice(
+    'deviceId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$deviceId:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;duplicatePushCampaign($campaignId, $request) -> ?DuplicatePushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Copies a push campaign's content and audience into a new draft. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->duplicatePushCampaign(
+    'campaignId',
+    new DuplicatePushCampaignRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` — Name for the copy. Defaults to the original name with (Copy).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;estimatePushCampaignRecipients($request) -> ?EstimatePushCampaignRecipientsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Counts the contacts in an audience (audienceCount) and those with an active device on the selected platforms (eligibleCount). Email status does not affect push eligibility. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->estimatePushCampaignRecipients(
+    new EstimatePushCampaignRecipientsRequest([
+        'targetLists' => [
+            'key' => "value",
+        ],
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$platforms:** `?array` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$targetLists:** `array` — Audience, same shape as campaign targetLists.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;getPushCampaign($campaignId) -> ?GetPushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a push campaign's content, audience and status, plus delivery stats once it has started sending (null for drafts). Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->getPushCampaign(
+    'campaignId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;getPushCampaignStats($campaignId) -> ?GetPushCampaignStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns delivery and engagement stats for a push campaign. Test sends are excluded. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->getPushCampaignStats(
+    'campaignId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;getPushSettings() -> ?GetPushSettingsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns web push, APNs (iOS) and Firebase (Android) readiness, the last credential error for each platform, the default icon and active device counts. Secrets are never returned. Requires the account:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->getPushSettings();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;listPushCampaigns($request) -> ?ListPushCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists push campaigns, newest first. Push campaigns also appear in GET /campaigns with type push. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->listPushCampaigns(
+    new ListPushCampaignsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$offset:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$status:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;listPushDevices($request) -> ?ListPushDevicesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists registered browsers and app installs in a stable order; page with the returned cursor. Tokens are never returned in full. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->listPushDevices(
+    new ListPushDevicesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$cursor:** `?string` — nextCursor from the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Only this contact's devices.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$platform:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$status:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberId:** `?string` — Only this subscriber's devices.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;registerPushDevice($request) -> ?RegisterPushDeviceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Registers or refreshes a device, typically from your app backend after the app receives its APNs or FCM token. Re-registering a known token reactivates it, refreshes its metadata and moves it to the given contact. An unknown email becomes a contact quietly (no lists, no contact_added sequences). Each contact keeps at most 20 active devices; the least recently seen are retired. Returns 201 for a new token and 200 for an existing one. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->registerPushDevice(
+    new RegisterPushDeviceRequest([
+        'platform' => RegisterPushDeviceRequestPlatform::Ios->value,
+        'token' => 'token',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$appVersion:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$deviceName:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Contact to link. Created quietly when new.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$keys:** `?RegisterPushDeviceRequestKeys` — Web only. PushSubscription.toJSON().keys.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$locale:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$osVersion:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$platform:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberId:** `?string` — Existing subscriber to link instead of email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$timezone:** `?string` — IANA timezone.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$token:** `string` — iOS: the hex APNs device token. Android: the FCM registration token. Web: the PushSubscription endpoint (also send keys).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;sendPushCampaign($campaignId, $request) -> ?SendPushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->sendPushCampaign(
+    'campaignId',
+    new SendPushCampaignRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$scheduledAt:** `?DateTime` — Future ISO 8601 time. Omit or null to send immediately.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;sendTestPush($request) -> ?SendTestPushResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends a real push to one device (deviceId) or to every active device of a contact (email or subscriberId). Provide title and/or body. Tests are excluded from stats and limited to 200 per company in a rolling 24-hour window. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->sendTestPush(
+    new SendTestPushRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$body:** `?string` — Notification message. Merge tags are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$deviceId:** `?string` — One device to notify.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Notify every active device of this contact.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$iconUrl:** `?string` — Optional https icon for web push. Defaults to the workspace icon.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$imageUrl:** `?string` — Optional https image shown in the notification.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$platforms:** `?array` — Limit delivery to these platforms. Omit or pass an empty array for every platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberId:** `?string` — Notify every active device of this subscriber.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$title:** `?string` — Notification title. Merge tags such as {{FIRST_NAME|there}} are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Link opened on tap. An https URL, an app deep link (myapp://...), or a merge tag. Browsers only open https links. null clears it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;setApnsCredentials($request) -> ?SetApnsCredentialsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Connects iOS push with an APNs auth key (.p8). The key is validated, encrypted at rest and never returned. Replacing the key clears the last credential error. Requires the integrations:manage scope and edit access to the workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->setApnsCredentials(
+    new SetApnsCredentialsRequest([
+        'bundleId' => 'com.example.app',
+        'keyId' => 'ABC123DEFG',
+        'privateKey' => 'privateKey',
+        'teamId' => 'DEF123GHIJ',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$bundleId:** `string` — Your app's bundle ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$environment:** `?string` — production for App Store and TestFlight builds, sandbox for Xcode development builds.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$keyId:** `string` — 10-character APNs key ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$privateKey:** `string` — Full contents of the AuthKey_XXXXXXXXXX.p8 file.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$teamId:** `string` — 10-character Apple developer team ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;setFcmCredentials($request) -> ?SetFcmCredentialsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Connects Android push with a Firebase service account key. The file is validated (it must be a service account with a private key; token_uri, when present, must be Google's), encrypted at rest and never returned. Requires the integrations:manage scope and edit access to the workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->setFcmCredentials(
+    new SetFcmCredentialsRequest([
+        'serviceAccount' => 'serviceAccount',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$serviceAccount:** `string|array` — The service account JSON file from Firebase project settings > Service accounts, as a JSON object or a string. The account needs the Firebase Cloud Messaging API Admin role.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;unschedulePushCampaign($campaignId) -> ?UnschedulePushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Moves a scheduled push campaign back to draft. The queued send is discarded. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->unschedulePushCampaign(
+    'campaignId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;updatePushCampaign($campaignId, $request) -> ?UpdatePushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->updatePushCampaign(
+    'campaignId',
+    new UpdatePushCampaignRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$body:** `?string` — Notification message. Merge tags are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$iconUrl:** `?string` — Optional https icon for web push. Defaults to the workspace icon.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$imageUrl:** `?string` — Optional https image shown in the notification.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$platforms:** `?array` — Limit delivery to these platforms. Omit or pass an empty array for every platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$targetLists:** `?array` — Audience, same shape as campaign targetLists.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$title:** `?string` — Notification title. Merge tags such as {{FIRST_NAME|there}} are supported.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Link opened on tap. An https URL, an app deep link (myapp://...), or a merge tag. Browsers only open https links. null clears it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;push-&gt;updateWebPushSettings($request) -> ?UpdateWebPushSettingsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Enables or disables web push, or sets the default notification icon. The first enable generates the workspace's VAPID key pair; disabling keeps the keys so existing browser subscriptions remain valid when you enable again. Requires the integrations:manage scope and edit access to the workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->push->updateWebPushSettings(
+    new UpdateWebPushSettingsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$defaultIconUrl:** `?string` — Default https icon used when a message has no icon. null or an empty string clears it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$enabled:** `?bool` — Turn web push on or off. Provide enabled and/or defaultIconUrl.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## References
+<details><summary><code>$client-&gt;references-&gt;listEmailReferences($request) -> ?ListEmailReferencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their best-matching emails are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->listEmailReferences(
+    new ListEmailReferencesRequest([
+        'kind' => ListEmailReferencesRequestKind::Campaign->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$kind:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` — For `scope=similar` without `q`, most emails (and sequences) to return. Also caps sequences elsewhere.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` — Page for `scope=all` or a search.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$q:** `?string` — Search words matched by meaning, most relevant first. With `scope=similar` only those brands' emails are searched. A search is paged.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$scope:** `?string` — `similar` (default) lists emails from the gallery brands most like you; `all` lists the whole gallery for the kind, a page at a time.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subtype:** `?string` — For `scope=similar` without `q`, a gallery subtype to list first, such as `password_reset`. Ignored when it does not belong to the kind.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Segments
 <details><summary><code>$client-&gt;segments-&gt;create($request) -> ?CreateSegmentsResponse</code></summary>
 <dl>
@@ -14202,6 +17110,14 @@ $client->sequences->create(
 <dl>
 <dd>
 
+**$frequencyCapEnabled:** `?bool` — Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$fromEmail:** `?string` — From address for every email in this sequence. Its domain must be configured and verified.
     
 </dd>
@@ -14346,7 +17262,7 @@ $client->sequences->create(
 <dl>
 <dd>
 
-**$segmentId:** `?string` — Segment ID for segment_entered triggers.
+**$segmentId:** `?string` — Segment ID for segment_entered and segment_exited triggers.
     
 </dd>
 </dl>
@@ -14427,6 +17343,102 @@ $client->sequences->create(
 <dd>
 
 **$userCancellable:** `?bool` — Whether recipients can cancel this sequence from email preferences.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;createFromExample($request) -> ?CreateFromExampleSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->createFromExample(
+    new CreateFromExampleSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$brand:** `?string` — Gallery brand slug. Use with `sequence` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$brief:** `?string` — Optional direction applied to every email. Takes priority over the example.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailStyle:** `?string` — Generated email style. Defaults to the company's email style preference.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` — Sequence name. Defaults to the sequence type, such as "Onboarding sequence".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sequence:** `?string` — Gallery sequence slug. Use with `brand` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Gallery sequence page URL, such as `https://sequenzy.com/email-examples/brands/linear/sequences/onboarding`.
     
 </dd>
 </dl>
@@ -16844,6 +19856,14 @@ $client->sequences->update(
 <dl>
 <dd>
 
+**$frequencyCapEnabled:** `?bool` — Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact already at the cap, and the contact continues to the next step. Transactional steps are never skipped. Omit to leave it unchanged.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$fromEmail:** `?string` — From address for every email in this sequence. Its domain must be configured and verified.
     
 </dd>
@@ -17004,7 +20024,7 @@ $client->sequences->update(
 <dl>
 <dd>
 
-**$segmentId:** `?string` — Segment ID for a replacement segment_entered trigger.
+**$segmentId:** `?string` — Segment ID for a replacement segment_entered or segment_exited trigger.
     
 </dd>
 </dl>
@@ -21231,6 +24251,94 @@ $client->templates->create(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;templates-&gt;createFromExample($request) -> ?CreateFromExampleTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remixes a public email from the Sequenzy email gallery into a new email template for your company. The new email keeps the example's exact layout and design; AI rewrites every piece of text for your company and your logo, brand color and website links are swapped in. It is saved as an HTML template. The example brand is never named, and none of its copy, offers or claims are reused. Its legal footer is removed; your own compliant footer is added when you send. Generation usually takes 5 to 20 seconds. Nothing is saved when generation fails; every successful call creates another template. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->templates->createFromExample(
+    new CreateFromExampleTemplatesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$brand:** `?string` — Gallery brand slug. Use with `email` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$brief:** `?string` — Optional direction for the new email. Takes priority over the example.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Gallery email slug. Use with `brand` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` — Template name. Defaults to the generated subject followed by "(remix of {brand})".
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Gallery email page URL, such as `https://sequenzy.com/email-examples/brands/linear/emails/welcome-to-linear`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;templates-&gt;createShareLink($templateId) -> ?CreateShareLinkTemplatesResponse</code></summary>
 <dl>
 <dd>
@@ -21411,7 +24519,7 @@ $client->templates->get(
 <dl>
 <dd>
 
-Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
+Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Content snapshots of code-managed transactional emails (created by sends with `trackAs`) are not listed and cannot be used as `templateId`. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
 </dd>
 </dl>
 </dd>
@@ -21682,6 +24790,14 @@ $client->templates->setLocalization(
 <dl>
 <dd>
 
+**$keepEdits:** `?bool` — Protect this translation like a dashboard edit. It is marked as edited (editedAt), automatic translation on save keeps it, and it becomes stale instead of being replaced when the original changes. Without it, the stored content is retranslated on the next save when automatic translation is on, and any earlier edit flag is cleared.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$previewText:** `?string` — Optional localized inbox preview text.
     
 </dd>
@@ -21756,6 +24872,14 @@ $client->templates->syncLocalizations(
 <dd>
 
 **$locales:** `?array` — Enabled non-primary locale codes to sync. Omit to sync all of them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$skipEdited:** `?bool` — Keep translations someone edited instead of retranslating them. Kept locales are returned in skippedLocales.
     
 </dd>
 </dl>
@@ -21886,6 +25010,182 @@ $client->templates->update(
 
 **$updates:** `mixed` — Unsupported nested update object. Requests using it return a validation error.
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## TrackingDomain
+<details><summary><code>$client-&gt;trackingDomain-&gt;getTrackingDomain() -> ?GetTrackingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the company tracking domain every sending domain uses for tracked links and opens, or null when links use the shared Sequenzy tracking domain. Requires the account:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->trackingDomain->getTrackingDomain();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;trackingDomain-&gt;removeTrackingDomain() -> ?RemoveTrackingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes the company tracking domain. New emails use the shared Sequenzy tracking domain, and links in emails already sent through the removed domain stop working. Removing when none is set succeeds with removed false. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->trackingDomain->removeTrackingDomain();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;trackingDomain-&gt;setTrackingDomain($request) -> ?SetTrackingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sets or changes the company tracking domain. Any subdomain the caller controls works, including one on a root other than the sending domains; a bare registrable domain is rejected because it cannot hold a CNAME. Publish the returned cnameRecord. Sending never waits for it; new emails use the shared Sequenzy tracking domain until it verifies. Saving the current hostname again only rechecks it. Changing the hostname keeps the previous one serving links in emails already sent while its old CNAME stays. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->trackingDomain->setTrackingDomain(
+    new SetTrackingDomainRequest([
+        'domain' => 'domain',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — Tracking hostname, a subdomain such as links.example.com. A leading https:// and trailing path are ignored.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;trackingDomain-&gt;verifyTrackingDomain() -> ?VerifyTrackingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Checks the company tracking domain's CNAME and HTTPS certificate now instead of waiting for the automatic checks. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->trackingDomain->verifyTrackingDomain();
+```
 </dd>
 </dl>
 </dd>
@@ -22036,7 +25336,7 @@ $client->trackingSettings->update(
 <dl>
 <dd>
 
-**$strictBotFilteringEnabled:** `?bool` — Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
+**$strictBotFilteringEnabled:** `?bool` — Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
     
 </dd>
 </dl>
@@ -22211,7 +25511,7 @@ Permanently deletes a saved transactional email template by ID or slug, so its s
 
 Already-sent deliveries are untouched: send history, stats, and stored HTML live on the deliveries themselves.
 
-The email content is kept as a reusable template and returned as `deleted.emailId`; pass that to `DELETE /api/v1/templates/{templateId}` to remove the content too. To stop sends without losing the template, update it with `enabled: false` instead.
+The email content is kept as a reusable template and returned as `deleted.emailId`; pass that to `DELETE /api/v1/templates/{templateId}` to remove the content too. Code-managed emails (`managedBy: code`) are the exception: their content snapshot is deleted with them, so the returned `emailId` no longer exists. To stop sends without losing the template, update it with `enabled: false` instead.
 
 Requires an API key with the `transactional:delete` scope.
 </dd>
@@ -22409,7 +25709,7 @@ $client->transactional->list(
 </dl>
 </details>
 
-<details><summary><code>$client-&gt;transactional-&gt;send($request) -> SendTransactionalResponseTransactional|SendTransactionalResponseOne|null</code></summary>
+<details><summary><code>$client-&gt;transactional-&gt;send($request) -> SendTransactionalResponseZero|SendTransactionalResponseOne|null</code></summary>
 <dl>
 <dd>
 
@@ -22433,6 +25733,13 @@ You can either:
 
 If both a canonical field and its alias are provided, `slug` must match `templateId` and `body` must match `html`.
 
+**Tracking direct-content sends:**
+- Set `trackAs` on a direct-content send (for example `weekly-report`) to count it under one code-managed transactional email. The first send with a new value creates it with `managedBy: code`; later sends with the same value link to it. The value may use up to 255 ASCII letters, digits, spaces and `. _ - : /`, and is normalized like a slug (`Weekly Report` and `weekly-report` are the same email). Other values, including empty ones, return 400 `INVALID_TRACK_AS`.
+- Opens, clicks, bounces and the other transactional stats then aggregate on that email, and it appears in `GET /transactional` next to your saved templates. Its subject, preview text and HTML are a snapshot of a recent send, refreshed at most every 10 minutes and stored before variable substitution.
+- Disabling the code-managed email makes further sends with that `trackAs` fail with 400 `TRACKED_EMAIL_DISABLED` until you enable it again. Deleting it lets the next send recreate it with fresh stats.
+- `trackAs` cannot be combined with `slug`/`templateId`, cannot reuse the slug of a template managed in the dashboard, and a company can have at most 100 code-managed emails. Use a stable name for an email type, never per-recipient values. Code-managed emails cannot be sent by `slug`.
+- The email is created after the send passes request validation, so an invalid send does not create it. A send that fails later, for example on an `Idempotency-Key` conflict, can still leave the newly created email with no sends.
+
 **Recipients:**
 - `to` can be a single email or an array of up to 50 emails
 - Duplicate emails are automatically deduplicated
@@ -22440,7 +25747,7 @@ If both a canonical field and its alias are provided, `slug` must match `templat
 
 **Attachments:**
 - Attachments can be provided as Base64-encoded content or URLs
-- Maximum 10 attachments and 7MB total per email
+- Maximum 10 attachments and 15MB total per email
 - Any file type supported (PDFs, images, documents, etc.)
 - Set `contentId` on an attachment to embed it as an inline image referenced from the HTML as `<img src="cid:VALUE">`
 
@@ -22504,7 +25811,7 @@ File attachments for the email. Each attachment must have a filename and either:
 
 Set `contentId` to embed the file as an inline image the HTML references with `<img src="cid:VALUE">` instead of attaching it.
 
-Maximum 10 attachments and 7MB total per email.
+Maximum 10 attachments and 15MB total per email.
     
 </dd>
 </dl>
@@ -22569,6 +25876,14 @@ the visible From.
 <dd>
 
 **$fromName:** `?string` — Display name selecting an existing identity on fromEmail. Requires fromEmail; mutually exclusive with senderProfileId and from. Does not create a profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$headers:** `?array` — Extra email headers as header name to string value, up to 50 applied. Names use letters, digits and hyphens (max 100 characters); values are one line of printable ASCII and each `Name: value` line fits in 998 characters. A transactional send can carry your own `List-Unsubscribe`, plus `List-Unsubscribe-Post: List-Unsubscribe=One-Click` for RFC 8058 one-click unsubscribe; unsubscribes through your link are not suppressed in Sequenzy. Marketing sends always use Sequenzy's signed unsubscribe headers, so `List-Unsubscribe`, `List-Unsubscribe-Post`, `Precedence` and `Feedback-ID` are not applied. Headers Sequenzy manages (From, Sender, To, Cc, Bcc, Reply-To, Subject, Date, Message-ID, MIME-Version, Return-Path, Received, Received-SPF, Delivered-To, DKIM-Signature, Authentication-Results, and names starting with Content-, X-Sequenzy-, X-SES-, ARC- or Resent-) are never applied. A header that cannot be applied never fails the request; it is listed in the response `ignoredHeaders`. Names match case-insensitively; when names differ only in case, only the first one is considered, even if it is not applied. A retry of a failed delivery (dashboard or outage recovery) resends without these headers.
     
 </dd>
 </dl>
@@ -22664,6 +25979,14 @@ the visible From.
 <dl>
 <dd>
 
+**$trackAs:** `?string` — Direct content only. Names the email type so its sends are counted under one code-managed transactional email, created on first use. Up to 255 ASCII letters, digits, spaces and `. _ - : /`, including at least one letter or digit; it is normalized like a slug. Cannot be combined with `slug`/`templateId`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$trackingSettings:** `?SendTransactionalRequestTrackingSettings` — Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
     
 </dd>
@@ -22696,7 +26019,7 @@ the visible From.
 <dl>
 <dd>
 
-Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks.
+Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks. Code-managed emails (`managedBy: code`, created by sends with `trackAs`) accept only `name`, `enabled` and `labels`; their content comes from each send, so `subject`, `previewText`, `html` and `blocks` return 400.
 </dd>
 </dl>
 </dd>
@@ -22770,6 +26093,1012 @@ $client->transactional->update(
 <dd>
 
 **$subject:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Warehouse Sync
+<details><summary><code>$client-&gt;warehouseSync-&gt;createWarehouseConnection($request) -> ?CreateWarehouseConnectionResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Connects Snowflake, BigQuery, Redshift or Postgres. Sequenzy runs a test query before saving; nothing is saved when it fails. Redshift and Postgres hosts must resolve to public addresses. Requires warehouse:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->createWarehouseConnection(
+    new CreateWarehouseConnectionRequest([
+        'config' => [
+            'key' => "value",
+        ],
+        'credentials' => [
+            'key' => "value",
+        ],
+        'name' => 'name',
+        'provider' => CreateWarehouseConnectionRequestProvider::Snowflake->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$config:** `array` — Non-secret settings. snowflake: account, username, warehouse, database, schema, role. bigquery: projectId, location. redshift and postgres: host, port (default 5439 or 5432), database, username, sslMode (require or verify-full, default require).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$credentials:** `array` — Secrets, stored encrypted and never returned. snowflake: privateKey (PKCS#8 PEM) and optional privateKeyPassphrase. bigquery: serviceAccountJson (the key file contents). redshift and postgres: password.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$provider:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;createWarehouseSync($request) -> ?CreateWarehouseSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a sync that runs a query on a schedule and sends changed rows to Sequenzy: contacts (kind subscribers) through the import pipeline, or events on existing contacts (kind events). The mapping and cursor are checked against the query's real columns and the first run starts right away. Requires warehouse:write and subscribers:write; event syncs also need events:write, and triggerAutomations or double_opt_in need automations:trigger.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->createWarehouseSync(
+    new CreateWarehouseSyncRequest([
+        'connectionId' => 'connectionId',
+        'kind' => CreateWarehouseSyncRequestKind::Subscribers->value,
+        'mapping' => new CreateWarehouseSyncRequestMapping([]),
+        'name' => 'name',
+        'query' => 'query',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$connectionId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$cursorColumn:** `?string` — Column read incrementally, for example updated_at. Each run reads rows at or after the last value it saw.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$frequency:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$kind:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$listIds:** `?array` — Subscriber syncs only. Lists new contacts join.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mapping:** `CreateWarehouseSyncRequestMapping` — Subscriber syncs: emailColumn (or phoneColumn), externalIdColumn, firstNameColumn, lastNameColumn, tagsColumn, attributes. Event syncs: emailColumn or externalIdColumn, eventNameColumn or eventName, eventIdColumn, occurredAtColumn, properties. Every column must exist in the query.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$optInMode:** `?string` — Subscriber syncs only. double_opt_in needs automations:trigger.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$query:** `string` — A single SELECT or WITH statement.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$triggerAutomations:** `?bool` — Let new contacts, or events from the last hour, start automations. Needs automations:trigger.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;deleteWarehouseConnection($id) -> ?DeleteWarehouseConnectionResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a connection and its stored credentials. Returns 409 while syncs still use it. Requires warehouse:delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->deleteWarehouseConnection(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;deleteWarehouseSync($id) -> ?DeleteWarehouseSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a sync and its run history. Contacts and events already imported stay. Requires warehouse:delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->deleteWarehouseSync(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;getWarehouseConnection($id) -> ?GetWarehouseConnectionResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one connection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->getWarehouseConnection(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;getWarehouseSync($id) -> ?GetWarehouseSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one sync with its latest run.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->getWarehouseSync(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;listWarehouseConnections() -> ?ListWarehouseConnectionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists warehouse connections with status, last test and number of syncs. Credentials are never returned. Requires warehouse:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->listWarehouseConnections();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;listWarehouseSyncRuns($id, $request) -> ?ListWarehouseSyncRunsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists runs from the last 30 days, newest first, with row counts, sample row problems and import progress.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->listWarehouseSyncRuns(
+    'id',
+    new ListWarehouseSyncRunsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;listWarehouseSyncs($request) -> ?ListWarehouseSyncsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists syncs with schedule, status, cursor position and the latest run, including progress of the subscriber imports it queued. Requires warehouse:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->listWarehouseSyncs(
+    new ListWarehouseSyncsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$connectionId:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;previewWarehouseQuery($id, $request) -> ?PreviewWarehouseQueryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Runs a SELECT query with a 20-row limit and returns its columns and rows, to build a sync mapping. Requires warehouse:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->previewWarehouseQuery(
+    'id',
+    new PreviewWarehouseQueryRequest([
+        'query' => 'query',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$query:** `string` — A single SELECT or WITH statement.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;runWarehouseSync($id, $request) -> ?RunWarehouseSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues a run now. Only one run per sync executes at a time; a request made while a run is in progress runs right after it. With fullResync, the run forgets which rows were sent and the cursor position, and sends every row again. A full resync of a sync that starts automations or sends double opt-in emails needs automations:trigger.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->runWarehouseSync(
+    'id',
+    new RunWarehouseSyncRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fullResync:** `?bool` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;testWarehouseConnection($id) -> ?TestWarehouseConnectionResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Runs a test query with the stored credentials and records the result on the connection.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->testWarehouseConnection(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;updateWarehouseConnection($id, $request) -> ?UpdateWarehouseConnectionResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Renames a connection, changes its settings or rotates its credentials. Settings and credential changes are re-tested before saving.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->updateWarehouseConnection(
+    'id',
+    new UpdateWarehouseConnectionRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$config:** `?array` — Settings to change; merged with the saved settings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$credentials:** `?array` — Replacement credentials. Omit to keep the stored ones.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;warehouseSync-&gt;updateWarehouseSync($id, $request) -> ?UpdateWarehouseSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes a sync. Omitted fields keep their current values. Query, mapping and cursor changes are checked against the query's columns; a changed query or cursor reads from the beginning again, while unchanged rows are still skipped. Other changes do not contact the warehouse. Saving makes the caller the user imports run as. On a sync that starts automations or sends double opt-in emails, changing the query, mapping, cursor or lists needs automations:trigger. A run in progress stops at its next page and runs again with the new settings.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->warehouseSync->updateWarehouseSync(
+    'id',
+    new UpdateWarehouseSyncRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$cursorColumn:** `?string` — Column read incrementally, for example updated_at. Each run reads rows at or after the last value it saw.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$frequency:** `?string` — manual cancels the next scheduled run.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$isEnabled:** `?bool` — false pauses the sync, true resumes it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$listIds:** `?array` — Subscriber syncs only. Lists that contacts the sync creates join; existing contacts keep their list memberships.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mapping:** `?UpdateWarehouseSyncRequestMapping` — Subscriber syncs: emailColumn (or phoneColumn), externalIdColumn, firstNameColumn, lastNameColumn, tagsColumn, attributes. Event syncs: emailColumn or externalIdColumn, eventNameColumn or eventName, eventIdColumn, occurredAtColumn, properties. Every column must exist in the query.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$optInMode:** `?string` — Subscriber syncs only. double_opt_in needs automations:trigger.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$query:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$triggerAutomations:** `?bool` — Let new contacts, or events from the last hour, start automations. Needs automations:trigger.
     
 </dd>
 </dl>
@@ -23426,7 +27755,7 @@ $client->webhooks->update(
 <dl>
 <dd>
 
-Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup. A domain belongs to exactly one company, so confirm the target company before adding it.
+Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it on its root (links.<root>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
 </dd>
 </dl>
 </dd>
@@ -23461,6 +27790,89 @@ $client->websites->add(
 <dd>
 
 **$domain:** `string` — Domain to add.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mailFromPrefix:** `?string` — Bounce (MAIL FROM) subdomain label. Defaults to send. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$trackingPrefix:** `?string` — Label of the company tracking domain created on the domain's root (<label>.<root>) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;websites-&gt;configureSendingDomainTracking($domain, $request) -> ?ConfigureSendingDomainTrackingResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deprecated: tracking is company-wide; use PUT /tracking-domain. Sets <trackingPrefix>.<domain> as the company tracking domain when the company has none. Publish the returned tracking.cnameRecord; sending never waits for it, and links use the shared Sequenzy tracking domain until it verifies. Repeating the company's current tracking hostname is a no-op. A different value is accepted but changes nothing, and the response message says so; it never replaces the company setting.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->websites->configureSendingDomainTracking(
+    'domain',
+    new ConfigureSendingDomainTrackingRequest([
+        'trackingPrefix' => 'trackingPrefix',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — Configured sending domain
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$trackingPrefix:** `string` — Tracking subdomain label, for example links. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved.
     
 </dd>
 </dl>
@@ -24110,6 +28522,14 @@ $client->widgets->createSavedForm(
 <dl>
 <dd>
 
+**$resubscribeBehavior:** `?string` — What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$showFirstName:** `?bool` 
     
 </dd>
@@ -24283,6 +28703,14 @@ $client->widgets->createSavedPopup(
 <dd>
 
 **$redirectUrl:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$resubscribeBehavior:** `?string` — What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
     
 </dd>
 </dl>
@@ -25263,6 +29691,14 @@ $client->widgets->submitCompanyScopedSavedSignupForm(
 <dl>
 <dd>
 
+**$sequenzyToken:** `?string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$tagIds:** `?array` — Ignored for saved forms. Stored form settings are used.
     
 </dd>
@@ -25303,7 +29739,9 @@ $client->widgets->submitCompanyScopedSavedSignupForm(
 <dl>
 <dd>
 
-Submit a saved popup without an API key. The popup's stored content is the source of truth for audience targeting, duplicate handling, custom fields, and success behavior.
+Submit a saved popup without an API key. The popup's stored content is the source of truth for audience targeting, duplicate handling, resubscribe behavior, custom fields, and success behavior.
+
+A contact who unsubscribed from all email is resubscribed and their target list memberships are restored. When the popup's `resubscribeBehavior` is `double_opt_in`, or workspace double opt-in is on, they receive a confirmation email instead. The response does not reveal which case applied.
 </dd>
 </dl>
 </dd>
@@ -25386,6 +29824,14 @@ $client->widgets->submitSavedPopup(
 <dl>
 <dd>
 
+**$sequenzyToken:** `?string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$website:** `?string` — Honeypot field. Leave empty.
     
 </dd>
@@ -25415,6 +29861,8 @@ Submit a public signup form. No API key is required.
 When the path value is a saved form ID, the form's stored settings are used for audience targeting and success behavior. When the path value is a company ID, this endpoint uses the legacy company-level form behavior.
 
 Omit `lists` to use the workspace default lists setting, provide `lists=` to add the subscriber to no lists, or provide comma-separated list IDs for specific lists. Provide stable `tags` IDs to apply existing tags to the subscriber.
+
+Submitting again is a fresh opt-in. A contact who unsubscribed from all email is resubscribed and their target list memberships are restored, whatever the `duplicateStrategy`. When the saved form's `resubscribeBehavior` is `double_opt_in`, or workspace double opt-in is on, they receive a confirmation email instead and are resubscribed when they confirm. Contacts whose address bounced or who marked your email as spam are not resubscribed. The response is the same in every case, so it does not reveal whether an address was subscribed.
 </dd>
 </dl>
 </dd>
@@ -25459,7 +29907,7 @@ $client->widgets->submitSignupForm(
 <dl>
 <dd>
 
-**$duplicateStrategy:** `?string` — How to handle an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder.
+**$duplicateStrategy:** `?string` — How to handle profile fields of an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder. Does not affect whether an unsubscribed contact is resubscribed.
     
 </dd>
 </dl>
@@ -25556,6 +30004,14 @@ $client->widgets->submitSignupForm(
 <dd>
 
 **$redirectUrl:** `?string` — Http(s) URL or bare domain to redirect to after successful submission
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sequenzyToken:** `?string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
     
 </dd>
 </dl>
@@ -25697,6 +30153,14 @@ $client->widgets->updateSavedForm(
 <dd>
 
 **$redirectUrl:** `?string` — HTTP or HTTPS success redirect. An empty string switches back to the confirmation message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$resubscribeBehavior:** `?string` — What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
     
 </dd>
 </dl>
@@ -25868,6 +30332,14 @@ $client->widgets->updateSavedPopup(
 <dd>
 
 **$redirectUrl:** `?string` — HTTP or HTTPS URL for successful signups. Pass an empty string to switch back to the confirmation message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$resubscribeBehavior:** `?string` — What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
     
 </dd>
 </dl>

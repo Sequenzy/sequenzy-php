@@ -28,4 +28,8 @@ enum FilterLeafField: string
     case EmailClicked = "emailClicked";
     case EmailBounced = "emailBounced";
     case EmailComplained = "emailComplained";
+    case PushDevice = "pushDevice";
+    case PushSent = "pushSent";
+    case PushDelivered = "pushDelivered";
+    case PushClicked = "pushClicked";
 }

@@ -8,7 +8,7 @@ use DateTime;
 use Sequenzy\Core\Types\Date;
 
 /**
- * Null when click links use the shared Sequenzy tracking domain.
+ * Company tracking domain, used by every sending domain for tracked links and opens. Null when links use the shared Sequenzy tracking domain; links also use it while the tracking domain is not verified. Manage it with the Tracking Domain endpoints.
  */
 class TrackingSettingsTrackingDomain extends JsonSerializableType
 {
