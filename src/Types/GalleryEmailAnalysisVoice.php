@@ -1,8 +1,8 @@
 <?php
 
-namespace Sequenzy\References\Types;
+namespace Sequenzy\Types;
 
-enum ListEmailReferencesResponseEmailsItemAnalysisVoice: string
+enum GalleryEmailAnalysisVoice: string
 {
     case Friendly = "friendly";
     case Professional = "professional";

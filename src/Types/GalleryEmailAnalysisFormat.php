@@ -1,8 +1,8 @@
 <?php
 
-namespace Sequenzy\References\Types;
+namespace Sequenzy\Types;
 
-enum ListEmailReferencesResponseEmailsItemAnalysisFormat: string
+enum GalleryEmailAnalysisFormat: string
 {
     case Plain = "plain";
     case TextHeavy = "text_heavy";

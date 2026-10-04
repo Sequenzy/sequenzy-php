@@ -1,6 +1,6 @@
 <?php
 
-namespace Sequenzy\References\Types;
+namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 /**
  * The email's breakdown, `null` until it has been analyzed. Counts come from its HTML; `voice`, `language`, `structure` and `takeaways` from AI reading the copy. Any field is `null` (or an empty list) when unknown.
  */
-class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
+class GalleryEmailAnalysis extends JsonSerializableType
 {
     /**
      * @var ?int $buttonCount
@@ -24,7 +24,7 @@ class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
     public ?array $buttonLabels;
 
     /**
-     * @var ?value-of<ListEmailReferencesResponseEmailsItemAnalysisColumns> $columns
+     * @var ?value-of<GalleryEmailAnalysisColumns> $columns
      */
     #[JsonProperty('columns')]
     public ?string $columns;
@@ -42,7 +42,7 @@ class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
     public ?array $fonts;
 
     /**
-     * @var ?value-of<ListEmailReferencesResponseEmailsItemAnalysisFormat> $format
+     * @var ?value-of<GalleryEmailAnalysisFormat> $format
      */
     #[JsonProperty('format')]
     public ?string $format;
@@ -84,10 +84,10 @@ class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
     public ?int $readingTimeSeconds;
 
     /**
-     * @var ?ListEmailReferencesResponseEmailsItemAnalysisSender $sender The sender as shown on gallery pages, with personal details redacted. `null` when unknown.
+     * @var ?GalleryEmailAnalysisSender $sender The sender as shown on gallery pages, with personal details redacted. `null` when unknown.
      */
     #[JsonProperty('sender')]
-    public ?ListEmailReferencesResponseEmailsItemAnalysisSender $sender;
+    public ?GalleryEmailAnalysisSender $sender;
 
     /**
      * @var ?array<string> $structure The email's beats in order, such as "Logo header" and "Primary button".
@@ -102,7 +102,7 @@ class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
     public ?array $takeaways;
 
     /**
-     * @var ?value-of<ListEmailReferencesResponseEmailsItemAnalysisVoice> $voice
+     * @var ?value-of<GalleryEmailAnalysisVoice> $voice
      */
     #[JsonProperty('voice')]
     public ?string $voice;
@@ -117,20 +117,20 @@ class ListEmailReferencesResponseEmailsItemAnalysis extends JsonSerializableType
      * @param array{
      *   buttonCount?: ?int,
      *   buttonLabels?: ?array<string>,
-     *   columns?: ?value-of<ListEmailReferencesResponseEmailsItemAnalysisColumns>,
+     *   columns?: ?value-of<GalleryEmailAnalysisColumns>,
      *   darkMode?: ?bool,
      *   fonts?: ?array<string>,
-     *   format?: ?value-of<ListEmailReferencesResponseEmailsItemAnalysisFormat>,
+     *   format?: ?value-of<GalleryEmailAnalysisFormat>,
      *   hasGif?: ?bool,
      *   imageCount?: ?int,
      *   language?: ?string,
      *   linkCount?: ?int,
      *   mainButton?: ?string,
      *   readingTimeSeconds?: ?int,
-     *   sender?: ?ListEmailReferencesResponseEmailsItemAnalysisSender,
+     *   sender?: ?GalleryEmailAnalysisSender,
      *   structure?: ?array<string>,
      *   takeaways?: ?array<string>,
-     *   voice?: ?value-of<ListEmailReferencesResponseEmailsItemAnalysisVoice>,
+     *   voice?: ?value-of<GalleryEmailAnalysisVoice>,
      *   wordCount?: ?int,
      * } $values
      */

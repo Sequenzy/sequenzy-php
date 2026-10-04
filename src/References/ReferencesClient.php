@@ -17,6 +17,12 @@ use Sequenzy\References\Types\DeleteGalleryBrandRequestResponse;
 use Sequenzy\References\Requests\ListEmailReferencesRequest;
 use Sequenzy\References\Types\ListEmailReferencesResponse;
 use Sequenzy\References\Types\ListGalleryBrandRequestsResponse;
+use Sequenzy\References\Types\ListGalleryWatchlistResponse;
+use Sequenzy\References\Requests\ListGalleryWatchlistEmailsRequest;
+use Sequenzy\References\Types\ListGalleryWatchlistEmailsResponse;
+use Sequenzy\References\Types\UnwatchGalleryBrandResponse;
+use Sequenzy\References\Requests\WatchGalleryBrandRequest;
+use Sequenzy\Types\GalleryWatchResult;
 
 class ReferencesClient
 {
@@ -168,7 +174,7 @@ class ReferencesClient
     }
 
     /**
-     * Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their best-matching emails are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
+     * Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their businesses (what each sells, and to whom) are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
      *
      * Example:
      * ```php
@@ -281,6 +287,240 @@ class ReferencesClient
                     return null;
                 }
                 return ListGalleryBrandRequestsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the brands your company watches, usually competitors, newest watch first. This is the dashboard's **Competitors** page. A brand already in the Sequenzy email gallery is `available`, with how many of its emails are in the gallery and when the newest was sent. Read the emails with [List Watched Brand Emails](/api-reference/references/watchlist-emails). A watch is a brand request, so [List Brand Requests](/api-reference/references/brand-requests-list) returns the same rows. Requires `templates:read`.
+     *
+     * Example:
+     * ```php
+     * $client->references->listGalleryWatchlist();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListGalleryWatchlistResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listGalleryWatchlist(?array $options = null): ?ListGalleryWatchlistResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "gallery/watchlist",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListGalleryWatchlistResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists emails from the brands your company watches, newest sent first, a page at a time. Emails usually arrive a few hours after they are sent. Hidden and removed emails are never included. Requires `templates:read`.
+     *
+     * Example:
+     * ```php
+     * $client->references->listGalleryWatchlistEmails(
+     *     new ListGalleryWatchlistEmailsRequest([]),
+     * );
+     * ```
+     *
+     * @param ListGalleryWatchlistEmailsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListGalleryWatchlistEmailsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listGalleryWatchlistEmails(ListGalleryWatchlistEmailsRequest $request = new ListGalleryWatchlistEmailsRequest(), ?array $options = null): ?ListGalleryWatchlistEmailsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->cursor != null) {
+            $query['cursor'] = $request->cursor;
+        }
+        if ($request->domain != null) {
+            $query['domain'] = $request->domain;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->since != null) {
+            $query['since'] = $request->since;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "gallery/watchlist/emails",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListGalleryWatchlistEmailsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Stops watching a brand. This also withdraws the brand request with the same ID. The brand stays in the gallery. Requires `templates:write`.
+     *
+     * Example:
+     * ```php
+     * $client->references->unwatchGalleryBrand(
+     *     'id',
+     * );
+     * ```
+     *
+     * @param string $id
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?UnwatchGalleryBrandResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function unwatchGalleryBrand(string $id, ?array $options = null): ?UnwatchGalleryBrandResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "gallery/watchlist/{$id}",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return UnwatchGalleryBrandResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Watches a brand, usually a competitor, by its website. A brand already in the gallery is watched at once with status `available`. Any other brand is requested, the same as [Request a Brand](/api-reference/references/brand-requests-create), and its emails show up once it is added and they are collected. Watching again keeps the one watch (a new `note` replaces the old) and returns 200 with `created` false, so retries never duplicate. Requires `templates:write`.
+     *
+     * Example:
+     * ```php
+     * $client->references->watchGalleryBrand(
+     *     new WatchGalleryBrandRequest([
+     *         'website' => 'website',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param WatchGalleryBrandRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GalleryWatchResult
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function watchGalleryBrand(WatchGalleryBrandRequest $request, ?array $options = null): ?GalleryWatchResult
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "gallery/watchlist",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GalleryWatchResult::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

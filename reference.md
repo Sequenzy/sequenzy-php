@@ -4485,6 +4485,73 @@ $client->campaigns->cancel(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;campaigns-&gt;check($campaignId, $request) -> ?CheckEmailResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Run the pre-send email check on a saved campaign: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->campaigns->check(
+    'campaignId',
+    new CheckCampaignsRequest([
+        'body' => new CheckEmailRequest([]),
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$request:** `CheckEmailRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;campaigns-&gt;create($request) -> ?CreateCampaignsResponse</code></summary>
 <dl>
 <dd>
@@ -16089,7 +16156,7 @@ $client->references->deleteGalleryBrandRequest(
 <dl>
 <dd>
 
-Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their best-matching emails are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
+Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their businesses (what each sells, and to whom) are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
 </dd>
 </dl>
 </dd>
@@ -16204,6 +16271,247 @@ Lists your requests to add brands (usually competitors) to the Sequenzy email ga
 ```php
 $client->references->listGalleryBrandRequests();
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;listGalleryWatchlist() -> ?ListGalleryWatchlistResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the brands your company watches, usually competitors, newest watch first. This is the dashboard's **Competitors** page. A brand already in the Sequenzy email gallery is `available`, with how many of its emails are in the gallery and when the newest was sent. Read the emails with [List Watched Brand Emails](/api-reference/references/watchlist-emails). A watch is a brand request, so [List Brand Requests](/api-reference/references/brand-requests-list) returns the same rows. Requires `templates:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->listGalleryWatchlist();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;listGalleryWatchlistEmails($request) -> ?ListGalleryWatchlistEmailsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists emails from the brands your company watches, newest sent first, a page at a time. Emails usually arrive a few hours after they are sent. Hidden and removed emails are never included. Requires `templates:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->listGalleryWatchlistEmails(
+    new ListGalleryWatchlistEmailsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$cursor:** `?string` — `nextCursor` from the previous page, for older emails.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$domain:** `?string` — Only this watched brand, by website or domain, such as `linear.app`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` — Emails per page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$since:** `?string` — Only emails sent at or after this ISO 8601 date or time, such as `2026-10-01` or `2026-10-01T00:00:00Z`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;unwatchGalleryBrand($id) -> ?UnwatchGalleryBrandResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops watching a brand. This also withdraws the brand request with the same ID. The brand stays in the gallery. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->unwatchGalleryBrand(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;watchGalleryBrand($request) -> ?GalleryWatchResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Watches a brand, usually a competitor, by its website. A brand already in the gallery is watched at once with status `available`. Any other brand is requested, the same as [Request a Brand](/api-reference/references/brand-requests-create), and its emails show up once it is added and they are collected. Watching again keeps the one watch (a new `note` replaces the old) and returns 200 with `created` false, so retries never duplicate. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->watchGalleryBrand(
+    new WatchGalleryBrandRequest([
+        'website' => 'website',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$note:** `?string` — Optional. What you want to see from the brand, such as its onboarding emails.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$website:** `string` — The brand's website or domain, such as `competitor.com` or `https://competitor.com/pricing`. It is reduced to the registrable domain. It cannot be your own website.
+    
 </dd>
 </dl>
 </dd>
@@ -17069,6 +17377,82 @@ $client->sequences->cancelEnrollments(
 <dd>
 
 **$subscriberIds:** `?array` — Up to 500 subscriber IDs to cancel in this sequence. IDs that do not resolve are returned in target.notFoundSubscriberIds. Defaults to dry run unless dryRun is explicitly false.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;checkStep($sequenceId, $nodeId, $request) -> ?CheckEmailResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Run the pre-send email check on a saved sequence email step: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->checkStep(
+    'sequenceId',
+    'nodeId',
+    new CheckStepSequencesRequest([
+        'body' => new CheckEmailRequest([]),
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` — Email step node ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$request:** `CheckEmailRequest` 
     
 </dd>
 </dl>
@@ -24370,6 +24754,73 @@ $client->team->list();
 </details>
 
 ## Templates
+<details><summary><code>$client-&gt;templates-&gt;check($templateId, $request) -> ?CheckEmailResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Run the pre-send email check on a saved template: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->templates->check(
+    'templateId',
+    new CheckTemplatesRequest([
+        'body' => new CheckEmailRequest([]),
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$templateId:** `string` — Template ID, or a transactional email ID or slug
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$request:** `CheckEmailRequest` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;templates-&gt;create($request) -> ?CreateTemplatesResponse</code></summary>
 <dl>
 <dd>
@@ -28010,7 +28461,7 @@ $client->webhooks->test(
 <dl>
 <dd>
 
-Updates an outbound webhook endpoint URL, name, status, or subscribed events. Changing the URL or enabling the endpoint resets stored endpoint failure state.
+Updates an outbound webhook endpoint URL, name, status, or subscribed events. Changing the URL or enabling the endpoint resets stored endpoint failure state, including `failingSince` and `autoDisabledAt`.
 </dd>
 </dl>
 </dd>

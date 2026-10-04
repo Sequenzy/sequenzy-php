@@ -12,6 +12,8 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Campaigns\Requests\CheckCampaignsRequest;
+use Sequenzy\Types\CheckEmailResponse;
 use Sequenzy\Campaigns\Requests\CreateCampaignsRequest;
 use Sequenzy\Campaigns\Types\CreateCampaignsResponse;
 use Sequenzy\Campaigns\Requests\CreateForAudienceCampaignsRequest;
@@ -125,6 +127,66 @@ class CampaignsClient
                     return null;
                 }
                 return CancelCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Run the pre-send email check on a saved campaign: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->check(
+     *     'campaignId',
+     *     new CheckCampaignsRequest([
+     *         'body' => new CheckEmailRequest([]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param CheckCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CheckEmailResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function check(string $campaignId, CheckCampaignsRequest $request, ?array $options = null): ?CheckEmailResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/check",
+                    method: HttpMethod::POST,
+                    body: $request->body,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CheckEmailResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

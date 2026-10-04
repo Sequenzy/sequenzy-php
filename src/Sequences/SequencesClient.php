@@ -15,6 +15,8 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Sequences\Types\CancelAudienceEnrollmentSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentCancelRequest;
 use Sequenzy\Types\SequenceEnrollmentCancelResponse;
+use Sequenzy\Sequences\Requests\CheckStepSequencesRequest;
+use Sequenzy\Types\CheckEmailResponse;
 use Sequenzy\Sequences\Requests\ConfigureInboundWebhookSequencesRequest;
 use Sequenzy\Sequences\Types\ConfigureInboundWebhookSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceCreateRequest;
@@ -268,6 +270,68 @@ class SequencesClient
                     return null;
                 }
                 return SequenceEnrollmentCancelResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Run the pre-send email check on a saved sequence email step: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->checkStep(
+     *     'sequenceId',
+     *     'nodeId',
+     *     new CheckStepSequencesRequest([
+     *         'body' => new CheckEmailRequest([]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $nodeId Email step node ID
+     * @param CheckStepSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CheckEmailResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function checkStep(string $sequenceId, string $nodeId, CheckStepSequencesRequest $request, ?array $options = null): ?CheckEmailResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/nodes/{$nodeId}/check",
+                    method: HttpMethod::POST,
+                    body: $request->body,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CheckEmailResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

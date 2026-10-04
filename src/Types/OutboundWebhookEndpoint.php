@@ -11,6 +11,12 @@ use Sequenzy\Core\Types\ArrayType;
 class OutboundWebhookEndpoint extends JsonSerializableType
 {
     /**
+     * @var ?DateTime $autoDisabledAt Set when Sequenzy disabled the endpoint automatically because every delivery failed for 7 days. Cleared when the endpoint is enabled again or its URL changes.
+     */
+    #[JsonProperty('autoDisabledAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $autoDisabledAt;
+
+    /**
      * @var ?DateTime $circuitOpenedAt
      */
     #[JsonProperty('circuitOpenedAt'), Date(Date::TYPE_DATETIME)]
@@ -39,6 +45,12 @@ class OutboundWebhookEndpoint extends JsonSerializableType
      */
     #[JsonProperty('events'), ArrayType(['string'])]
     public ?array $events;
+
+    /**
+     * @var ?DateTime $failingSince When the current unbroken run of failed deliveries started. `null` once a delivery succeeds.
+     */
+    #[JsonProperty('failingSince'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $failingSince;
 
     /**
      * @var ?string $id
@@ -96,11 +108,13 @@ class OutboundWebhookEndpoint extends JsonSerializableType
 
     /**
      * @param array{
+     *   autoDisabledAt?: ?DateTime,
      *   circuitOpenedAt?: ?DateTime,
      *   circuitOpenUntil?: ?DateTime,
      *   consecutiveFailures?: ?int,
      *   createdAt?: ?DateTime,
      *   events?: ?array<value-of<OutboundWebhookEventType>>,
+     *   failingSince?: ?DateTime,
      *   id?: ?string,
      *   lastFailureAt?: ?DateTime,
      *   lastSuccessAt?: ?DateTime,
@@ -115,11 +129,13 @@ class OutboundWebhookEndpoint extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->autoDisabledAt = $values['autoDisabledAt'] ?? null;
         $this->circuitOpenedAt = $values['circuitOpenedAt'] ?? null;
         $this->circuitOpenUntil = $values['circuitOpenUntil'] ?? null;
         $this->consecutiveFailures = $values['consecutiveFailures'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
         $this->events = $values['events'] ?? null;
+        $this->failingSince = $values['failingSince'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->lastFailureAt = $values['lastFailureAt'] ?? null;
         $this->lastSuccessAt = $values['lastSuccessAt'] ?? null;

@@ -1,14 +1,13 @@
 <?php
 
-namespace Sequenzy\References\Types;
+namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Types\GalleryEmailAnalysis;
 use Sequenzy\Core\Json\JsonProperty;
 use DateTime;
 use Sequenzy\Core\Types\Date;
 
-class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
+class GalleryWatchedBrandEmail extends JsonSerializableType
 {
     /**
      * @var ?GalleryEmailAnalysis $analysis
@@ -17,10 +16,16 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
     public ?GalleryEmailAnalysis $analysis;
 
     /**
-     * @var ?ListEmailReferencesResponseEmailsItemBrand $brand
+     * @var ?GalleryWatchedBrandEmailBrand $brand
      */
     #[JsonProperty('brand')]
-    public ?ListEmailReferencesResponseEmailsItemBrand $brand;
+    public ?GalleryWatchedBrandEmailBrand $brand;
+
+    /**
+     * @var ?DateTime $collectedAt When the gallery received the email, usually a few hours after `sentAt`.
+     */
+    #[JsonProperty('collectedAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $collectedAt;
 
     /**
      * @var ?string $id
@@ -59,7 +64,7 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
     public ?string $type;
 
     /**
-     * @var ?string $url
+     * @var ?string $url The email's gallery page. Also accepted as `url` by [Create Template from Example](/api-reference/templates/create-from-example).
      */
     #[JsonProperty('url')]
     public ?string $url;
@@ -67,7 +72,8 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
     /**
      * @param array{
      *   analysis?: ?GalleryEmailAnalysis,
-     *   brand?: ?ListEmailReferencesResponseEmailsItemBrand,
+     *   brand?: ?GalleryWatchedBrandEmailBrand,
+     *   collectedAt?: ?DateTime,
      *   id?: ?string,
      *   preheader?: ?string,
      *   sentAt?: ?DateTime,
@@ -82,6 +88,7 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
     ) {
         $this->analysis = $values['analysis'] ?? null;
         $this->brand = $values['brand'] ?? null;
+        $this->collectedAt = $values['collectedAt'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->preheader = $values['preheader'] ?? null;
         $this->sentAt = $values['sentAt'] ?? null;
