@@ -66,7 +66,7 @@ class SubscriberImportRecord extends JsonSerializableType
     public ?string $phone;
 
     /**
-     * @var ?value-of<SubscriberImportRecordStatus> $status
+     * @var ?value-of<SubscriberImportRecordStatus> $status Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged.
      */
     #[JsonProperty('status')]
     public ?string $status;

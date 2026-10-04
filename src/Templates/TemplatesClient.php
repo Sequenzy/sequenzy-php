@@ -20,6 +20,8 @@ use Sequenzy\Templates\Types\DeleteTemplatesResponse;
 use Sequenzy\Templates\Types\GetTemplatesResponse;
 use Sequenzy\Templates\Requests\ListTemplatesRequest;
 use Sequenzy\Templates\Types\ListTemplatesResponse;
+use Sequenzy\Templates\Requests\PreviewFromExampleTemplatesRequest;
+use Sequenzy\Templates\Types\PreviewFromExampleTemplatesResponse;
 use Sequenzy\Templates\Requests\RenderTemplatesRequest;
 use Sequenzy\Types\RenderEmailResponse;
 use Sequenzy\Templates\Types\RevokeShareLinkTemplatesResponse;
@@ -401,6 +403,62 @@ class TemplatesClient
                     return null;
                 }
                 return ListTemplatesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Rewrites a public email from the Sequenzy email gallery for your brand, or for another `website`, and returns it without saving anything. Same rewrite as Create Template from Example. Usually takes 5 to 20 seconds. Requires `templates:write`.
+     *
+     * Example:
+     * ```php
+     * $client->templates->previewFromExample(
+     *     new PreviewFromExampleTemplatesRequest([]),
+     * );
+     * ```
+     *
+     * @param PreviewFromExampleTemplatesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PreviewFromExampleTemplatesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function previewFromExample(PreviewFromExampleTemplatesRequest $request = new PreviewFromExampleTemplatesRequest(), ?array $options = null): ?PreviewFromExampleTemplatesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "templates/from-example/preview",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PreviewFromExampleTemplatesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

@@ -53,6 +53,8 @@ use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentMoveRequest;
 use Sequenzy\Types\SequenceEnrollmentMoveResponse;
+use Sequenzy\Sequences\Requests\PreviewFromExampleSequencesRequest;
+use Sequenzy\Sequences\Types\PreviewFromExampleSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentRealignRequest;
 use Sequenzy\Types\SequenceEnrollmentRealignResponse;
 use Sequenzy\Sequences\Requests\RenderStepSequencesRequest;
@@ -396,7 +398,7 @@ class SequencesClient
     }
 
     /**
-     * Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+     * Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails (the first 12 unless `stepNumbers` picks which), and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
      *
      * Example:
      * ```php
@@ -1821,6 +1823,62 @@ class SequencesClient
                     return null;
                 }
                 return SequenceActionResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Rewrites the first 3 emails of a public gallery sequence for your brand, or for another `website`, and returns them without creating anything. Emails that could not be written are counted in `failedEmailCount`; the call fails only when none could be written. Usually takes 10 to 30 seconds. Requires `sequences:write`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->previewFromExample(
+     *     new PreviewFromExampleSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param PreviewFromExampleSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PreviewFromExampleSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function previewFromExample(PreviewFromExampleSequencesRequest $request = new PreviewFromExampleSequencesRequest(), ?array $options = null): ?PreviewFromExampleSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/from-example/preview",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PreviewFromExampleSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

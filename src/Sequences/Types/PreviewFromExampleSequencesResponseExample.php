@@ -4,9 +4,8 @@ namespace Sequenzy\Sequences\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Core\Types\ArrayType;
 
-class CreateFromExampleSequencesResponseExample extends JsonSerializableType
+class PreviewFromExampleSequencesResponseExample extends JsonSerializableType
 {
     /**
      * @var ?string $brand
@@ -15,22 +14,16 @@ class CreateFromExampleSequencesResponseExample extends JsonSerializableType
     public ?string $brand;
 
     /**
+     * @var ?int $emailCount
+     */
+    #[JsonProperty('emailCount')]
+    public ?int $emailCount;
+
+    /**
      * @var ?string $name
      */
     #[JsonProperty('name')]
     public ?string $name;
-
-    /**
-     * @var ?int $omittedEmailCount Emails in the example that were not cloned (not chosen in `stepNumbers`, or beyond the 12-step limit).
-     */
-    #[JsonProperty('omittedEmailCount')]
-    public ?int $omittedEmailCount;
-
-    /**
-     * @var ?array<int> $stepNumbers Positions of the cloned emails in the example, ascending.
-     */
-    #[JsonProperty('stepNumbers'), ArrayType(['integer'])]
-    public ?array $stepNumbers;
 
     /**
      * @var ?string $url
@@ -41,9 +34,8 @@ class CreateFromExampleSequencesResponseExample extends JsonSerializableType
     /**
      * @param array{
      *   brand?: ?string,
+     *   emailCount?: ?int,
      *   name?: ?string,
-     *   omittedEmailCount?: ?int,
-     *   stepNumbers?: ?array<int>,
      *   url?: ?string,
      * } $values
      */
@@ -51,9 +43,8 @@ class CreateFromExampleSequencesResponseExample extends JsonSerializableType
         array $values = [],
     ) {
         $this->brand = $values['brand'] ?? null;
+        $this->emailCount = $values['emailCount'] ?? null;
         $this->name = $values['name'] ?? null;
-        $this->omittedEmailCount = $values['omittedEmailCount'] ?? null;
-        $this->stepNumbers = $values['stepNumbers'] ?? null;
         $this->url = $values['url'] ?? null;
     }
 

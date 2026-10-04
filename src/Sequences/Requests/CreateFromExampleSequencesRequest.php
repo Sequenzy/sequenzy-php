@@ -5,6 +5,7 @@ namespace Sequenzy\Sequences\Requests;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Sequences\Types\CreateFromExampleSequencesRequestEmailStyle;
+use Sequenzy\Core\Types\ArrayType;
 
 class CreateFromExampleSequencesRequest extends JsonSerializableType
 {
@@ -39,6 +40,12 @@ class CreateFromExampleSequencesRequest extends JsonSerializableType
     public ?string $sequence;
 
     /**
+     * @var ?array<int> $stepNumbers Which of the example's emails to clone, as 1-based positions in the gallery sequence (its Email 1, Email 2 and so on), not the `stepNumber` of the created sequence's steps. Duplicates are ignored and order does not matter. Each email keeps its original timing from the trigger. Defaults to the first 12. An empty list, more than 12 distinct positions, or a position outside the sequence returns 400; a list of more than 100 entries or non-integer entries fails validation with 422.
+     */
+    #[JsonProperty('stepNumbers'), ArrayType(['integer'])]
+    public ?array $stepNumbers;
+
+    /**
      * @var ?string $url Gallery sequence page URL, such as `https://sequenzy.com/email-examples/brands/linear/sequences/onboarding`.
      */
     #[JsonProperty('url')]
@@ -51,6 +58,7 @@ class CreateFromExampleSequencesRequest extends JsonSerializableType
      *   emailStyle?: ?value-of<CreateFromExampleSequencesRequestEmailStyle>,
      *   name?: ?string,
      *   sequence?: ?string,
+     *   stepNumbers?: ?array<int>,
      *   url?: ?string,
      * } $values
      */
@@ -62,6 +70,7 @@ class CreateFromExampleSequencesRequest extends JsonSerializableType
         $this->emailStyle = $values['emailStyle'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->sequence = $values['sequence'] ?? null;
+        $this->stepNumbers = $values['stepNumbers'] ?? null;
         $this->url = $values['url'] ?? null;
     }
 }

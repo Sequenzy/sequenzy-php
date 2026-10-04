@@ -10,6 +10,12 @@ use Sequenzy\Core\Types\Date;
 class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
 {
     /**
+     * @var ?ListEmailReferencesResponseEmailsItemAnalysis $analysis The email's breakdown, `null` until it has been analyzed. Counts come from its HTML; `voice`, `language`, `structure` and `takeaways` from AI reading the copy. Any field is `null` (or an empty list) when unknown.
+     */
+    #[JsonProperty('analysis')]
+    public ?ListEmailReferencesResponseEmailsItemAnalysis $analysis;
+
+    /**
      * @var ?ListEmailReferencesResponseEmailsItemBrand $brand
      */
     #[JsonProperty('brand')]
@@ -59,6 +65,7 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
 
     /**
      * @param array{
+     *   analysis?: ?ListEmailReferencesResponseEmailsItemAnalysis,
      *   brand?: ?ListEmailReferencesResponseEmailsItemBrand,
      *   id?: ?string,
      *   preheader?: ?string,
@@ -72,6 +79,7 @@ class ListEmailReferencesResponseEmailsItem extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->analysis = $values['analysis'] ?? null;
         $this->brand = $values['brand'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->preheader = $values['preheader'] ?? null;

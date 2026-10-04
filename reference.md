@@ -15955,6 +15955,128 @@ $client->push->updateWebPushSettings(
 </details>
 
 ## References
+<details><summary><code>$client-&gt;references-&gt;createGalleryBrandRequest($request) -> ?GalleryBrandRequestResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks for a brand, usually a competitor, to be added to the Sequenzy email gallery, the same as **Suggest a brand** in the dashboard's gallery picker. Asking again for the same domain keeps the one request (a new `note` replaces the old) and returns 200 with `created` false, so retries never duplicate. If the brand is already in the gallery, the request comes back with status `available`. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->createGalleryBrandRequest(
+    new CreateGalleryBrandRequestRequest([
+        'website' => 'website',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$note:** `?string` — Optional. What you want to see from the brand, such as its onboarding emails.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$website:** `string` — The brand's website or domain, such as `competitor.com` or `https://competitor.com/pricing`. It is reduced to the registrable domain, so `www.competitor.com` and `competitor.com` are the same request. It cannot be your own website.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;deleteGalleryBrandRequest($id) -> ?DeleteGalleryBrandRequestResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Withdraws one of your brand requests. A brand already added to the gallery stays there. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->deleteGalleryBrandRequest(
+    'id',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;references-&gt;listEmailReferences($request) -> ?ListEmailReferencesResponse</code></summary>
 <dl>
 <dd>
@@ -16043,6 +16165,45 @@ $client->references->listEmailReferences(
 
 **$subtype:** `?string` — For `scope=similar` without `q`, a gallery subtype to list first, such as `password_reset`. Ignored when it does not belong to the kind.
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;references-&gt;listGalleryBrandRequests() -> ?ListGalleryBrandRequestsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists your requests to add brands (usually competitors) to the Sequenzy email gallery, newest first, with where each one stands. A request moves from `requested` to `collecting` once the brand is added to the gallery, then to `available` once its emails are in the gallery, when `brand.url` links to them and [List Email References](/api-reference/references/list) can return them. Requests are private to your company. Requires `templates:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->references->listGalleryBrandRequests();
+```
 </dd>
 </dl>
 </dd>
@@ -17366,7 +17527,7 @@ $client->sequences->create(
 <dl>
 <dd>
 
-Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails (the first 12 unless `stepNumbers` picks which), and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
 </dd>
 </dl>
 </dd>
@@ -17431,6 +17592,14 @@ $client->sequences->createFromExample(
 <dd>
 
 **$sequence:** `?string` — Gallery sequence slug. Use with `brand` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$stepNumbers:** `?array` — Which of the example's emails to clone, as 1-based positions in the gallery sequence (its Email 1, Email 2 and so on), not the `stepNumber` of the created sequence's steps. Duplicates are ignored and order does not matter. Each email keeps its original timing from the trigger. Defaults to the first 12. An empty list, more than 12 distinct positions, or a position outside the sequence returns 400; a list of more than 100 entries or non-integer entries fails validation with 422.
     
 </dd>
 </dl>
@@ -19119,6 +19288,94 @@ $client->sequences->pauseEnrollments(
 <dd>
 
 **$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;previewFromExample($request) -> ?PreviewFromExampleSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Rewrites the first 3 emails of a public gallery sequence for your brand, or for another `website`, and returns them without creating anything. Emails that could not be written are counted in `failedEmailCount`; the call fails only when none could be written. Usually takes 10 to 30 seconds. Requires `sequences:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->previewFromExample(
+    new PreviewFromExampleSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$brand:** `?string` — Gallery brand slug. Use with `sequence` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$brief:** `?string` — Optional direction for every email. Takes priority over the example.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sequence:** `?string` — Gallery sequence slug. Use with `brand` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Gallery sequence page URL.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$website:** `?string` — Optional site or domain, such as `acme.com`, to write the preview for instead of your own brand. Its registrable domain is looked up like the public gallery preview. Omit it to use your company's brand profile.
     
 </dd>
 </dl>
@@ -24576,6 +24833,94 @@ $client->templates->list(
 <dd>
 
 **$offset:** `?int` — Templates to skip before returning results.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;templates-&gt;previewFromExample($request) -> ?PreviewFromExampleTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Rewrites a public email from the Sequenzy email gallery for your brand, or for another `website`, and returns it without saving anything. Same rewrite as Create Template from Example. Usually takes 5 to 20 seconds. Requires `templates:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->templates->previewFromExample(
+    new PreviewFromExampleTemplatesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$brand:** `?string` — Gallery brand slug. Use with `email` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$brief:** `?string` — Optional direction for the email. Takes priority over the example.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Gallery email slug. Use with `brand` instead of `url`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$url:** `?string` — Gallery email page URL, or a sequence page URL ending in `#email-{email}`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$website:** `?string` — Optional site or domain, such as `acme.com`, to write the preview for instead of your own brand. Its registrable domain is looked up like the public gallery preview. Omit it to use your company's brand profile.
     
 </dd>
 </dl>
