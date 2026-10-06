@@ -6,6 +6,7 @@ enum CreateSavedPopupRequestTemplate: string
 {
     case NewsletterModal = "newsletter-modal";
     case DiscountOffer = "discount-offer";
+    case ScratchToReveal = "scratch-to-reveal";
     case CountdownLaunch = "countdown-launch";
     case MinimalSlideIn = "minimal-slide-in";
     case ExitLeadMagnet = "exit-lead-magnet";

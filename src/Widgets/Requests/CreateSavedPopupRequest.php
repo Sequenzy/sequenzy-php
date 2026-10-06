@@ -10,6 +10,7 @@ use Sequenzy\Types\SavedPopupFrequency;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestPlacement;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestPresentation;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestResubscribeBehavior;
+use Sequenzy\Types\SavedPopupReward;
 use Sequenzy\Types\SavedPopupSchedule;
 use Sequenzy\Widgets\Types\CreateSavedPopupRequestStatus;
 use Sequenzy\Types\SavedPopupTargeting;
@@ -92,6 +93,12 @@ class CreateSavedPopupRequest extends JsonSerializableType
     public ?string $resubscribeBehavior;
 
     /**
+     * @var ?SavedPopupReward $reward
+     */
+    #[JsonProperty('reward')]
+    public ?SavedPopupReward $reward;
+
+    /**
      * @var ?SavedPopupSchedule $schedule
      */
     #[JsonProperty('schedule')]
@@ -159,6 +166,7 @@ class CreateSavedPopupRequest extends JsonSerializableType
      *   presentation?: ?value-of<CreateSavedPopupRequestPresentation>,
      *   redirectUrl?: ?string,
      *   resubscribeBehavior?: ?value-of<CreateSavedPopupRequestResubscribeBehavior>,
+     *   reward?: ?SavedPopupReward,
      *   schedule?: ?SavedPopupSchedule,
      *   status?: ?value-of<CreateSavedPopupRequestStatus>,
      *   successMessage?: ?string,
@@ -185,6 +193,7 @@ class CreateSavedPopupRequest extends JsonSerializableType
         $this->presentation = $values['presentation'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
         $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
+        $this->reward = $values['reward'] ?? null;
         $this->schedule = $values['schedule'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;

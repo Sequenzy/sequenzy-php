@@ -32,6 +32,12 @@ class GetSettingsSmsResponseSmsNumbersItem extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?bool $linkShorteningEnabled When true (the default), links in messages from this number are replaced with click-tracked short links. When false, they are sent exactly as written and SMS clicks from this number are not tracked.
+     */
+    #[JsonProperty('linkShorteningEnabled')]
+    public ?bool $linkShorteningEnabled;
+
+    /**
      * @var ?string $status
      */
     #[JsonProperty('status')]
@@ -43,6 +49,7 @@ class GetSettingsSmsResponseSmsNumbersItem extends JsonSerializableType
      *   e164?: ?string,
      *   id?: ?string,
      *   label?: ?string,
+     *   linkShorteningEnabled?: ?bool,
      *   status?: ?string,
      * } $values
      */
@@ -53,6 +60,7 @@ class GetSettingsSmsResponseSmsNumbersItem extends JsonSerializableType
         $this->e164 = $values['e164'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->linkShorteningEnabled = $values['linkShorteningEnabled'] ?? null;
         $this->status = $values['status'] ?? null;
     }
 

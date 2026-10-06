@@ -21202,7 +21202,7 @@ $client->sms->sendTest(
 <dl>
 <dd>
 
-Updates an SMS number's user-facing label and/or its brand prefix override. Omitted fields keep their value; at least one field is required. Requires companies:manage.
+Updates an SMS number's user-facing label, its brand prefix override, and/or link shortening. Omitted fields keep their value; at least one field is required. Link shortening changes apply to messages prepared after the change. Requires companies:manage.
 </dd>
 </dl>
 </dd>
@@ -21252,6 +21252,14 @@ $client->sms->updateNumberLabel(
 <dd>
 
 **$label:** `?string` — Label such as Marketing or Support. Send null to clear it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$linkShorteningEnabled:** `?bool` — true replaces links in messages from this number with click-tracked short links; false sends them exactly as written, so SMS clicks from this number are not tracked.
     
 </dd>
 </dl>
@@ -29514,6 +29522,14 @@ $client->widgets->createSavedPopup(
 <dl>
 <dd>
 
+**$reward:** `?SavedPopupReward` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$schedule:** `?SavedPopupSchedule` 
     
 </dd>
@@ -31136,6 +31152,14 @@ $client->widgets->updateSavedPopup(
 <dd>
 
 **$resubscribeBehavior:** `?string` — What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$reward:** `?SavedPopupReward` 
     
 </dd>
 </dl>

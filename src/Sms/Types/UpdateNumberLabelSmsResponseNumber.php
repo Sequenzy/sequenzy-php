@@ -26,10 +26,17 @@ class UpdateNumberLabelSmsResponseNumber extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?bool $linkShorteningEnabled
+     */
+    #[JsonProperty('linkShorteningEnabled')]
+    public ?bool $linkShorteningEnabled;
+
+    /**
      * @param array{
      *   brandPrefix?: ?string,
      *   id?: ?string,
      *   label?: ?string,
+     *   linkShorteningEnabled?: ?bool,
      * } $values
      */
     public function __construct(
@@ -38,6 +45,7 @@ class UpdateNumberLabelSmsResponseNumber extends JsonSerializableType
         $this->brandPrefix = $values['brandPrefix'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->linkShorteningEnabled = $values['linkShorteningEnabled'] ?? null;
     }
 
     /**

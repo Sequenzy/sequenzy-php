@@ -4,6 +4,7 @@ namespace Sequenzy\Widgets\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\SavedPopupRewardResult;
 
 class SubmitSavedPopupResponse extends JsonSerializableType
 {
@@ -14,6 +15,12 @@ class SubmitSavedPopupResponse extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?SavedPopupRewardResult $reward Present when the popup has an enabled scratch-to-reveal reward. Every success response for that popup carries the same reward, including submissions ignored by bot and abuse protection, so the response does not reveal whether the contact was stored. Error responses never include it.
+     */
+    #[JsonProperty('reward')]
+    public ?SavedPopupRewardResult $reward;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -22,6 +29,7 @@ class SubmitSavedPopupResponse extends JsonSerializableType
     /**
      * @param array{
      *   redirectUrl?: ?string,
+     *   reward?: ?SavedPopupRewardResult,
      *   success?: ?bool,
      * } $values
      */
@@ -29,6 +37,7 @@ class SubmitSavedPopupResponse extends JsonSerializableType
         array $values = [],
     ) {
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->reward = $values['reward'] ?? null;
         $this->success = $values['success'] ?? null;
     }
 

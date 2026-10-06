@@ -14,7 +14,7 @@ use Sequenzy\Core\Types\Date;
 class SavedPopup extends JsonSerializableType
 {
     /**
-     * @var ?array<string, mixed> $content Complete popup content - template, presentation, placement, theme, settings, trigger, targeting, schedule, frequency, visual, and blocks. Present on detail reads; omitted when listing unless `includeContent=true`.
+     * @var ?array<string, mixed> $content Complete popup content - template, presentation, placement, theme, settings, trigger, targeting, schedule, frequency, visual, reward (see SavedPopupReward), and blocks. Present on detail reads; omitted when listing unless `includeContent=true`.
      */
     #[JsonProperty('content'), ArrayType(['string' => 'mixed'])]
     public ?array $content;

@@ -273,7 +273,7 @@ class SmsClient
     }
 
     /**
-     * Updates an SMS number's user-facing label and/or its brand prefix override. Omitted fields keep their value; at least one field is required. Requires companies:manage.
+     * Updates an SMS number's user-facing label, its brand prefix override, and/or link shortening. Omitted fields keep their value; at least one field is required. Link shortening changes apply to messages prepared after the change. Requires companies:manage.
      *
      * Example:
      * ```php

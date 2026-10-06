@@ -20,9 +20,16 @@ class UpdateNumberLabelSmsRequest extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?bool $linkShorteningEnabled true replaces links in messages from this number with click-tracked short links; false sends them exactly as written, so SMS clicks from this number are not tracked.
+     */
+    #[JsonProperty('linkShorteningEnabled')]
+    public ?bool $linkShorteningEnabled;
+
+    /**
      * @param array{
      *   brandPrefix?: ?string,
      *   label?: ?string,
+     *   linkShorteningEnabled?: ?bool,
      * } $values
      */
     public function __construct(
@@ -30,5 +37,6 @@ class UpdateNumberLabelSmsRequest extends JsonSerializableType
     ) {
         $this->brandPrefix = $values['brandPrefix'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->linkShorteningEnabled = $values['linkShorteningEnabled'] ?? null;
     }
 }
