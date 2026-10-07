@@ -84,6 +84,12 @@ class EmailBlock extends JsonSerializableType
     public ?int $padding;
 
     /**
+     * @var ?bool $stackOnMobile Columns block only. Multi-column rows stack into a single column on screens 480px wide or narrower. Set to false to keep the columns side by side on mobile. Omit or set to true for the default stacking.
+     */
+    #[JsonProperty('stackOnMobile')]
+    public ?bool $stackOnMobile;
+
+    /**
      * @var ?EmailBlockStyles $styles Per-block visual styles. For compatibility, style fields such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius can also be supplied at the block top level and are normalized into this object.
      */
     #[JsonProperty('styles')]
@@ -110,6 +116,7 @@ class EmailBlock extends JsonSerializableType
      *   overlayPosition?: ?value-of<EmailBlockOverlayPosition>,
      *   overlayShade?: ?int,
      *   padding?: ?int,
+     *   stackOnMobile?: ?bool,
      *   styles?: ?EmailBlockStyles,
      * } $values
      */
@@ -128,6 +135,7 @@ class EmailBlock extends JsonSerializableType
         $this->overlayPosition = $values['overlayPosition'] ?? null;
         $this->overlayShade = $values['overlayShade'] ?? null;
         $this->padding = $values['padding'] ?? null;
+        $this->stackOnMobile = $values['stackOnMobile'] ?? null;
         $this->styles = $values['styles'] ?? null;
         $this->type = $values['type'];
     }
