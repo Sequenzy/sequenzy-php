@@ -121,7 +121,7 @@ class IntegrationsClient
     }
 
     /**
-     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, which is webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
      *
      * Example:
      * ```php

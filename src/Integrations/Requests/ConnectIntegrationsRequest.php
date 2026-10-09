@@ -11,7 +11,7 @@ use Sequenzy\Integrations\Types\ConnectIntegrationsRequestSettings;
 class ConnectIntegrationsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, and attio. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token.
      */
     #[JsonProperty('apiKey')]
     public ?string $apiKey;
@@ -29,7 +29,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public string $provider;
 
     /**
-     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects.
      */
     #[JsonProperty('providerAccountId')]
     public ?string $providerAccountId;
@@ -41,7 +41,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public ?ConnectIntegrationsRequestSettings $settings;
 
     /**
-     * @var ?string $webhookSecret Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
+     * @var ?string $webhookSecret Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Segment, use 16-153 UTF-8 bytes.
      */
     #[JsonProperty('webhookSecret')]
     public ?string $webhookSecret;
