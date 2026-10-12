@@ -21,6 +21,7 @@ use Sequenzy\Events\EventsClient;
 use Sequenzy\Feedback\FeedbackClient;
 use Sequenzy\FrequencyCap\FrequencyCapClient;
 use Sequenzy\Generation\GenerationClient;
+use Sequenzy\InApp\InAppClient;
 use Sequenzy\Integrations\IntegrationsClient;
 use Sequenzy\LandingPages\LandingPagesClient;
 use Sequenzy\Lists\ListsClient;
@@ -150,6 +151,11 @@ class SequenzyClient
      * @var GenerationClient $generation
      */
     public GenerationClient $generation;
+
+    /**
+     * @var InAppClient $inApp
+     */
+    public InAppClient $inApp;
 
     /**
      * @var IntegrationsClient $integrations
@@ -369,6 +375,7 @@ class SequenzyClient
         $this->feedback = new FeedbackClient($this->client, $this->options);
         $this->frequencyCap = new FrequencyCapClient($this->client, $this->options);
         $this->generation = new GenerationClient($this->client, $this->options);
+        $this->inApp = new InAppClient($this->client, $this->options);
         $this->integrations = new IntegrationsClient($this->client, $this->options);
         $this->landingPages = new LandingPagesClient($this->client, $this->options);
         $this->lists = new ListsClient($this->client, $this->options);

@@ -21,6 +21,12 @@ class SavedFormSettings extends JsonSerializableType
     public ?string $borderRadius;
 
     /**
+     * @var bool $botProtection Whether a Cloudflare Turnstile bot check runs before each signup. Signups that fail it confirm by email first.
+     */
+    #[JsonProperty('botProtection')]
+    public bool $botProtection;
+
+    /**
      * @var ?string $buttonColor
      */
     #[JsonProperty('buttonColor')]
@@ -233,6 +239,7 @@ class SavedFormSettings extends JsonSerializableType
     /**
      * @param array{
      *   afterSubmission: value-of<SavedFormSettingsAfterSubmission>,
+     *   botProtection: bool,
      *   buttonText: string,
      *   customFields: array<SavedFormSettingsCustomFieldsItem>,
      *   description: string,
@@ -276,6 +283,7 @@ class SavedFormSettings extends JsonSerializableType
     ) {
         $this->afterSubmission = $values['afterSubmission'];
         $this->borderRadius = $values['borderRadius'] ?? null;
+        $this->botProtection = $values['botProtection'];
         $this->buttonColor = $values['buttonColor'] ?? null;
         $this->buttonText = $values['buttonText'];
         $this->customFields = $values['customFields'];

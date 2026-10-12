@@ -70,6 +70,12 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
     public ?string $redirectUrl;
 
     /**
+     * @var ?string $sequenzyBotCheckToken Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+     */
+    #[JsonProperty('sequenzyBotCheckToken')]
+    public ?string $sequenzyBotCheckToken;
+
+    /**
      * @var ?string $sequenzyToken Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
      */
     #[JsonProperty('sequenzyToken')]
@@ -105,6 +111,7 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
      *   listIdsBracketed?: ?array<string>,
      *   phone?: ?string,
      *   redirectUrl?: ?string,
+     *   sequenzyBotCheckToken?: ?string,
      *   sequenzyToken?: ?string,
      *   tagIds?: ?array<string>,
      *   tagIdsBracketed?: ?array<string>,
@@ -124,6 +131,7 @@ class SubmitCompanyScopedSavedSignupFormRequest extends JsonSerializableType
         $this->listIdsBracketed = $values['listIdsBracketed'] ?? null;
         $this->phone = $values['phone'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
+        $this->sequenzyBotCheckToken = $values['sequenzyBotCheckToken'] ?? null;
         $this->sequenzyToken = $values['sequenzyToken'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->tagIdsBracketed = $values['tagIdsBracketed'] ?? null;

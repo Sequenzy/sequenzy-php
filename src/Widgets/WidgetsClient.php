@@ -370,6 +370,54 @@ class WidgetsClient
     }
 
     /**
+     * HTML page that runs the Cloudflare Turnstile check for saved forms and popups with bot protection turned on. No API key is required.
+     *
+     * The hosted embed script and popups load it in a small iframe and pass its token with the submission as `sequenzyBotCheckToken`. You do not need to call it yourself.
+     *
+     * Example:
+     * ```php
+     * $client->widgets->getFormBotCheckFrame();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return string
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getFormBotCheckFrame(?array $options = null): string
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "forms/bot-check",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                return $response->getBody()->getContents();
+            }
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Load the hosted JavaScript runtime for popup signup widgets. No API key is required.
      *
      * Example:

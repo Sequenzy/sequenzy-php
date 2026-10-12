@@ -26,6 +26,12 @@ class UpdateSavedPopupRequest extends JsonSerializableType
     public ?array $blocks;
 
     /**
+     * @var ?bool $botProtection Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
+     */
+    #[JsonProperty('botProtection')]
+    public ?bool $botProtection;
+
+    /**
      * @var ?string $buttonText
      */
     #[JsonProperty('buttonText')]
@@ -148,6 +154,7 @@ class UpdateSavedPopupRequest extends JsonSerializableType
     /**
      * @param array{
      *   blocks?: ?array<array<string, mixed>>,
+     *   botProtection?: ?bool,
      *   buttonText?: ?string,
      *   description?: ?string,
      *   duplicateStrategy?: ?value-of<UpdateSavedPopupRequestDuplicateStrategy>,
@@ -174,6 +181,7 @@ class UpdateSavedPopupRequest extends JsonSerializableType
         array $values = [],
     ) {
         $this->blocks = $values['blocks'] ?? null;
+        $this->botProtection = $values['botProtection'] ?? null;
         $this->buttonText = $values['buttonText'] ?? null;
         $this->description = $values['description'] ?? null;
         $this->duplicateStrategy = $values['duplicateStrategy'] ?? null;

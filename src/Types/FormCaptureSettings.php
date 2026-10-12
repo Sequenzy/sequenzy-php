@@ -15,6 +15,12 @@ class FormCaptureSettings extends JsonSerializableType
     public string $afterSubmission;
 
     /**
+     * @var bool $botProtection Whether a Cloudflare Turnstile bot check runs before each signup. Signups that fail it confirm by email first.
+     */
+    #[JsonProperty('botProtection')]
+    public bool $botProtection;
+
+    /**
      * @var value-of<FormCaptureSettingsDuplicateStrategy> $duplicateStrategy
      */
     #[JsonProperty('duplicateStrategy')]
@@ -53,6 +59,7 @@ class FormCaptureSettings extends JsonSerializableType
     /**
      * @param array{
      *   afterSubmission: value-of<FormCaptureSettingsAfterSubmission>,
+     *   botProtection: bool,
      *   duplicateStrategy: value-of<FormCaptureSettingsDuplicateStrategy>,
      *   listIds: array<string>,
      *   listMode: value-of<FormCaptureSettingsListMode>,
@@ -65,6 +72,7 @@ class FormCaptureSettings extends JsonSerializableType
         array $values,
     ) {
         $this->afterSubmission = $values['afterSubmission'];
+        $this->botProtection = $values['botProtection'];
         $this->duplicateStrategy = $values['duplicateStrategy'];
         $this->listIds = $values['listIds'];
         $this->listMode = $values['listMode'];

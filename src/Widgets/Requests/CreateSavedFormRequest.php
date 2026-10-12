@@ -11,6 +11,12 @@ use Sequenzy\Widgets\Types\CreateSavedFormRequestResubscribeBehavior;
 class CreateSavedFormRequest extends JsonSerializableType
 {
     /**
+     * @var ?bool $botProtection Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
+     */
+    #[JsonProperty('botProtection')]
+    public ?bool $botProtection;
+
+    /**
      * @var ?string $buttonText
      */
     #[JsonProperty('buttonText')]
@@ -92,6 +98,7 @@ class CreateSavedFormRequest extends JsonSerializableType
      * @param array{
      *   listIds: array<string>,
      *   name: string,
+     *   botProtection?: ?bool,
      *   buttonText?: ?string,
      *   description?: ?string,
      *   duplicateStrategy?: ?value-of<CreateSavedFormRequestDuplicateStrategy>,
@@ -108,6 +115,7 @@ class CreateSavedFormRequest extends JsonSerializableType
     public function __construct(
         array $values,
     ) {
+        $this->botProtection = $values['botProtection'] ?? null;
         $this->buttonText = $values['buttonText'] ?? null;
         $this->description = $values['description'] ?? null;
         $this->duplicateStrategy = $values['duplicateStrategy'] ?? null;

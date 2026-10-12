@@ -10471,6 +10471,282 @@ $client->generation->generateSubjectLines(
 </dl>
 </details>
 
+## In-app
+<details><summary><code>$client-&gt;inApp-&gt;deleteInAppMessage($messageId) -> ?DeleteInAppMessageResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes an item so the contact's app stops showing it the next time it fetches the feed. Its engagement no longer counts in step stats. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->inApp->deleteInAppMessage(
+    'messageId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$messageId:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;inApp-&gt;getInAppStepStats($stepId) -> ?GetInAppStepStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Created, displayed, clicked and dismissed counts for one in_app sequence step. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->inApp->getInAppStepStats(
+    'stepId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$stepId:** `string` — The step's node ID from Get Sequence.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;inApp-&gt;listInAppMessages($request) -> ?ListInAppMessagesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists a contact's in-app messages and content cards, created by in_app sequence steps. With status open (default) it returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->inApp->listInAppMessages(
+    new ListInAppMessagesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$email:** `?string` — Contact email (case-insensitive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$externalId:** `?string` — Contact external ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$kind:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$status:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberId:** `?string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;inApp-&gt;recordInAppEvent($messageId, $request) -> ?RecordInAppEventResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records that the app displayed, clicked, dismissed or read an item. The first report of each type sets its timestamp; repeats change nothing except clickCount, and recorded is false. Clicks, dismissals and reads also mark the item displayed. Messages leave the open feed once displayed, clicked or dismissed; cards once dismissed. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->inApp->recordInAppEvent(
+    'messageId',
+    new RecordInAppEventRequest([
+        'type' => RecordInAppEventRequestType::Displayed->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$messageId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$type:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Integrations
 <details><summary><code>$client-&gt;integrations-&gt;activatePixel($id) -> ?ActivatePixelIntegrationsResponse</code></summary>
 <dl>
@@ -29270,6 +29546,14 @@ $client->widgets->createSavedForm(
 <dl>
 <dd>
 
+**$botProtection:** `?bool` — Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$buttonText:** `?string` 
     
 </dd>
@@ -29427,6 +29711,14 @@ $client->widgets->createSavedPopup(
 <dd>
 
 **$blocks:** `?array` — Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$botProtection:** `?bool` — Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
     
 </dd>
 </dl>
@@ -29784,6 +30076,47 @@ $client->widgets->getCompanyScopedSavedSignupFormEmbedScript(
 
 **$formId:** `string` — The saved form ID
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;widgets-&gt;getFormBotCheckFrame() -> string</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+HTML page that runs the Cloudflare Turnstile check for saved forms and popups with bot protection turned on. No API key is required.
+
+The hosted embed script and popups load it in a small iframe and pass its token with the submission as `sequenzyBotCheckToken`. You do not need to call it yourself.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->widgets->getFormBotCheckFrame();
+```
 </dd>
 </dl>
 </dd>
@@ -30503,6 +30836,14 @@ $client->widgets->submitCompanyScopedSavedSignupForm(
 <dl>
 <dd>
 
+**$sequenzyBotCheckToken:** `?string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$sequenzyToken:** `?string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
     
 </dd>
@@ -30629,6 +30970,14 @@ $client->widgets->submitSavedPopup(
 <dd>
 
 **$phone:** `?string` — Subscriber phone number in E.164 or US national format, when configured on the popup. Stored on the base subscriber profile and does not grant SMS consent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sequenzyBotCheckToken:** `?string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
     
 </dd>
 </dl>
@@ -30823,6 +31172,14 @@ $client->widgets->submitSignupForm(
 <dl>
 <dd>
 
+**$sequenzyBotCheckToken:** `?string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$sequenzyToken:** `?string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
     
 </dd>
@@ -30909,6 +31266,14 @@ $client->widgets->updateSavedForm(
 <dd>
 
 **$blocks:** `?array` — Full replacement for the form's content blocks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$botProtection:** `?bool` — Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
     
 </dd>
 </dl>
@@ -31064,6 +31429,14 @@ $client->widgets->updateSavedPopup(
 <dd>
 
 **$blocks:** `?array` — Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$botProtection:** `?bool` — Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
     
 </dd>
 </dl>
