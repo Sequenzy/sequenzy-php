@@ -13,6 +13,7 @@ enum OutboundWebhookEventType: string
     case EmailOpened = "email.opened";
     case EmailClicked = "email.clicked";
     case EmailReplied = "email.replied";
+    case EmailReceived = "email.received";
     case EmailUnsubscribed = "email.unsubscribed";
     case CampaignSent = "campaign.sent";
     case SmsSent = "sms.sent";

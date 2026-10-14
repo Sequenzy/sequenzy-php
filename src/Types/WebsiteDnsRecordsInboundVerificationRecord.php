@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+ * Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the TXT record an older inbound reply host needed for Amazon SES ownership; a migrated host's records now appear on its receiving domain.
  */
 class WebsiteDnsRecordsInboundVerificationRecord extends JsonSerializableType
 {

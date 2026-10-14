@@ -10,7 +10,7 @@ use Sequenzy\Core\Types\ArrayType;
 class CreateWebhooksRequest extends JsonSerializableType
 {
     /**
-     * @var ?array<value-of<OutboundWebhookEventType>> $events Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
+     * @var ?array<value-of<OutboundWebhookEventType>> $events Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, email.received, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, new inbox mail, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
      */
     #[JsonProperty('events'), ArrayType(['string'])]
     public ?array $events;

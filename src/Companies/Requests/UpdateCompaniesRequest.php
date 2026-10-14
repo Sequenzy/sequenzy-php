@@ -178,13 +178,13 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?string $replyToName;
 
     /**
-     * @var ?value-of<UpdateCompaniesRequestReplyTrackingDomainMode> $replyTrackingDomainMode Use Sequenzy's managed inbound domain or a configured custom domain.
+     * @var ?value-of<UpdateCompaniesRequestReplyTrackingDomainMode> $replyTrackingDomainMode custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
      */
     #[JsonProperty('replyTrackingDomainMode')]
     public ?string $replyTrackingDomainMode;
 
     /**
-     * @var ?bool $replyTrackingEnabled Enable or disable inbound reply capture.
+     * @var ?bool $replyTrackingEnabled Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
      */
     #[JsonProperty('replyTrackingEnabled')]
     public ?bool $replyTrackingEnabled;

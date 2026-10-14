@@ -204,7 +204,7 @@ class Company extends JsonSerializableType
     public ?int $replyRetentionDays;
 
     /**
-     * @var ?value-of<CompanyReplyTrackingDomainMode> $replyTrackingDomainMode Whether reply capture uses Sequenzy's managed inbound domain or a configured custom domain.
+     * @var ?value-of<CompanyReplyTrackingDomainMode> $replyTrackingDomainMode Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
      */
     #[JsonProperty('replyTrackingDomainMode')]
     public ?string $replyTrackingDomainMode;

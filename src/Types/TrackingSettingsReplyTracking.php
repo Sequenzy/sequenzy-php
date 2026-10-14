@@ -20,7 +20,7 @@ class TrackingSettingsReplyTracking extends JsonSerializableType
     public ?bool $inboundEmailEnabled;
 
     /**
-     * @var ?string $inboundReplyDomainMode
+     * @var ?value-of<TrackingSettingsReplyTrackingInboundReplyDomainMode> $inboundReplyDomainMode Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
      */
     #[JsonProperty('inboundReplyDomainMode')]
     public ?string $inboundReplyDomainMode;
@@ -29,7 +29,7 @@ class TrackingSettingsReplyTracking extends JsonSerializableType
      * @param array{
      *   forwardReplies?: ?bool,
      *   inboundEmailEnabled?: ?bool,
-     *   inboundReplyDomainMode?: ?string,
+     *   inboundReplyDomainMode?: ?value-of<TrackingSettingsReplyTrackingInboundReplyDomainMode>,
      * } $values
      */
     public function __construct(

@@ -7159,7 +7159,7 @@ $client->companies->update(
 <dl>
 <dd>
 
-**$replyTrackingDomainMode:** `?string` — Use Sequenzy's managed inbound domain or a configured custom domain.
+**$replyTrackingDomainMode:** `?string` — custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
     
 </dd>
 </dl>
@@ -7167,7 +7167,7 @@ $client->companies->update(
 <dl>
 <dd>
 
-**$replyTrackingEnabled:** `?bool` — Enable or disable inbound reply capture.
+**$replyTrackingEnabled:** `?bool` — Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
     
 </dd>
 </dl>
@@ -7228,6 +7228,75 @@ $client->companies->update(
 </details>
 
 ## Conversations
+<details><summary><code>$client-&gt;conversations-&gt;bulkUpdateSpam($request) -> ?BulkUpdateSpamConversationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Moves up to 100 conversations into the Spam folder (spam true) or back to the inbox (spam false). Only conversations that move are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->bulkUpdateSpam(
+    new BulkUpdateSpamConversationsRequest([
+        'conversationIds' => [
+            'conversationIds',
+        ],
+        'spam' => true,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$conversationIds:** `array` — Conversation IDs to move, up to 100. Whitespace is trimmed and blank or repeated IDs are ignored; at least one non-blank ID is required.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$spam:** `bool` — True moves them to Spam; false moves them back.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;conversations-&gt;bulkUpdateStatus($request) -> ?BulkUpdateStatusConversationsResponse</code></summary>
 <dl>
 <dd>
@@ -7449,7 +7518,7 @@ $client->conversations->get(
 <dl>
 <dd>
 
-Returns the address anyone can email to reach this company's inbox, the same address on verified custom inbound domains, whether receiving is on, whether attachments are stored, and how long received email is kept.
+Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether receiving is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
 </dd>
 </dl>
 </dd>
@@ -7488,7 +7557,7 @@ $client->conversations->getInboxAddress();
 <dl>
 <dd>
 
-Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, or search term.
+Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, search term, inbox address, or the Spam folder. Conversations in the Spam folder are only listed with spam=true.
 </dd>
 </dl>
 </dd>
@@ -7536,7 +7605,23 @@ $client->conversations->list(
 <dl>
 <dd>
 
+**$recipient:** `?string` — Only conversations that started at this inbox address. Case does not matter. See List conversation recipients.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$search:** `?string` — Search in subject, subscriber email, or subscriber name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$spam:** `?string` — Pass "true" to list the Spam folder instead. Other lists leave spam out.
     
 </dd>
 </dl>
@@ -7554,6 +7639,45 @@ $client->conversations->list(
 
 **$unread:** `?string` — Pass "true" to only return conversations with unread messages.
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;conversations-&gt;listRecipients() -> ?ListRecipientsConversationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the inbox addresses conversations started at, such as admin@acme.com and team@acme.com, most recently used first (up to 100). Addresses that only received spam are left out. Use one as the recipient filter of List conversations.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->conversations->listRecipients();
+```
 </dd>
 </dl>
 </dd>
@@ -7793,7 +7917,7 @@ $client->conversations->sendMessage(
 <dl>
 <dd>
 
-Sets a branded inbox address `{localPart}@inbound.{domain}` on one of your verified sending domains, or clears it when both fields are null. The address starts receiving once the domain's inbound MX record is verified; the default address keeps working. Returns the same body as Get Inbox Address.
+Sets a branded inbox address `{localPart}@{domain}` on one of your receiving domains, or clears it when both fields are null. The address is active once the receiving domain is verified; the default address keeps working. Every other address on the domain reaches the inbox too; the branded one is the address to share. Returns the same body as Get Inbox Address.
 </dd>
 </dl>
 </dd>
@@ -7825,7 +7949,7 @@ $client->conversations->updateInboxAddress(
 <dl>
 <dd>
 
-**$domain:** `?string` — A verified sending domain of the company, such as `acme.com`. Null to clear.
+**$domain:** `?string` — One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as the workspace's one receiving domain, or fails with 409 `limit_reached` when the workspace already has a different one. Null to clear.
     
 </dd>
 </dl>
@@ -16695,6 +16819,272 @@ $client->push->updateWebPushSettings(
 <dd>
 
 **$enabled:** `?bool` — Turn web push on or off. Provide enabled and/or defaultIconUrl.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Receiving Domains
+<details><summary><code>$client-&gt;receivingDomains-&gt;addReceivingDomain($request) -> ?ReceivingDomainCreateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds your workspace's receiving domain, a domain or subdomain whose mail should reach your Inbox, and returns the DNS records to publish. A workspace has one receiving domain. Once it is verified, replies to emails from all your sending domains come back to reply addresses on it, and its first verification turns Inbox on; until then replies use inbound.sequenzy.com. Mail for a domain goes wherever its MX records point, so a domain whose MX records already point at another mail service (Google Workspace, Microsoft 365, Cloudflare Email Routing) is refused: use a subdomain such as support.acme.com instead. When the workspace already has a receiving domain, a different name is refused with limit_reached before any DNS lookup. Adding a name this workspace already has returns it unchanged with created false, without checking its MX records again, so retries are safe. Adding the first receiving domain also sets the company's reply domain mode to custom. Requires the websites:write scope and owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->receivingDomains->addReceivingDomain(
+    new AddReceivingDomainRequest([
+        'domain' => 'support.acme.com',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — Domain or subdomain you own, such as acme.com or support.acme.com. Case and a trailing dot are ignored.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;receivingDomains-&gt;getReceivingDomain($domain) -> ?ReceivingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one receiving domain from the latest stored check. To check its DNS now, use Verify receiving domain. Requires the websites:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->receivingDomains->getReceivingDomain(
+    'support.acme.com',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — The receiving domain's name, such as support.acme.com, or its id.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;receivingDomains-&gt;listReceivingDomains() -> ?ListReceivingDomainsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the domains and subdomains whose mail reaches your Inbox, in alphabetical order, with their status and the DNS records to publish. A workspace has one receiving domain; workspaces that set up several before keep them, and replies then use the sender's own domain or one on the same root, else the oldest verified one. Requires the websites:read scope. Marketer personal API keys cannot use receiving domain endpoints.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->receivingDomains->listReceivingDomains();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;receivingDomains-&gt;removeReceivingDomain($domain) -> ?ReceivingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes a receiving domain and returns it as it was. Mail to every address on it stops arriving, including replies to emails already sent with reply addresses on it, and a branded inbox address on it is cleared. Remove Sequenzy's MX record from your DNS afterwards. Requires the websites:delete scope and owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->receivingDomains->removeReceivingDomain(
+    'support.acme.com',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — The receiving domain's name, such as support.acme.com, or its id.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;receivingDomains-&gt;verifyReceivingDomain($domain) -> ?ReceivingDomainResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Checks the domain's DNS records and Amazon SES setup now instead of waiting for the next automatic check, and returns the result. The first time a receiving domain added with Add receiving domain becomes verified, Inbox turns on (replyTrackingEnabled becomes true). Domains moved from an older reply setup or added through Update inbox address leave the Inbox setting unchanged. Requires the websites:write scope and owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->receivingDomains->verifyReceivingDomain(
+    'support.acme.com',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — The receiving domain's name, such as support.acme.com, or its id.
     
 </dd>
 </dl>
@@ -28703,7 +29093,7 @@ $client->webhooks->create(
 <dl>
 <dd>
 
-**$events:** `?array` — Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
+**$events:** `?array` — Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, email.received, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, new inbox mail, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
     
 </dd>
 </dl>
@@ -29480,7 +29870,7 @@ $client->websites->list();
 <dl>
 <dd>
 
-Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics. For legacy custom reply domains, once the inbound MX is verified this also prepares any required public verification TXT record in website.dnsRecords.inboundVerificationRecord. Publish that record and retry this endpoint; existing reply hostnames are preserved. Inspect dnsRecords.inboundRoutingStatus independently of readyToSend.
+Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics. It does not check or set up receiving mail; use Verify receiving domain (/receiving-domains/{domain}/verify) for that.
 </dd>
 </dl>
 </dd>

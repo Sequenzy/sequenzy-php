@@ -58,6 +58,18 @@ class ConversationSummary extends JsonSerializableType
     public ?int $messageCount;
 
     /**
+     * @var ?string $recipientAddress Inbox address the conversation started at, such as admin@acme.com. Null for replies to your emails.
+     */
+    #[JsonProperty('recipientAddress')]
+    public ?string $recipientAddress;
+
+    /**
+     * @var ?bool $spam True when the conversation is in the Spam folder: mail the inbound spam or virus scan flagged, or a conversation moved there.
+     */
+    #[JsonProperty('spam')]
+    public ?bool $spam;
+
+    /**
      * @var ?value-of<ConversationSummaryStatus> $status
      */
     #[JsonProperty('status')]
@@ -97,6 +109,8 @@ class ConversationSummary extends JsonSerializableType
      *   lastMessageBy?: ?string,
      *   lastMessagePreview?: ?ConversationSummaryLastMessagePreview,
      *   messageCount?: ?int,
+     *   recipientAddress?: ?string,
+     *   spam?: ?bool,
      *   status?: ?value-of<ConversationSummaryStatus>,
      *   subject?: ?string,
      *   subscriberEmail?: ?string,
@@ -115,6 +129,8 @@ class ConversationSummary extends JsonSerializableType
         $this->lastMessageBy = $values['lastMessageBy'] ?? null;
         $this->lastMessagePreview = $values['lastMessagePreview'] ?? null;
         $this->messageCount = $values['messageCount'] ?? null;
+        $this->recipientAddress = $values['recipientAddress'] ?? null;
+        $this->spam = $values['spam'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->subject = $values['subject'] ?? null;
         $this->subscriberEmail = $values['subscriberEmail'] ?? null;

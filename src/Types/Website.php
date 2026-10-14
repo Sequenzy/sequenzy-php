@@ -29,7 +29,7 @@ class Website extends JsonSerializableType
     public ?array $dkim;
 
     /**
-     * @var ?WebsiteDnsRecords $dnsRecords The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+     * @var ?WebsiteDnsRecords $dnsRecords The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
      */
     #[JsonProperty('dnsRecords')]
     public ?WebsiteDnsRecords $dnsRecords;

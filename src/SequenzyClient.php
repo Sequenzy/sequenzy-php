@@ -33,6 +33,7 @@ use Sequenzy\NotificationPreferences\NotificationPreferencesClient;
 use Sequenzy\Orders\OrdersClient;
 use Sequenzy\Products\ProductsClient;
 use Sequenzy\Push\PushClient;
+use Sequenzy\ReceivingDomains\ReceivingDomainsClient;
 use Sequenzy\References\ReferencesClient;
 use Sequenzy\Segments\SegmentsClient;
 use Sequenzy\SenderProfiles\SenderProfilesClient;
@@ -213,6 +214,11 @@ class SequenzyClient
      * @var PushClient $push
      */
     public PushClient $push;
+
+    /**
+     * @var ReceivingDomainsClient $receivingDomains
+     */
+    public ReceivingDomainsClient $receivingDomains;
 
     /**
      * @var ReferencesClient $references
@@ -399,6 +405,7 @@ class SequenzyClient
         $this->orders = new OrdersClient($this->client, $this->options);
         $this->products = new ProductsClient($this->client, $this->options);
         $this->push = new PushClient($this->client, $this->options);
+        $this->receivingDomains = new ReceivingDomainsClient($this->client, $this->options);
         $this->references = new ReferencesClient($this->client, $this->options);
         $this->segments = new SegmentsClient($this->client, $this->options);
         $this->senderProfiles = new SenderProfilesClient($this->client, $this->options);

@@ -7,33 +7,39 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+ * The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
  */
 class WebsiteDnsRecords extends JsonSerializableType
 {
     /**
-     * @var ?string $inboundRoutingError Last reply-routing error and recovery instruction. Null when there is no stored error; omitted when no inbound MX record exists. Retry verification after correcting DNS or a temporary provider failure.
+     * @var ?string $inboundRoutingError Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. Null when no error was stored; omitted when the domain has no stored inbound MX record. Read the receiving domain's error instead.
      */
     #[JsonProperty('inboundRoutingError')]
     public ?string $inboundRoutingError;
 
     /**
-     * @var ?value-of<WebsiteDnsRecordsInboundRoutingStatus> $inboundRoutingStatus Customer-facing reply readiness from stored checks, returned when an inbound MX record exists. SES routes require verified MX, receiving ownership, and an active receiving rule. Unchecked legacy SES routes display pending; retained MTA reply routes keep their existing status. Inconclusive ownership checks preserve the underlying route and previously confirmed ownership, with an error for retry.
+     * @var ?value-of<WebsiteDnsRecordsInboundRoutingStatus> $inboundRoutingStatus Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. Returned when the domain has a stored inbound MX record. Read the receiving domain's status instead.
      */
     #[JsonProperty('inboundRoutingStatus')]
     public ?string $inboundRoutingStatus;
 
     /**
-     * @var ?WebsiteDnsRecordsInboundVerificationRecord $inboundVerificationRecord Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+     * @var ?WebsiteDnsRecordsInboundVerificationRecord $inboundVerificationRecord Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the TXT record an older inbound reply host needed for Amazon SES ownership; a migrated host's records now appear on its receiving domain.
      */
     #[JsonProperty('inboundVerificationRecord')]
     public ?WebsiteDnsRecordsInboundVerificationRecord $inboundVerificationRecord;
 
     /**
-     * @var ?value-of<WebsiteDnsRecordsInboundVerificationStatus> $inboundVerificationStatus Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
+     * @var ?value-of<WebsiteDnsRecordsInboundVerificationStatus> $inboundVerificationStatus Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the stored ownership status of the older inbound reply host.
      */
     #[JsonProperty('inboundVerificationStatus')]
     public ?string $inboundVerificationStatus;
+
+    /**
+     * @var ?array<WebsiteDnsRecordsPlatformDnsRecordsItem> $platformDnsRecords Present on domains added with the per-domain CNAME record set. Publish these CNAMEs instead of the DKIM TXT record in byodkimRecord (a TXT published there still verifies, but a key change then needs a DNS change). Branch on whether this field is present. Only entries with required true block verification. dkim_spare lets Sequenzy change the DKIM key without a DNS change from you; ses_return_path, once it resolves, aligns SPF with your domain on every email.
+     */
+    #[JsonProperty('platformDnsRecords'), ArrayType([WebsiteDnsRecordsPlatformDnsRecordsItem::class])]
+    public ?array $platformDnsRecords;
 
     /**
      * @var ?array<string, mixed> $returnPathCnameDiagnostic Why the bounce CNAME is not verified yet, when known.
@@ -71,6 +77,7 @@ class WebsiteDnsRecords extends JsonSerializableType
      *   inboundRoutingStatus?: ?value-of<WebsiteDnsRecordsInboundRoutingStatus>,
      *   inboundVerificationRecord?: ?WebsiteDnsRecordsInboundVerificationRecord,
      *   inboundVerificationStatus?: ?value-of<WebsiteDnsRecordsInboundVerificationStatus>,
+     *   platformDnsRecords?: ?array<WebsiteDnsRecordsPlatformDnsRecordsItem>,
      *   returnPathCnameDiagnostic?: ?array<string, mixed>,
      *   returnPathCnameRecord?: ?WebsiteDnsRecordsReturnPathCnameRecord,
      *   returnPathCnameStatus?: ?value-of<WebsiteDnsRecordsReturnPathCnameStatus>,
@@ -85,6 +92,7 @@ class WebsiteDnsRecords extends JsonSerializableType
         $this->inboundRoutingStatus = $values['inboundRoutingStatus'] ?? null;
         $this->inboundVerificationRecord = $values['inboundVerificationRecord'] ?? null;
         $this->inboundVerificationStatus = $values['inboundVerificationStatus'] ?? null;
+        $this->platformDnsRecords = $values['platformDnsRecords'] ?? null;
         $this->returnPathCnameDiagnostic = $values['returnPathCnameDiagnostic'] ?? null;
         $this->returnPathCnameRecord = $values['returnPathCnameRecord'] ?? null;
         $this->returnPathCnameStatus = $values['returnPathCnameStatus'] ?? null;

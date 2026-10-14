@@ -11,13 +11,13 @@ use Sequenzy\Core\Json\JsonProperty;
 class InboxCustomAddress extends JsonSerializableType
 {
     /**
-     * @var ?string $address The full address, such as support@inbound.acme.com. Null until the domain's inbound host is known.
+     * @var ?string $address The full address, localPart@domain, such as support@acme.com.
      */
     #[JsonProperty('address')]
     public ?string $address;
 
     /**
-     * @var string $domain The verified sending domain.
+     * @var string $domain The receiving domain the address is on.
      */
     #[JsonProperty('domain')]
     public string $domain;
@@ -29,7 +29,7 @@ class InboxCustomAddress extends JsonSerializableType
     public string $localPart;
 
     /**
-     * @var value-of<InboxCustomAddressStatus> $status `active` once the inbound MX record is verified; `pending` until then.
+     * @var value-of<InboxCustomAddressStatus> $status `active` once the receiving domain is verified; `pending` until then.
      */
     #[JsonProperty('status')]
     public string $status;

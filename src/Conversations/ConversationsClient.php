@@ -4,8 +4,8 @@ namespace Sequenzy\Conversations;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\Conversations\Requests\BulkUpdateStatusConversationsRequest;
-use Sequenzy\Conversations\Types\BulkUpdateStatusConversationsResponse;
+use Sequenzy\Conversations\Requests\BulkUpdateSpamConversationsRequest;
+use Sequenzy\Conversations\Types\BulkUpdateSpamConversationsResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
 use Sequenzy\Core\Json\JsonApiRequest;
@@ -13,12 +13,15 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Conversations\Requests\BulkUpdateStatusConversationsRequest;
+use Sequenzy\Conversations\Types\BulkUpdateStatusConversationsResponse;
 use Sequenzy\Conversations\Requests\ForwardMessageConversationsRequest;
 use Sequenzy\Conversations\Types\ForwardMessageConversationsResponse;
 use Sequenzy\Conversations\Types\GetConversationsResponse;
 use Sequenzy\Conversations\Types\GetInboxAddressResponse;
 use Sequenzy\Conversations\Requests\ListConversationsRequest;
 use Sequenzy\Conversations\Types\ListConversationsResponse;
+use Sequenzy\Conversations\Types\ListRecipientsConversationsResponse;
 use Sequenzy\Conversations\Types\MarkReadConversationsResponse;
 use Sequenzy\Conversations\Types\MarkUnreadConversationsResponse;
 use Sequenzy\Conversations\Requests\SendMessageConversationsRequest;
@@ -62,6 +65,67 @@ class ConversationsClient
     ) {
         $this->client = $client;
         $this->options = $options ?? [];
+    }
+
+    /**
+     * Moves up to 100 conversations into the Spam folder (spam true) or back to the inbox (spam false). Only conversations that move are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
+     *
+     * Example:
+     * ```php
+     * $client->conversations->bulkUpdateSpam(
+     *     new BulkUpdateSpamConversationsRequest([
+     *         'conversationIds' => [
+     *             'conversationIds',
+     *         ],
+     *         'spam' => true,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param BulkUpdateSpamConversationsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?BulkUpdateSpamConversationsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function bulkUpdateSpam(BulkUpdateSpamConversationsRequest $request, ?array $options = null): ?BulkUpdateSpamConversationsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "conversations/bulk/spam",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return BulkUpdateSpamConversationsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 
     /**
@@ -243,7 +307,7 @@ class ConversationsClient
     }
 
     /**
-     * Returns the address anyone can email to reach this company's inbox, the same address on verified custom inbound domains, whether receiving is on, whether attachments are stored, and how long received email is kept.
+     * Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether receiving is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
      *
      * Example:
      * ```php
@@ -295,7 +359,7 @@ class ConversationsClient
     }
 
     /**
-     * Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, or search term.
+     * Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, search term, inbox address, or the Spam folder. Conversations in the Spam folder are only listed with spam=true.
      *
      * Example:
      * ```php
@@ -327,8 +391,14 @@ class ConversationsClient
         if ($request->page != null) {
             $query['page'] = $request->page;
         }
+        if ($request->recipient != null) {
+            $query['recipient'] = $request->recipient;
+        }
         if ($request->search != null) {
             $query['search'] = $request->search;
+        }
+        if ($request->spam != null) {
+            $query['spam'] = $request->spam;
         }
         if ($request->status != null) {
             $query['status'] = $request->status;
@@ -353,6 +423,58 @@ class ConversationsClient
                     return null;
                 }
                 return ListConversationsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the inbox addresses conversations started at, such as admin@acme.com and team@acme.com, most recently used first (up to 100). Addresses that only received spam are left out. Use one as the recipient filter of List conversations.
+     *
+     * Example:
+     * ```php
+     * $client->conversations->listRecipients();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListRecipientsConversationsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listRecipients(?array $options = null): ?ListRecipientsConversationsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "conversations/recipients",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListRecipientsConversationsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -535,7 +657,7 @@ class ConversationsClient
     }
 
     /**
-     * Sets a branded inbox address `{localPart}@inbound.{domain}` on one of your verified sending domains, or clears it when both fields are null. The address starts receiving once the domain's inbound MX record is verified; the default address keeps working. Returns the same body as Get Inbox Address.
+     * Sets a branded inbox address `{localPart}@{domain}` on one of your receiving domains, or clears it when both fields are null. The address is active once the receiving domain is verified; the default address keeps working. Every other address on the domain reaches the inbox too; the branded one is the address to share. Returns the same body as Get Inbox Address.
      *
      * Example:
      * ```php
