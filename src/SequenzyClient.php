@@ -4,6 +4,7 @@ namespace Sequenzy;
 
 use Sequenzy\AbTests\AbTestsClient;
 use Sequenzy\Account\AccountClient;
+use Sequenzy\AccountHealth\AccountHealthClient;
 use Sequenzy\Accounts\AccountsClient;
 use Sequenzy\Analytics\AnalyticsClient;
 use Sequenzy\AudienceSyncs\AudienceSyncsClient;
@@ -11,6 +12,7 @@ use Sequenzy\Campaigns\CampaignsClient;
 use Sequenzy\Companies\CompaniesClient;
 use Sequenzy\Conversations\ConversationsClient;
 use Sequenzy\DataExports\DataExportsClient;
+use Sequenzy\DesignMd\DesignMdClient;
 use Sequenzy\EmailAiStyle\EmailAiStyleClient;
 use Sequenzy\EmailBlocks\EmailBlocksClient;
 use Sequenzy\EmailComponents\EmailComponentsClient;
@@ -68,6 +70,11 @@ class SequenzyClient
     public AccountClient $account;
 
     /**
+     * @var AccountHealthClient $accountHealth
+     */
+    public AccountHealthClient $accountHealth;
+
+    /**
      * @var AccountsClient $accounts
      */
     public AccountsClient $accounts;
@@ -101,6 +108,11 @@ class SequenzyClient
      * @var DataExportsClient $dataExports
      */
     public DataExportsClient $dataExports;
+
+    /**
+     * @var DesignMdClient $designMd
+     */
+    public DesignMdClient $designMd;
 
     /**
      * @var EmailAiStyleClient $emailAiStyle
@@ -358,6 +370,7 @@ class SequenzyClient
 
         $this->abTests = new AbTestsClient($this->client, $this->options);
         $this->account = new AccountClient($this->client, $this->options);
+        $this->accountHealth = new AccountHealthClient($this->client, $this->options);
         $this->accounts = new AccountsClient($this->client, $this->options);
         $this->analytics = new AnalyticsClient($this->client, $this->options);
         $this->audienceSyncs = new AudienceSyncsClient($this->client, $this->options);
@@ -365,6 +378,7 @@ class SequenzyClient
         $this->companies = new CompaniesClient($this->client, $this->options);
         $this->conversations = new ConversationsClient($this->client, $this->options);
         $this->dataExports = new DataExportsClient($this->client, $this->options);
+        $this->designMd = new DesignMdClient($this->client, $this->options);
         $this->emailAiStyle = new EmailAiStyleClient($this->client, $this->options);
         $this->emailBlocks = new EmailBlocksClient($this->client, $this->options);
         $this->emailComponents = new EmailComponentsClient($this->client, $this->options);

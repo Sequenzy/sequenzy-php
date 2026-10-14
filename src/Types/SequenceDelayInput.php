@@ -126,10 +126,16 @@ class SequenceDelayInput extends JsonSerializableType
     public ?string $untilStartTime;
 
     /**
-     * @var ?string $untilTimezone IANA timezone used to evaluate the window when mode is until_weekday.
+     * @var ?string $untilTimezone IANA timezone used to evaluate the window when mode is until_weekday. The fallback when untilTimezoneSource is subscriber.
      */
     #[JsonProperty('untilTimezone')]
     public ?string $untilTimezone;
+
+    /**
+     * @var ?value-of<SequenceDelayInputUntilTimezoneSource> $untilTimezoneSource When mode is until_weekday, fixed uses untilTimezone for every contact and subscriber uses each contact's own timezone with untilTimezone as the fallback.
+     */
+    #[JsonProperty('untilTimezoneSource')]
+    public ?string $untilTimezoneSource;
 
     /**
      * @param array{
@@ -153,6 +159,7 @@ class SequenceDelayInput extends JsonSerializableType
      *   untilPastAction?: ?value-of<SequenceDelayInputUntilPastAction>,
      *   untilStartTime?: ?string,
      *   untilTimezone?: ?string,
+     *   untilTimezoneSource?: ?value-of<SequenceDelayInputUntilTimezoneSource>,
      * } $values
      */
     public function __construct(
@@ -178,6 +185,7 @@ class SequenceDelayInput extends JsonSerializableType
         $this->untilPastAction = $values['untilPastAction'] ?? null;
         $this->untilStartTime = $values['untilStartTime'] ?? null;
         $this->untilTimezone = $values['untilTimezone'] ?? null;
+        $this->untilTimezoneSource = $values['untilTimezoneSource'] ?? null;
     }
 
     /**

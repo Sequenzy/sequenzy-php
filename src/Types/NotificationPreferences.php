@@ -9,13 +9,13 @@ use Sequenzy\Core\Types\ArrayType;
 class NotificationPreferences extends JsonSerializableType
 {
     /**
-     * @var ?array<string, string> $defaults Mode each event uses when the user has never configured it, resolved for the API key's user. The workspace owner defaults to weekly_report "weekly"; invited members default to "off".
+     * @var ?array<string, string> $defaults Mode each event uses when the user has never configured it, resolved for the API key's user. The workspace owner defaults to weekly_report "weekly" and account_health "instant"; invited members default to "off".
      */
     #[JsonProperty('defaults'), ArrayType(['string' => 'string'])]
     public ?array $defaults;
 
     /**
-     * @var ?array<NotificationPreference> $notificationPreferences Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility.
+     * @var ?array<NotificationPreference> $notificationPreferences Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility, and Sequenzy CLI releases up to 0.0.174 (x-sequenzy-client cli/0.0.174 or earlier) do not receive account_health.
      */
     #[JsonProperty('notificationPreferences'), ArrayType([NotificationPreference::class])]
     public ?array $notificationPreferences;

@@ -10,7 +10,7 @@ use Sequenzy\Core\Types\Date;
 class SequenceNodeUpdateInput extends JsonSerializableType
 {
     /**
-     * @var SequenceNodeUpdateInputChanges $changes Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput.
+     * @var SequenceNodeUpdateInputChanges $changes Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
      */
     #[JsonProperty('changes')]
     public SequenceNodeUpdateInputChanges $changes;

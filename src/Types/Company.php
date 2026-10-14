@@ -114,6 +114,18 @@ class Company extends JsonSerializableType
     public ?array $emailLocalizationConfig;
 
     /**
+     * @var ?value-of<CompanyEmailPreset> $emailPreset Default header and footer for new emails. `branded` adds the logo header and the full footer with social links; `minimal` uses no logo and a compact footer. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared.
+     */
+    #[JsonProperty('emailPreset')]
+    public ?string $emailPreset;
+
+    /**
+     * @var ?value-of<CompanyEmailStylePreference> $emailStylePreference How AI writes emails by default. `visual` designs emails with sections and imagery; `plain` writes simple text-focused emails with one button. Both use the company theme, header and footer. `null` means not chosen yet: generation designs emails until a choice is made. A saved reference email keeps generated emails designed until it is cleared.
+     */
+    #[JsonProperty('emailStylePreference')]
+    public ?string $emailStylePreference;
+
+    /**
      * @var ?array<string, mixed> $emailTheme
      */
     #[JsonProperty('emailTheme'), ArrayType(['string' => 'mixed'])]
@@ -270,6 +282,8 @@ class Company extends JsonSerializableType
      *   emailDirection?: ?string,
      *   emailLengthPreference?: ?value-of<CompanyEmailLengthPreference>,
      *   emailLocalizationConfig?: ?array<string, mixed>,
+     *   emailPreset?: ?value-of<CompanyEmailPreset>,
+     *   emailStylePreference?: ?value-of<CompanyEmailStylePreference>,
      *   emailTheme?: ?array<string, mixed>,
      *   fontFamily?: ?string,
      *   forwardReplies?: ?bool,
@@ -315,6 +329,8 @@ class Company extends JsonSerializableType
         $this->emailDirection = $values['emailDirection'] ?? null;
         $this->emailLengthPreference = $values['emailLengthPreference'] ?? null;
         $this->emailLocalizationConfig = $values['emailLocalizationConfig'] ?? null;
+        $this->emailPreset = $values['emailPreset'] ?? null;
+        $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;

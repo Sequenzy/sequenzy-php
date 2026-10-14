@@ -8,4 +8,5 @@ enum NotificationPreferenceEvent: string
     case FormSubmitted = "form_submitted";
     case CampaignCompleted = "campaign_completed";
     case WeeklyReport = "weekly_report";
+    case AccountHealth = "account_health";
 }

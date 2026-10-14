@@ -1438,6 +1438,272 @@ $client->account->updateApiKey(
 </dl>
 </details>
 
+## AccountHealth
+<details><summary><code>$client-&gt;accountHealth-&gt;createAccountHealthFix($insightId) -> ?AccountHealthFixResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Builds the draft sequence an "event without a sequence" finding asks for, triggered by that event, with its timing and titled email steps, then writes the emails with AI like a sequence from a template. It stays inactive until you enable it. Calling it again returns the existing draft with created false and never rewrites its emails. Requires the sequences:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->createAccountHealthFix(
+    'insightId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$insightId:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;accountHealth-&gt;getAccountHealth() -> ?GetAccountHealthResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the account health report for the active company - the schedule, AI budget and spend, the latest check with its AI summary and stats, and open and snoozed insights, most severe first. Checks run for companies with more than 1,000 active subscribers that sent email in the last 14 days. Requires the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->getAccountHealth();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;accountHealth-&gt;runAccountHealthCheck() -> ?RunAccountHealthCheckResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues an account health check now. A check that is already queued or running is returned instead, with alreadyInProgress true. Manual checks never send the report email, are limited to one every 10 minutes, and wait a day after a check that left findings open. Poll Get account health until runInProgress is false. Requires the sequences:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->runAccountHealthCheck();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;accountHealth-&gt;updateAccountHealthInsight($insightId, $request) -> ?UpdateAccountHealthInsightResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Dismisses, snoozes, resolves or reopens one insight. A resolved insight reopens if the next check still finds it; a dismissed one stays hidden. Requires the sequences:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->updateAccountHealthInsight(
+    'insightId',
+    new UpdateAccountHealthInsightRequest([
+        'action' => UpdateAccountHealthInsightRequestAction::Dismiss->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$insightId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$action:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$snoozeDays:** `?int` — Days to snooze, only with action snooze. Defaults to 7.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;accountHealth-&gt;updateAccountHealthSettings($request) -> ?UpdateAccountHealthSettingsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Turns the weekly account health check (Mondays, 05:00 UTC) on or off and chooses whether it drafts fixes. Pass only the fields to change; unknown fields are rejected. Who gets the findings is each person's account_health notification preference. Requires the companies:manage scope plus owner or admin access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->updateAccountHealthSettings(
+    new AccountHealthSettings([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$request:** `AccountHealthSettings` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Accounts
 <details><summary><code>$client-&gt;accounts-&gt;acceptSuggestions($request) -> ?AccountSuggestionsAcceptResponse</code></summary>
 <dl>
@@ -6741,6 +7007,22 @@ $client->companies->update(
 <dl>
 <dd>
 
+**$emailPreset:** `?string` — Default header and footer for new emails: `branded` (logo header and full footer) or `minimal` (compact footer, no logo). Existing emails keep their own setting. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared. Other strings return 400; values that are not a string return 422.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailStylePreference:** `?string` — How AI writes emails by default: `visual` for designed emails, `plain` for simple text-focused emails. `null` clears the choice, so generation designs emails and the dashboard asks again. Other strings return 400; values that are not a string or `null` return 422.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$emailTheme:** `?UpdateCompaniesRequestEmailTheme` — Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
     
 </dd>
@@ -8227,6 +8509,133 @@ $client->dataExports->updateDataExport(
 <dd>
 
 **$secretAccessKey:** `?string` — Must be sent together with accessKeyId.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## DesignMd
+<details><summary><code>$client-&gt;designMd-&gt;getDesignMd() -> ?GetDesignMdResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the company's design.md, its email design brief as one Markdown document. YAML frontmatter holds the exact values AI-generated emails use (logo, colors, fonts, buttons, cornerRadius, layout tokens), shown as the values emails actually get. The body holds the Voice and Design direction sections the AI writer follows, plus a read-only Reference email section naming the saved AI style. design.md is a view over existing company fields, not a separate store.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->designMd->getDesignMd();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;designMd-&gt;updateDesignMd($request) -> ?UpdateDesignMdResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves an edited design.md. Only values that differ from the current document are written. A frontmatter value left exactly as returned is not written and keeps its current behavior; a changed buttons.radius, cornerRadius or fonts.heading is pinned so layout defaults no longer override it; a changed layout token is written into the design direction ahead of its prose. A key or section you remove is left unchanged, and an empty Voice or Design direction section clears that field (an empty direction returns to brand-derived defaults). Other level-2 sections are kept as part of the design direction. The Reference email section is read-only. Requires company_profile:manage, including for dry runs.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->designMd->updateDesignMd(
+    new UpdateDesignMdRequest([
+        'expectedVersion' => '3f9a2c1d8e7b6a50',
+        'markdown' => <<<EOT
+---
+colors:
+  primary: "#1f4fff"
+---
+
+# Acme email design
+
+## Voice
+
+Plain and direct. Setup steps first.
+
+EOT,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$dryRun:** `?bool` — true validates the document and reports changes and warnings without saving.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$expectedVersion:** `?string` — Version from GET /design-md. When it no longer matches, the save fails with 409 and nothing is written. Recommended.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$markdown:** `string` — The full design.md document, usually the markdown from GET /design-md with your edits.
     
 </dd>
 </dl>

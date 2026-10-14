@@ -8,13 +8,13 @@ use Sequenzy\Core\Json\JsonProperty;
 class NotificationPreference extends JsonSerializableType
 {
     /**
-     * @var value-of<NotificationPreferenceEvent> $event Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent.
+     * @var value-of<NotificationPreferenceEvent> $event Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent. account_health is the findings of the scheduled account health check, carried inside the Monday report when the person gets it and sent as their own email otherwise; on by default for the workspace owner, off for invited members.
      */
     #[JsonProperty('event')]
     public string $event;
 
     /**
-     * @var value-of<NotificationPreferenceMode> $mode How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly".
+     * @var value-of<NotificationPreferenceMode> $mode How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly"; account_health accepts only "off" or "instant".
      */
     #[JsonProperty('mode')]
     public string $mode;

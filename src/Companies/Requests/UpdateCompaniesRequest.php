@@ -7,6 +7,8 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailDirection;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailLengthPreference;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailPreset;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailStylePreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailTheme;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestReplyTrackingDomainMode;
 use Sequenzy\Core\Types\Union;
@@ -60,6 +62,18 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('emailLengthPreference')]
     public ?string $emailLengthPreference;
+
+    /**
+     * @var ?value-of<UpdateCompaniesRequestEmailPreset> $emailPreset Default header and footer for new emails: `branded` (logo header and full footer) or `minimal` (compact footer, no logo). Existing emails keep their own setting. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared. Other strings return 400; values that are not a string return 422.
+     */
+    #[JsonProperty('emailPreset')]
+    public ?string $emailPreset;
+
+    /**
+     * @var ?value-of<UpdateCompaniesRequestEmailStylePreference> $emailStylePreference How AI writes emails by default: `visual` for designed emails, `plain` for simple text-focused emails. `null` clears the choice, so generation designs emails and the dashboard asks again. Other strings return 400; values that are not a string or `null` return 422.
+     */
+    #[JsonProperty('emailStylePreference')]
+    public ?string $emailStylePreference;
 
     /**
      * @var ?UpdateCompaniesRequestEmailTheme $emailTheme Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
@@ -221,6 +235,8 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   emailDesignPrompt?: ?string,
      *   emailDirection?: ?value-of<UpdateCompaniesRequestEmailDirection>,
      *   emailLengthPreference?: ?value-of<UpdateCompaniesRequestEmailLengthPreference>,
+     *   emailPreset?: ?value-of<UpdateCompaniesRequestEmailPreset>,
+     *   emailStylePreference?: ?value-of<UpdateCompaniesRequestEmailStylePreference>,
      *   emailTheme?: ?UpdateCompaniesRequestEmailTheme,
      *   fontFamily?: ?string,
      *   forwardReplies?: ?bool,
@@ -259,6 +275,8 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->emailDesignPrompt = $values['emailDesignPrompt'] ?? null;
         $this->emailDirection = $values['emailDirection'] ?? null;
         $this->emailLengthPreference = $values['emailLengthPreference'] ?? null;
+        $this->emailPreset = $values['emailPreset'] ?? null;
+        $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;

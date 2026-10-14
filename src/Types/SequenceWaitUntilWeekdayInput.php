@@ -36,10 +36,16 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
     public ?string $startTime;
 
     /**
-     * @var ?string $timezone IANA timezone used to evaluate the window.
+     * @var ?string $timezone IANA timezone used to evaluate the window. Required. When timezoneSource is subscriber, this is the fallback for contacts without a valid timezone.
      */
     #[JsonProperty('timezone')]
     public ?string $timezone;
+
+    /**
+     * @var ?value-of<SequenceWaitUntilWeekdayInputTimezoneSource> $timezoneSource fixed evaluates the window in timezone for every contact. subscriber evaluates it in each contact's own timezone (the subscriber timezone field) and falls back to timezone. The contact's timezone is read each time the step is evaluated. Sequence reads always return this field.
+     */
+    #[JsonProperty('timezoneSource')]
+    public ?string $timezoneSource;
 
     /**
      * @var ?string $untilEndTime Alias for endTime.
@@ -60,15 +66,23 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
     public ?string $untilTimezone;
 
     /**
+     * @var ?value-of<SequenceWaitUntilWeekdayInputUntilTimezoneSource> $untilTimezoneSource Alias for timezoneSource.
+     */
+    #[JsonProperty('untilTimezoneSource')]
+    public ?string $untilTimezoneSource;
+
+    /**
      * @param array{
      *   day?: ?string,
      *   days?: ?array<string>,
      *   endTime?: ?string,
      *   startTime?: ?string,
      *   timezone?: ?string,
+     *   timezoneSource?: ?value-of<SequenceWaitUntilWeekdayInputTimezoneSource>,
      *   untilEndTime?: ?string,
      *   untilStartTime?: ?string,
      *   untilTimezone?: ?string,
+     *   untilTimezoneSource?: ?value-of<SequenceWaitUntilWeekdayInputUntilTimezoneSource>,
      * } $values
      */
     public function __construct(
@@ -79,9 +93,11 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
         $this->endTime = $values['endTime'] ?? null;
         $this->startTime = $values['startTime'] ?? null;
         $this->timezone = $values['timezone'] ?? null;
+        $this->timezoneSource = $values['timezoneSource'] ?? null;
         $this->untilEndTime = $values['untilEndTime'] ?? null;
         $this->untilStartTime = $values['untilStartTime'] ?? null;
         $this->untilTimezone = $values['untilTimezone'] ?? null;
+        $this->untilTimezoneSource = $values['untilTimezoneSource'] ?? null;
     }
 
     /**
