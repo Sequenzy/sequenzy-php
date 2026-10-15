@@ -14,7 +14,7 @@ class AccountHealthFixResult extends JsonSerializableType
     public ?bool $created;
 
     /**
-     * @var ?value-of<AccountHealthFixResultEnrichmentStatus> $enrichmentStatus Only when created is true. `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
+     * @var ?value-of<AccountHealthFixResultEnrichmentStatus> $enrichmentStatus When created is true, or when an existing draft still had email steps without an email (absent once every email exists). `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
      */
     #[JsonProperty('enrichmentStatus')]
     public ?string $enrichmentStatus;

@@ -14,7 +14,7 @@ class AddWebsitesRequest extends JsonSerializableType
     public string $domain;
 
     /**
-     * @var ?string $mailFromPrefix Return-path (MAIL FROM) subdomain label. Defaults to rp. New domains also get a second return path, usually s<label> (srp by default); publish the returned names. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
+     * @var ?string $mailFromPrefix Return-path (MAIL FROM) subdomain label. Defaults to rp. New domains also get a second return path, usually <label>2 (rp2 by default); publish the returned names. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
      */
     #[JsonProperty('mailFromPrefix')]
     public ?string $mailFromPrefix;
