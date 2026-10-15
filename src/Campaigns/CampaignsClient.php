@@ -21,15 +21,25 @@ use Sequenzy\Campaigns\Types\CreateForAudienceCampaignsResponse;
 use Sequenzy\Campaigns\Requests\CreateGoalCampaignsRequest;
 use Sequenzy\Campaigns\Types\CreateGoalCampaignsResponse;
 use Sequenzy\Campaigns\Types\CreateShareLinkCampaignsResponse;
+use Sequenzy\Campaigns\Requests\CreateVariationCampaignsRequest;
+use Sequenzy\Types\EmailVariationResponse;
 use Sequenzy\Campaigns\Types\DeleteCampaignsResponse;
 use Sequenzy\Campaigns\Types\DeleteGoalCampaignsResponse;
+use Sequenzy\Campaigns\Types\DiscardVariationCampaignsResponse;
 use Sequenzy\Campaigns\Requests\DuplicateCampaignsRequest;
 use Sequenzy\Campaigns\Types\DuplicateCampaignsResponse;
+use Sequenzy\Campaigns\Requests\EditVariationCampaignsRequest;
+use Sequenzy\Campaigns\Types\EditVariationCampaignsResponse;
+use Sequenzy\Campaigns\Requests\GenerateVariationsCampaignsRequest;
+use Sequenzy\Campaigns\Types\GenerateVariationsCampaignsResponse;
+use Sequenzy\Campaigns\Requests\GenerateVariationSectionOptionsCampaignsRequest;
+use Sequenzy\Campaigns\Types\GenerateVariationSectionOptionsCampaignsResponse;
 use Sequenzy\Campaigns\Types\GetCampaignsResponse;
 use Sequenzy\Campaigns\Types\GetAudienceCampaignsResponse;
 use Sequenzy\Campaigns\Requests\ListCampaignsRequest;
 use Sequenzy\Campaigns\Types\ListCampaignsResponse;
 use Sequenzy\Campaigns\Types\ListGoalsCampaignsResponse;
+use Sequenzy\Campaigns\Types\ListVariationsCampaignsResponse;
 use Sequenzy\Campaigns\Types\PauseCampaignsResponse;
 use Sequenzy\Campaigns\Requests\PreviewComputedDataCampaignsRequest;
 use Sequenzy\Campaigns\Types\PreviewComputedDataCampaignsResponse;
@@ -48,6 +58,8 @@ use Sequenzy\Campaigns\Requests\UpdateCampaignsRequest;
 use Sequenzy\Campaigns\Types\UpdateCampaignsResponse;
 use Sequenzy\Campaigns\Requests\UpdateGoalCampaignsRequest;
 use Sequenzy\Campaigns\Types\UpdateGoalCampaignsResponse;
+use Sequenzy\Campaigns\Requests\UpdateVariationCampaignsRequest;
+use Sequenzy\Campaigns\Types\UseVariationCampaignsResponse;
 
 class CampaignsClient
 {
@@ -439,6 +451,66 @@ class CampaignsClient
     }
 
     /**
+     * Saves a version of the email as a new ready variation, for example a copy you want to take in another direction. Provide blocks or html (not both). Footerless blocks get the company's default footer, as on Update campaign. Labels are assigned in order (V1, V2, ...); a variation with parentVariationId is labeled as its branch (V2.1, V2.2, ...). Labels are never reused, even after a discard.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->createVariation(
+     *     'campaignId',
+     *     new CreateVariationCampaignsRequest([
+     *         'name' => 'name',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param CreateVariationCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EmailVariationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createVariation(string $campaignId, CreateVariationCampaignsRequest $request, ?array $options = null): ?EmailVariationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EmailVariationResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first.
      *
      * Example:
@@ -551,6 +623,63 @@ class CampaignsClient
     }
 
     /**
+     * Discards a variation. It leaves the list and its branches move up to its parent; Restore variation undoes this. Needs the campaigns:write scope, not campaigns:delete.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->discardVariation(
+     *     'campaignId',
+     *     'variationId',
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?DiscardVariationCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function discardVariation(string $campaignId, string $variationId, ?array $options = null): ?DiscardVariationCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return DiscardVariationCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Creates a draft copy of a campaign. Optionally copies the campaign's A/B test or duplicates a single variant as a plain campaign.
      *
      * Example:
@@ -595,6 +724,191 @@ class CampaignsClient
                     return null;
                 }
                 return DuplicateCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Changes one ready variation with AI and saves the result over it, like an edit in the editor. The prompt says what to change, in any language. With sectionIds, only those top-level blocks change; a whole-variation edit may also give the variation its own emailTheme and fontFamily. Runs synchronously and can take up to a minute. The campaign email does not change; use Use variation for that.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->editVariation(
+     *     'campaignId',
+     *     'variationId',
+     *     new EditVariationCampaignsRequest([
+     *         'prompt' => 'Make the hero dark and the headline punchier',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param EditVariationCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EditVariationCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function editVariation(string $campaignId, string $variationId, EditVariationCampaignsRequest $request, ?array $options = null): ?EditVariationCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}/edit",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EditVariationCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Starts generating 1 to 4 variations with AI and returns them at once with status generating. Each one takes its own direction planned from your prompt, so they differ from each other; style sets how far they move. Generation runs in the background; poll List variations or Get variation until each is ready or failed (a variation still generating after 10 minutes is reported as failed). An email can have up to 8 variations generating at once. The source is the email's saved content, or the variation in parentVariationId, which must be ready. The campaign email itself does not change.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->generateVariations(
+     *     'campaignId',
+     *     new GenerateVariationsCampaignsRequest([
+     *         'prompt' => 'Three versions that are shorter and warmer',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param GenerateVariationsCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GenerateVariationsCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function generateVariations(string $campaignId, GenerateVariationsCampaignsRequest $request, ?array $options = null): ?GenerateVariationsCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/generate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GenerateVariationsCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Generates 1 to 4 alternative versions of selected sections (top-level blocks) of the email or of one variation, and returns them without saving anything. Each option holds replacement blocks that keep the selected blocks' ids; apply one by swapping those blocks into the variation's blocks and calling Update variation. Changes the AI makes outside the selected sections are dropped. Runs synchronously and can take up to a minute.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->generateVariationSectionOptions(
+     *     'campaignId',
+     *     new GenerateVariationSectionOptionsCampaignsRequest([
+     *         'prompt' => 'prompt',
+     *         'sectionIds' => [
+     *             'sectionIds',
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param GenerateVariationSectionOptionsCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GenerateVariationSectionOptionsCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function generateVariationSectionOptions(string $campaignId, GenerateVariationSectionOptionsCampaignsRequest $request, ?array $options = null): ?GenerateVariationSectionOptionsCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/section-options",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GenerateVariationSectionOptionsCampaignsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -719,6 +1033,63 @@ class CampaignsClient
     }
 
     /**
+     * Returns one variation, including its status while it generates. Discarded variations are not found.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->getVariation(
+     *     'campaignId',
+     *     'variationId',
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EmailVariationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getVariation(string $campaignId, string $variationId, ?array $options = null): ?EmailVariationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EmailVariationResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) and the recipient cap (maxRecipients) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
      *
      * Example:
@@ -829,6 +1200,61 @@ class CampaignsClient
                     return null;
                 }
                 return ListGoalsCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the campaign email's variations, oldest first. Variations are alternative versions of the email that you compare side by side on the editor canvas; the campaign keeps sending its email until you use one. Discarded variations are not listed. Each variation's parentId points at the nearest variation it descends from that has not been discarded. Email campaigns only.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->listVariations(
+     *     'campaignId',
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListVariationsCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listVariations(string $campaignId, ?array $options = null): ?ListVariationsCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListVariationsCampaignsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1068,6 +1494,63 @@ class CampaignsClient
                     return null;
                 }
                 return ResendToNonOpenersCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Brings back a discarded variation with its label, and moves its branches back under it. Restoring a variation that is not discarded returns it unchanged.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->restoreVariation(
+     *     'campaignId',
+     *     'variationId',
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EmailVariationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function restoreVariation(string $campaignId, string $variationId, ?array $options = null): ?EmailVariationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}/restore",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EmailVariationResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1481,6 +1964,123 @@ class CampaignsClient
                     return null;
                 }
                 return UpdateGoalCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Renames a variation or replaces its content. Content (blocks, html, subject, previewText) can only change once the variation is ready. Provide at least one field.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->updateVariation(
+     *     'campaignId',
+     *     'variationId',
+     *     new UpdateVariationCampaignsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param UpdateVariationCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EmailVariationResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function updateVariation(string $campaignId, string $variationId, UpdateVariationCampaignsRequest $request = new UpdateVariationCampaignsRequest(), ?array $options = null): ?EmailVariationResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}",
+                    method: HttpMethod::PATCH,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EmailVariationResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Copies a ready variation into the campaign email (blocks, and the subject, preview text, theme and font when the variation has its own). If the email's current content is not already a variation, it is saved first as a new variation named "Before {label}" and returned as savedPrevious, so nothing is lost. When the variation has its own look, the other variations that follow the email's look keep the one it had. Draft campaigns only. Translations are re-derived from the new content.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->useVariation(
+     *     'campaignId',
+     *     'variationId',
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $variationId Variation ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?UseVariationCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function useVariation(string $campaignId, string $variationId, ?array $options = null): ?UseVariationCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/variations/{$variationId}/use",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return UseVariationCampaignsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

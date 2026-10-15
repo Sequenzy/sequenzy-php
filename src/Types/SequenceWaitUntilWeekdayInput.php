@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * Hold until the next occurrence of a weekday inside a local-time window. Contacts already inside the window continue immediately.
+ * Hold until the next occurrence of a weekday inside a local-time window. Contacts already inside the window continue immediately, unless minimumWait is set.
  */
 class SequenceWaitUntilWeekdayInput extends JsonSerializableType
 {
@@ -28,6 +28,12 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
      */
     #[JsonProperty('endTime')]
     public ?string $endTime;
+
+    /**
+     * @var ?SequenceWaitUntilWeekdayInputMinimumWait $minimumWait Wait at least this long before looking for the window. Once it ends, the contact continues at that moment if it falls inside the window, otherwise at the next window opening, so a fixed wait and a time-of-day wait fit in one step. Omit for no minimum. Values are stored as whole days, hours and minutes, so 36 hours reads back as 1 day and 12 hours. Negative values are rejected. On create, unknown keys and non-object values are ignored and reported in warnings; node updates, inserted steps and branch paths reject them. Sequence reads always return this field, with zeros when the step has no minimum.
+     */
+    #[JsonProperty('minimumWait')]
+    public ?SequenceWaitUntilWeekdayInputMinimumWait $minimumWait;
 
     /**
      * @var ?string $startTime Window start in 24-hour HH:mm local time.
@@ -76,6 +82,7 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
      *   day?: ?string,
      *   days?: ?array<string>,
      *   endTime?: ?string,
+     *   minimumWait?: ?SequenceWaitUntilWeekdayInputMinimumWait,
      *   startTime?: ?string,
      *   timezone?: ?string,
      *   timezoneSource?: ?value-of<SequenceWaitUntilWeekdayInputTimezoneSource>,
@@ -91,6 +98,7 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
         $this->day = $values['day'] ?? null;
         $this->days = $values['days'] ?? null;
         $this->endTime = $values['endTime'] ?? null;
+        $this->minimumWait = $values['minimumWait'] ?? null;
         $this->startTime = $values['startTime'] ?? null;
         $this->timezone = $values['timezone'] ?? null;
         $this->timezoneSource = $values['timezoneSource'] ?? null;

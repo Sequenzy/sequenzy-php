@@ -56,7 +56,7 @@ class AccountHealthClient
     }
 
     /**
-     * Builds the draft sequence an "event without a sequence" finding asks for, triggered by that event, with its timing and titled email steps, then writes the emails with AI like a sequence from a template. It stays inactive until you enable it. Calling it again returns the existing draft with created false and never rewrites its emails. Requires the sequences:write scope.
+     * Builds the draft sequence an "event without a sequence" (unhandled_event) or "missing sequence" (missing_sequence) finding asks for, with its trigger, timing and titled email steps, then writes the emails with AI like a sequence from a template. An unhandled_event draft is triggered by its event; a missing_sequence draft uses the trigger and steps in the finding's evidence (new contacts, an event, or manual enrollment). It stays inactive until you enable it. Calling it again returns the existing draft with created false and never rewrites its emails. Requires the sequences:write scope.
      *
      * Example:
      * ```php

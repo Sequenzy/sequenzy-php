@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
+ * Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step and minimumWait to keep a minimum wait.
  */
 class SequenceNodeUpdateInputChanges extends JsonSerializableType
 {

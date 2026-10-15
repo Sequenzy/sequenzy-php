@@ -20,6 +20,12 @@ class TrackingSettingsTracking extends JsonSerializableType
     public ?int $defaultAttributionWindowHours;
 
     /**
+     * @var ?bool $emailContentStorageEnabled Whether to keep each sent email's rendered content and subject, and the IP address, user agent and country of opens and clicks. When false, sent-email records keep no body once the email is sent and store the email's name (campaign, template or sequence) in place of its subject, opens and clicks store no IP address, user agent or country, and view-in-browser links stop working. Body and subject rules apply to emails sent afterwards; IP address, user agent and country follow the setting at each open or click.
+     */
+    #[JsonProperty('emailContentStorageEnabled')]
+    public ?bool $emailContentStorageEnabled;
+
+    /**
      * @var ?bool $openTrackingEnabled
      */
     #[JsonProperty('openTrackingEnabled')]
@@ -53,6 +59,7 @@ class TrackingSettingsTracking extends JsonSerializableType
      * @param array{
      *   clickTrackingEnabled?: ?bool,
      *   defaultAttributionWindowHours?: ?int,
+     *   emailContentStorageEnabled?: ?bool,
      *   openTrackingEnabled?: ?bool,
      *   strictBotFilteringEnabled?: ?bool,
      *   transactionalClickTrackingEnabled?: ?bool,
@@ -65,6 +72,7 @@ class TrackingSettingsTracking extends JsonSerializableType
     ) {
         $this->clickTrackingEnabled = $values['clickTrackingEnabled'] ?? null;
         $this->defaultAttributionWindowHours = $values['defaultAttributionWindowHours'] ?? null;
+        $this->emailContentStorageEnabled = $values['emailContentStorageEnabled'] ?? null;
         $this->openTrackingEnabled = $values['openTrackingEnabled'] ?? null;
         $this->strictBotFilteringEnabled = $values['strictBotFilteringEnabled'] ?? null;
         $this->transactionalClickTrackingEnabled = $values['transactionalClickTrackingEnabled'] ?? null;

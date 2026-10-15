@@ -20,6 +20,8 @@ use Sequenzy\Analytics\Requests\GetCampaignStatsLegacyRequest;
 use Sequenzy\Analytics\Types\GetCampaignStatsLegacyResponse;
 use Sequenzy\Analytics\Requests\GetEmailClientMetricsRequest;
 use Sequenzy\Analytics\Types\GetEmailClientMetricsResponse;
+use Sequenzy\Analytics\Requests\GetLinkClickMetricsRequest;
+use Sequenzy\Analytics\Types\GetLinkClickMetricsResponse;
 use Sequenzy\Analytics\Requests\GetMetricsRequest;
 use Sequenzy\Analytics\Types\GetMetricsResponse;
 use Sequenzy\Analytics\Requests\GetRecipientsRequest;
@@ -353,6 +355,84 @@ class AnalyticsClient
                     return null;
                 }
                 return GetEmailClientMetricsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns clicks per link destination across every email in the time range, ranked by unique clicks, which count each subscriber once per link however often they clicked. Destinations ignore query strings, fragments and trailing slashes, so the same page linked with different UTM tags counts as one link, and links that differ only by query parameters, such as video or product IDs, are combined. Test sends are excluded. Defaults to the last 90 days. For one campaign's links with exact URLs, read `clickedLinks` from the campaign metrics endpoint.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getLinkClickMetrics(
+     *     new GetLinkClickMetricsRequest([]),
+     * );
+     * ```
+     *
+     * @param GetLinkClickMetricsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetLinkClickMetricsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getLinkClickMetrics(GetLinkClickMetricsRequest $request = new GetLinkClickMetricsRequest(), ?array $options = null): ?GetLinkClickMetricsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->emailType != null) {
+            $query['emailType'] = $request->emailType;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->mailboxProvider != null) {
+            $query['mailboxProvider'] = $request->mailboxProvider;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/links",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetLinkClickMetricsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

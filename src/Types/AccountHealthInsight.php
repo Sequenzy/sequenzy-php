@@ -32,7 +32,7 @@ class AccountHealthInsight extends JsonSerializableType
     public ?string $detector;
 
     /**
-     * @var ?array<string, mixed> $evidence Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts.
+     * @var ?array<string, mixed> $evidence Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`.
      */
     #[JsonProperty('evidence'), ArrayType(['string' => 'mixed'])]
     public ?array $evidence;

@@ -64,7 +64,7 @@ class TriggerEventsRequest extends JsonSerializableType
     public ?string $lastName;
 
     /**
-     * @var ?DateTime $occurredAt When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year event retention window is rejected with 400.
+     * @var ?DateTime $occurredAt When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year historical import window is rejected with 400.
      */
     #[JsonProperty('occurredAt'), Date(Date::TYPE_DATETIME)]
     public ?DateTime $occurredAt;
