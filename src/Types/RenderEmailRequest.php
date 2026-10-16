@@ -48,6 +48,12 @@ class RenderEmailRequest extends JsonSerializableType
     public ?string $variantId;
 
     /**
+     * @var ?string $variationId Render a design variation of the campaign's or step's email in place of its saved content, from List Campaign Variations or List Sequence Email Variations. It must be ready; it can't be combined with variantId. Ignored for templates.
+     */
+    #[JsonProperty('variationId')]
+    public ?string $variationId;
+
+    /**
      * @param array{
      *   locale?: ?string,
      *   subscriber?: ?RenderEmailRequestSubscriber,
@@ -55,6 +61,7 @@ class RenderEmailRequest extends JsonSerializableType
      *   tracking?: ?bool,
      *   variables?: ?array<string, mixed>,
      *   variantId?: ?string,
+     *   variationId?: ?string,
      * } $values
      */
     public function __construct(
@@ -66,6 +73,7 @@ class RenderEmailRequest extends JsonSerializableType
         $this->tracking = $values['tracking'] ?? null;
         $this->variables = $values['variables'] ?? null;
         $this->variantId = $values['variantId'] ?? null;
+        $this->variationId = $values['variationId'] ?? null;
     }
 
     /**

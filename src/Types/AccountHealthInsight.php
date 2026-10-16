@@ -32,10 +32,16 @@ class AccountHealthInsight extends JsonSerializableType
     public ?string $detector;
 
     /**
-     * @var ?array<string, mixed> $evidence Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`.
+     * @var ?array<string, mixed> $evidence Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`. An over_emailing finding carries `overloadedSubscribers`, `recipients`, `peakPerDay`, `dailyThreshold`, `windowDays`, `frequencyCap` (null when off) and `sources` (type campaign, sequence or api, id, name, sends, and respectsFrequencyCap for sequences; the api source has an empty id and stands for marketing Send API email, which the frequency cap does not limit). A neglected_subscribers finding carries `neglectedSubscribers`, `eligibleSubscribers`, `days`, `estimated` and `sampled`.
      */
     #[JsonProperty('evidence'), ArrayType(['string' => 'mixed'])]
     public ?array $evidence;
+
+    /**
+     * @var ?AccountHealthInsightFeedback $feedback Included in Get Account Health only. Your own answer to "was this useful?" for this finding (the API key owner's), or null when you have not answered. Other responses that return an insight leave it out.
+     */
+    #[JsonProperty('feedback')]
+    public ?AccountHealthInsightFeedback $feedback;
 
     /**
      * @var ?DateTime $firstSeenAt
@@ -121,6 +127,7 @@ class AccountHealthInsight extends JsonSerializableType
      *   detail?: ?string,
      *   detector?: ?value-of<AccountHealthInsightDetector>,
      *   evidence?: ?array<string, mixed>,
+     *   feedback?: ?AccountHealthInsightFeedback,
      *   firstSeenAt?: ?DateTime,
      *   fixAutomationId?: ?string,
      *   id?: ?string,
@@ -143,6 +150,7 @@ class AccountHealthInsight extends JsonSerializableType
         $this->detail = $values['detail'] ?? null;
         $this->detector = $values['detector'] ?? null;
         $this->evidence = $values['evidence'] ?? null;
+        $this->feedback = $values['feedback'] ?? null;
         $this->firstSeenAt = $values['firstSeenAt'] ?? null;
         $this->fixAutomationId = $values['fixAutomationId'] ?? null;
         $this->id = $values['id'] ?? null;

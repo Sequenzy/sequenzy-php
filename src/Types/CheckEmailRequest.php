@@ -48,6 +48,12 @@ class CheckEmailRequest extends JsonSerializableType
     public ?string $variantId;
 
     /**
+     * @var ?string $variationId Check a design variation of the campaign's or step's email instead of its saved content. It must be ready; it can't be combined with variantId. Ignored for templates.
+     */
+    #[JsonProperty('variationId')]
+    public ?string $variationId;
+
+    /**
      * @param array{
      *   links?: ?bool,
      *   locale?: ?string,
@@ -55,6 +61,7 @@ class CheckEmailRequest extends JsonSerializableType
      *   subscriberId?: ?string,
      *   variables?: ?array<string, mixed>,
      *   variantId?: ?string,
+     *   variationId?: ?string,
      * } $values
      */
     public function __construct(
@@ -66,6 +73,7 @@ class CheckEmailRequest extends JsonSerializableType
         $this->subscriberId = $values['subscriberId'] ?? null;
         $this->variables = $values['variables'] ?? null;
         $this->variantId = $values['variantId'] ?? null;
+        $this->variationId = $values['variationId'] ?? null;
     }
 
     /**

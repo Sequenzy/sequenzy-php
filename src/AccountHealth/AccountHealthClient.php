@@ -14,6 +14,8 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\AccountHealth\Types\GetAccountHealthResponse;
 use Sequenzy\AccountHealth\Types\RunAccountHealthCheckResponse;
+use Sequenzy\AccountHealth\Requests\SubmitAccountHealthFeedbackRequest;
+use Sequenzy\AccountHealth\Types\SubmitAccountHealthFeedbackResponse;
 use Sequenzy\AccountHealth\Requests\UpdateAccountHealthInsightRequest;
 use Sequenzy\AccountHealth\Types\UpdateAccountHealthInsightResponse;
 use Sequenzy\Types\AccountHealthSettings;
@@ -201,6 +203,66 @@ class AccountHealthClient
                     return null;
                 }
                 return RunAccountHealthCheckResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Records whether a finding was useful to the API key owner, with an optional comment, and passes it to the Sequenzy team to improve the suggestions. It changes nothing in the workspace. Each person has one answer per finding, for findings of any status; sending again replaces the rating and keeps the earlier comment unless comment is given (null or an empty string clears it). Requires the analytics:read scope, so viewers can answer too.
+     *
+     * Example:
+     * ```php
+     * $client->accountHealth->submitAccountHealthFeedback(
+     *     'insightId',
+     *     new SubmitAccountHealthFeedbackRequest([
+     *         'rating' => SubmitAccountHealthFeedbackRequestRating::Useful->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $insightId
+     * @param SubmitAccountHealthFeedbackRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SubmitAccountHealthFeedbackResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function submitAccountHealthFeedback(string $insightId, SubmitAccountHealthFeedbackRequest $request, ?array $options = null): ?SubmitAccountHealthFeedbackResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "account-health/insights/{$insightId}/feedback",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SubmitAccountHealthFeedbackResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

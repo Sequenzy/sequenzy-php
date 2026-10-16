@@ -5,6 +5,7 @@ namespace Sequenzy\Accounts\Requests;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Accounts\Types\ListAccountsRequestOrder;
 use Sequenzy\Accounts\Types\ListAccountsRequestSort;
+use Sequenzy\Accounts\Types\ListAccountsRequestWithoutEventRecipients;
 
 class ListAccountsRequest extends JsonSerializableType
 {
@@ -34,12 +35,18 @@ class ListAccountsRequest extends JsonSerializableType
     public ?string $sort;
 
     /**
+     * @var ?value-of<ListAccountsRequestWithoutEventRecipients> $withoutEventRecipients When `true`, only accounts that have members but no owner or admin. Account events sent to owners or admins reach nobody in these accounts.
+     */
+    public ?string $withoutEventRecipients;
+
+    /**
      * @param array{
      *   limit?: ?int,
      *   order?: ?value-of<ListAccountsRequestOrder>,
      *   page?: ?int,
      *   search?: ?string,
      *   sort?: ?value-of<ListAccountsRequestSort>,
+     *   withoutEventRecipients?: ?value-of<ListAccountsRequestWithoutEventRecipients>,
      * } $values
      */
     public function __construct(
@@ -50,5 +57,6 @@ class ListAccountsRequest extends JsonSerializableType
         $this->page = $values['page'] ?? null;
         $this->search = $values['search'] ?? null;
         $this->sort = $values['sort'] ?? null;
+        $this->withoutEventRecipients = $values['withoutEventRecipients'] ?? null;
     }
 }

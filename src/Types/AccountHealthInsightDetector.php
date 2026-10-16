@@ -12,4 +12,6 @@ enum AccountHealthInsightDetector: string
     case DeliverabilitySpike = "deliverability_spike";
     case SendingDomainFailing = "sending_domain_failing";
     case MissingSequence = "missing_sequence";
+    case OverEmailing = "over_emailing";
+    case NeglectedSubscribers = "neglected_subscribers";
 }

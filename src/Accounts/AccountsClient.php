@@ -470,7 +470,7 @@ class AccountsClient
     }
 
     /**
-     * Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc).
+     * Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin.
      *
      * Example:
      * ```php
@@ -510,6 +510,9 @@ class AccountsClient
         }
         if ($request->sort != null) {
             $query['sort'] = $request->sort;
+        }
+        if ($request->withoutEventRecipients != null) {
+            $query['withoutEventRecipients'] = $request->withoutEventRecipients;
         }
         try {
             $response = $this->client->sendRequest(

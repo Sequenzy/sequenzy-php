@@ -27,8 +27,11 @@ use Sequenzy\Sequences\Requests\CreateGoalSequencesRequest;
 use Sequenzy\Sequences\Types\CreateGoalSequencesResponse;
 use Sequenzy\Types\SequenceActionResponse;
 use Sequenzy\Sequences\Types\DeleteGoalSequencesResponse;
+use Sequenzy\Sequences\Types\DiscardEmailVariationSequencesResponse;
 use Sequenzy\Sequences\Requests\DuplicateSequencesRequest;
 use Sequenzy\Sequences\Types\DuplicateSequencesResponse;
+use Sequenzy\Sequences\Requests\EditEmailsSequencesRequest;
+use Sequenzy\Sequences\Types\EditEmailsSequencesResponse;
 use Sequenzy\Sequences\Requests\EnrollAudienceSequencesRequest;
 use Sequenzy\Sequences\Types\EnrollAudienceSequencesResponse;
 use Sequenzy\Sequences\Requests\EnrollSubscribersInSequencesRequest;
@@ -37,6 +40,8 @@ use Sequenzy\Sequences\Requests\EstimateAudienceEnrollmentSequencesRequest;
 use Sequenzy\Sequences\Types\EstimateAudienceEnrollmentSequencesResponse;
 use Sequenzy\Sequences\Requests\GenerateSequencesRequest;
 use Sequenzy\Sequences\Types\GenerateSequencesResponse;
+use Sequenzy\Sequences\Requests\GenerateEmailVariationsSequencesRequest;
+use Sequenzy\Sequences\Types\GenerateEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Types\GetSequencesResponse;
 use Sequenzy\Sequences\Types\GetAudienceEnrollmentSequencesResponse;
 use Sequenzy\Types\SequenceEnrollmentGetResponse;
@@ -50,6 +55,7 @@ use Sequenzy\Sequences\Requests\ListSequencesRequest;
 use Sequenzy\Sequences\Types\ListSequencesResponse;
 use Sequenzy\Sequences\Requests\ListAudienceEnrollmentsSequencesRequest;
 use Sequenzy\Sequences\Types\ListAudienceEnrollmentsSequencesResponse;
+use Sequenzy\Sequences\Types\ListEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Requests\ListEnrollmentsSequencesRequest;
 use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
@@ -72,6 +78,8 @@ use Sequenzy\Sequences\Requests\SequenceUpdateRequest;
 use Sequenzy\Sequences\Types\UpdateSequencesResponse;
 use Sequenzy\Sequences\Requests\UpdateGoalSequencesRequest;
 use Sequenzy\Sequences\Types\UpdateGoalSequencesResponse;
+use Sequenzy\Sequences\Requests\UseEmailVariationSequencesRequest;
+use Sequenzy\Sequences\Types\UseEmailVariationSequencesResponse;
 
 class SequencesClient
 {
@@ -743,6 +751,65 @@ class SequencesClient
     }
 
     /**
+     * Discards a variation. It is no longer listed; the email does not change.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->discardEmailVariation(
+     *     'sequenceId',
+     *     'emailId',
+     *     'variationId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $emailId The email's ID, the emailId of its step from Get Sequence
+     * @param string $variationId Variation ID
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?DiscardEmailVariationSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function discardEmailVariation(string $sequenceId, string $emailId, string $variationId, ?array $options = null): ?DiscardEmailVariationSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/emails/{$emailId}/variations/{$variationId}",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return DiscardEmailVariationSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Creates an independent draft copy of the sequence graph, email templates, and sequence A/B tests.
      *
      * Example:
@@ -787,6 +854,66 @@ class SequencesClient
                     return null;
                 }
                 return DuplicateSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Changes a sequence's emails with AI in one request, like the Emails view in the sequence editor. The prompt says what to change, in any language. Without emailIds the prompt decides which emails change, every email unless it names some. A look change is made identical across the emails it restyles, down to each kind of block's style. A prompt asking to make emails look like one of them copies that email's style exactly, without AI. A request for design variations ("make a few variations of email 1") returns 400; use Generate Sequence Email Variations instead. Each email succeeds or fails on its own; changed emails are saved unless dryRun is true. An email written in HTML is edited as HTML. A/B test steps and steps without an email are skipped. Runs synchronously; one request edits up to 12 emails. An email saved elsewhere while the AI worked is not overwritten (saved false with an error).
+     *
+     * Example:
+     * ```php
+     * $client->sequences->editEmails(
+     *     'sequenceId',
+     *     new EditEmailsSequencesRequest([
+     *         'prompt' => 'Make the background cream and remove the header',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param EditEmailsSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?EditEmailsSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function editEmails(string $sequenceId, EditEmailsSequencesRequest $request, ?array $options = null): ?EditEmailsSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/emails/edit",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return EditEmailsSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1082,6 +1209,68 @@ class SequencesClient
                     return null;
                 }
                 return GenerateSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Starts designing 1 to 4 variations of one email of a sequence with AI, like "I like email 1, make a few variations" in the sequence editor's Emails view, and returns them at once with status generating. The source is the email's saved content. Generation runs in the background, usually under a minute; poll List Sequence Email Variations until each is ready or failed. The email does not change until you use one. An email can have up to 8 variations generating at once.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->generateEmailVariations(
+     *     'sequenceId',
+     *     'emailId',
+     *     new GenerateEmailVariationsSequencesRequest([
+     *         'prompt' => 'A few bolder versions',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $emailId The email's ID, the emailId of its step from Get Sequence
+     * @param GenerateEmailVariationsSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GenerateEmailVariationsSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function generateEmailVariations(string $sequenceId, string $emailId, GenerateEmailVariationsSequencesRequest $request, ?array $options = null): ?GenerateEmailVariationsSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/emails/{$emailId}/variations/generate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GenerateEmailVariationsSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1628,6 +1817,63 @@ class SequencesClient
                     return null;
                 }
                 return ListAudienceEnrollmentsSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the design variations of one email of a sequence, oldest first, with status (generating, ready, failed) and inUse (the email has exactly this content). Discarded variations are not listed. Poll this after Generate Sequence Email Variations until none is generating.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->listEmailVariations(
+     *     'sequenceId',
+     *     'emailId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $emailId The email's ID, the emailId of its step from Get Sequence
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListEmailVariationsSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listEmailVariations(string $sequenceId, string $emailId, ?array $options = null): ?ListEmailVariationsSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/emails/{$emailId}/variations",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListEmailVariationsSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -2542,6 +2788,68 @@ class SequencesClient
                     return null;
                 }
                 return UpdateGoalSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Saves a ready variation's design (blocks, theme and font) into the email, which keeps its own subject and preview text. With scope all, every other editable email of the sequence also takes its style exactly, without AI, keeping its own words. Each email saves on its own; one saved elsewhere since it was read is not overwritten (saved false with an error). Translations and A/B copy are re-derived. With dryRun nothing is saved.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->useEmailVariation(
+     *     'sequenceId',
+     *     'emailId',
+     *     'variationId',
+     *     new UseEmailVariationSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $emailId The email's ID, the emailId of its step from Get Sequence
+     * @param string $variationId Variation ID
+     * @param UseEmailVariationSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?UseEmailVariationSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function useEmailVariation(string $sequenceId, string $emailId, string $variationId, UseEmailVariationSequencesRequest $request = new UseEmailVariationSequencesRequest(), ?array $options = null): ?UseEmailVariationSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/emails/{$emailId}/variations/{$variationId}/use",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return UseEmailVariationSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

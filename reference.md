@@ -1573,6 +1573,81 @@ $client->accountHealth->runAccountHealthCheck();
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;accountHealth-&gt;submitAccountHealthFeedback($insightId, $request) -> ?SubmitAccountHealthFeedbackResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records whether a finding was useful to the API key owner, with an optional comment, and passes it to the Sequenzy team to improve the suggestions. It changes nothing in the workspace. Each person has one answer per finding, for findings of any status; sending again replaces the rating and keeps the earlier comment unless comment is given (null or an empty string clears it). Requires the analytics:read scope, so viewers can answer too.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->accountHealth->submitAccountHealthFeedback(
+    'insightId',
+    new SubmitAccountHealthFeedbackRequest([
+        'rating' => SubmitAccountHealthFeedbackRequestRating::Useful->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$insightId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$comment:** `?string` — What made it useful or not. Leading and trailing spaces are trimmed. Omit to keep an earlier comment; null or an empty string clears it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$rating:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;accountHealth-&gt;updateAccountHealthInsight($insightId, $request) -> ?UpdateAccountHealthInsightResponse</code></summary>
 <dl>
 <dd>
@@ -2155,7 +2230,7 @@ $client->accounts->getOrganizationIdJob(
 <dl>
 <dd>
 
-Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc).
+Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin.
 </dd>
 </dl>
 </dd>
@@ -2220,6 +2295,14 @@ $client->accounts->list(
 <dd>
 
 **$sort:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$withoutEventRecipients:** `?string` — When `true`, only accounts that have members but no owner or admin. Account events sent to owners or admins reach nobody in these accounts.
     
 </dd>
 </dl>
@@ -20278,6 +20361,80 @@ $client->sequences->disable(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;sequences-&gt;discardEmailVariation($sequenceId, $emailId, $variationId) -> ?DiscardEmailVariationSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Discards a variation. It is no longer listed; the email does not change.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->discardEmailVariation(
+    'sequenceId',
+    'emailId',
+    'variationId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailId:** `string` — The email's ID, the emailId of its step from Get Sequence
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$variationId:** `string` — Variation ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;sequences-&gt;duplicate($sequenceId, $request) -> ?DuplicateSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -20332,6 +20489,97 @@ $client->sequences->duplicate(
 <dd>
 
 **$name:** `?string` — Optional name for the copy.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;editEmails($sequenceId, $request) -> ?EditEmailsSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes a sequence's emails with AI in one request, like the Emails view in the sequence editor. The prompt says what to change, in any language. Without emailIds the prompt decides which emails change, every email unless it names some. A look change is made identical across the emails it restyles, down to each kind of block's style. A prompt asking to make emails look like one of them copies that email's style exactly, without AI. A request for design variations ("make a few variations of email 1") returns 400; use Generate Sequence Email Variations instead. Each email succeeds or fails on its own; changed emails are saved unless dryRun is true. An email written in HTML is edited as HTML. A/B test steps and steps without an email are skipped. Runs synchronously; one request edits up to 12 emails. An email saved elsewhere while the AI worked is not overwritten (saved false with an error).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->editEmails(
+    'sequenceId',
+    new EditEmailsSequencesRequest([
+        'prompt' => 'Make the background cream and remove the header',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$dryRun:** `?bool` — Return the new content without saving it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailIds:** `?array` — Only change these emails (emailId from Get Sequence). Omit to let the prompt decide.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$prompt:** `string` — What should change, in any language.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sectionIds:** `?array` — Only change these top-level blocks. Needs exactly one emailIds entry.
     
 </dd>
 </dl>
@@ -20721,6 +20969,98 @@ $client->sequences->generate(
 <dd>
 
 **$name:** `?string` — Optional sequence name. Defaults to the normalized goal.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;generateEmailVariations($sequenceId, $emailId, $request) -> ?GenerateEmailVariationsSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts designing 1 to 4 variations of one email of a sequence with AI, like "I like email 1, make a few variations" in the sequence editor's Emails view, and returns them at once with status generating. The source is the email's saved content. Generation runs in the background, usually under a minute; poll List Sequence Email Variations until each is ready or failed. The email does not change until you use one. An email can have up to 8 variations generating at once.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->generateEmailVariations(
+    'sequenceId',
+    'emailId',
+    new GenerateEmailVariationsSequencesRequest([
+        'prompt' => 'A few bolder versions',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailId:** `string` — The email's ID, the emailId of its step from Get Sequence
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$count:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$prompt:** `string` — The direction for the new versions, in any language.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$style:** `?string` — How far the new versions move from the email. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look. Defaults to fresh.
     
 </dd>
 </dl>
@@ -21343,6 +21683,71 @@ $client->sequences->listAudienceEnrollments(
 <dd>
 
 **$limit:** `?int` — Runs to return.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;listEmailVariations($sequenceId, $emailId) -> ?ListEmailVariationsSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the design variations of one email of a sequence, oldest first, with status (generating, ready, failed) and inUse (the email has exactly this content). Discarded variations are not listed. Poll this after Generate Sequence Email Variations until none is generating.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->listEmailVariations(
+    'sequenceId',
+    'emailId',
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailId:** `string` — The email's ID, the emailId of its step from Get Sequence
     
 </dd>
 </dl>
@@ -22879,6 +23284,97 @@ $client->sequences->updateGoal(
 <dd>
 
 **$request:** `SequenceGoalInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;useEmailVariation($sequenceId, $emailId, $variationId, $request) -> ?UseEmailVariationSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves a ready variation's design (blocks, theme and font) into the email, which keeps its own subject and preview text. With scope all, every other editable email of the sequence also takes its style exactly, without AI, keeping its own words. Each email saves on its own; one saved elsewhere since it was read is not overwritten (saved false with an error). Translations and A/B copy are re-derived. With dryRun nothing is saved.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->useEmailVariation(
+    'sequenceId',
+    'emailId',
+    'variationId',
+    new UseEmailVariationSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emailId:** `string` — The email's ID, the emailId of its step from Get Sequence
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$variationId:** `string` — Variation ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$dryRun:** `?bool` — Return what would change without saving.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$scope:** `?string` — email changes only this email; all also gives every other email of the sequence its style.
     
 </dd>
 </dl>

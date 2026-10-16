@@ -14,4 +14,6 @@ enum AccountHealthActionKind: string
     case VerifySendingDomain = "verify_sending_domain";
     case OpenDomainSettings = "open_domain_settings";
     case ReviewDeliverability = "review_deliverability";
+    case OpenFrequencyCapSettings = "open_frequency_cap_settings";
+    case ApplyFrequencyCap = "apply_frequency_cap";
 }
