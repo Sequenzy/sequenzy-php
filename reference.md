@@ -31328,6 +31328,71 @@ $client->websites->list();
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;websites-&gt;startSendingDomainDnsUpgrade($domain, $request) -> ?StartSendingDomainDnsUpgradeResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles, sequences and tracking stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. Some domains get a new DKIM key during the upgrade; you still publish the same four CNAMEs. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->websites->startSendingDomainDnsUpgrade(
+    'domain',
+    new StartSendingDomainDnsUpgradeRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$domain:** `string` — Configured sending domain
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$mailFromPrefix:** `?string` — Return-path subdomain label for the new records. Defaults to rp; if rp is taken or already has DNS records, rp1, then sqrp. The SES return path is this label followed by 2 (rp2 by default), moving to bounces or sesbounces if that name is in use; publish the returned names. One DNS label of letters, numbers or hyphens; inbound is not allowed, and a label that already has DNS records, or is the current return path or the tracking domain label, is rejected with 400.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;websites-&gt;verifySendingDomain($domain) -> ?VerifySendingDomainResponse</code></summary>
 <dl>
 <dd>

@@ -35,6 +35,12 @@ class Website extends JsonSerializableType
     public ?WebsiteDnsRecords $dnsRecords;
 
     /**
+     * @var ?WebsiteDnsUpgrade $dnsUpgrade Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+     */
+    #[JsonProperty('dnsUpgrade')]
+    public ?WebsiteDnsUpgrade $dnsUpgrade;
+
+    /**
      * @var ?bool $dnsVerified Whether the customer DNS records are verified.
      */
     #[JsonProperty('dnsVerified')]
@@ -112,6 +118,7 @@ class Website extends JsonSerializableType
      *   createdAt?: ?DateTime,
      *   dkim?: ?array<string, mixed>,
      *   dnsRecords?: ?WebsiteDnsRecords,
+     *   dnsUpgrade?: ?WebsiteDnsUpgrade,
      *   dnsVerified?: ?bool,
      *   domain?: ?string,
      *   id?: ?string,
@@ -133,6 +140,7 @@ class Website extends JsonSerializableType
         $this->createdAt = $values['createdAt'] ?? null;
         $this->dkim = $values['dkim'] ?? null;
         $this->dnsRecords = $values['dnsRecords'] ?? null;
+        $this->dnsUpgrade = $values['dnsUpgrade'] ?? null;
         $this->dnsVerified = $values['dnsVerified'] ?? null;
         $this->domain = $values['domain'] ?? null;
         $this->id = $values['id'] ?? null;
