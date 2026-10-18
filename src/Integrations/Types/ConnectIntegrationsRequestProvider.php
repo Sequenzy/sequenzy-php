@@ -10,6 +10,7 @@ enum ConnectIntegrationsRequestProvider: string
     case LemonSqueezy = "lemon_squeezy";
     case Whop = "whop";
     case Revenuecat = "revenuecat";
+    case Superwall = "superwall";
     case Creem = "creem";
     case Chargebee = "chargebee";
     case Clerk = "clerk";

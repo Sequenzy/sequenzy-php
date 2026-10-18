@@ -154,6 +154,12 @@ class EmailSendsClient
         if ($request->limit != null) {
             $query['limit'] = $request->limit;
         }
+        if ($request->listId != null) {
+            $query['listId'] = $request->listId;
+        }
+        if ($request->mailboxProvider != null) {
+            $query['mailboxProvider'] = $request->mailboxProvider;
+        }
         if ($request->page != null) {
             $query['page'] = $request->page;
         }

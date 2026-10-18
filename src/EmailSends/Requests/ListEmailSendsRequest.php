@@ -47,6 +47,16 @@ class ListEmailSendsRequest extends JsonSerializableType
     public ?int $limit;
 
     /**
+     * @var ?string $listId Only sends to active subscribers currently on this list, the same audience the analytics list filter uses. A list ID from another company matches no rows.
+     */
+    public ?string $listId;
+
+    /**
+     * @var ?string $mailboxProvider Recipient mailbox provider, with the same values and domain classification as the analytics `mailboxProvider` filter (e.g. gmail, microsoft, yahoo, icloud, orange). `other` matches every recipient domain outside the named providers. Case-insensitive; an unknown value returns 400.
+     */
+    public ?string $mailboxProvider;
+
+    /**
      * @var ?int $page
      */
     public ?int $page;
@@ -105,6 +115,8 @@ class ListEmailSendsRequest extends JsonSerializableType
      *   days?: ?int,
      *   emailType?: ?value-of<ListEmailSendsRequestEmailType>,
      *   limit?: ?int,
+     *   listId?: ?string,
+     *   mailboxProvider?: ?string,
      *   page?: ?int,
      *   q?: ?string,
      *   recipient?: ?string,
@@ -127,6 +139,8 @@ class ListEmailSendsRequest extends JsonSerializableType
         $this->days = $values['days'] ?? null;
         $this->emailType = $values['emailType'] ?? null;
         $this->limit = $values['limit'] ?? null;
+        $this->listId = $values['listId'] ?? null;
+        $this->mailboxProvider = $values['mailboxProvider'] ?? null;
         $this->page = $values['page'] ?? null;
         $this->q = $values['q'] ?? null;
         $this->recipient = $values['recipient'] ?? null;
