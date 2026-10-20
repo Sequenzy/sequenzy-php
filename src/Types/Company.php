@@ -138,6 +138,12 @@ class Company extends JsonSerializableType
     public ?string $fontFamily;
 
     /**
+     * @var ?value-of<CompanyFooterStyle> $footerStyle Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
+     */
+    #[JsonProperty('footerStyle')]
+    public ?string $footerStyle;
+
+    /**
      * @var ?bool $forwardReplies Whether captured replies are forwarded to the configured mailbox.
      */
     #[JsonProperty('forwardReplies')]
@@ -286,6 +292,7 @@ class Company extends JsonSerializableType
      *   emailStylePreference?: ?value-of<CompanyEmailStylePreference>,
      *   emailTheme?: ?array<string, mixed>,
      *   fontFamily?: ?string,
+     *   footerStyle?: ?value-of<CompanyFooterStyle>,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
      *   id?: ?string,
@@ -333,6 +340,7 @@ class Company extends JsonSerializableType
         $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
+        $this->footerStyle = $values['footerStyle'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
         $this->id = $values['id'] ?? null;

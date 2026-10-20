@@ -19,11 +19,15 @@ use Sequenzy\Push\Types\CreatePushCampaignResponse;
 use Sequenzy\Push\Types\DeletePushDeviceResponse;
 use Sequenzy\Push\Requests\DuplicatePushCampaignRequest;
 use Sequenzy\Push\Types\DuplicatePushCampaignResponse;
+use Sequenzy\Push\Requests\EndLiveActivityRequest;
+use Sequenzy\Types\LiveActivityDispatch;
 use Sequenzy\Push\Requests\EstimatePushCampaignRecipientsRequest;
 use Sequenzy\Push\Types\EstimatePushCampaignRecipientsResponse;
 use Sequenzy\Push\Types\GetPushCampaignResponse;
 use Sequenzy\Push\Types\GetPushCampaignStatsResponse;
 use Sequenzy\Push\Types\GetPushSettingsResponse;
+use Sequenzy\Push\Requests\ListLiveActivitiesRequest;
+use Sequenzy\Push\Types\ListLiveActivitiesResponse;
 use Sequenzy\Push\Requests\ListPushCampaignsRequest;
 use Sequenzy\Push\Types\ListPushCampaignsResponse;
 use Sequenzy\Push\Requests\ListPushDevicesRequest;
@@ -38,7 +42,9 @@ use Sequenzy\Push\Requests\SetApnsCredentialsRequest;
 use Sequenzy\Push\Types\SetApnsCredentialsResponse;
 use Sequenzy\Push\Requests\SetFcmCredentialsRequest;
 use Sequenzy\Push\Types\SetFcmCredentialsResponse;
+use Sequenzy\Push\Requests\StartLiveActivityRequest;
 use Sequenzy\Push\Types\UnschedulePushCampaignResponse;
+use Sequenzy\Push\Requests\UpdateLiveActivityRequest;
 use Sequenzy\Push\Requests\UpdatePushCampaignRequest;
 use Sequenzy\Push\Types\UpdatePushCampaignResponse;
 use Sequenzy\Push\Requests\UpdateWebPushSettingsRequest;
@@ -409,6 +415,67 @@ class PushClient
     }
 
     /**
+     * Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->endLiveActivity(
+     *     new EndLiveActivityRequest([
+     *         'activityId' => 'order-1234',
+     *         'contentState' => [
+     *             'key' => "value",
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param EndLiveActivityRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?LiveActivityDispatch
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function endLiveActivity(EndLiveActivityRequest $request, ?array $options = null): ?LiveActivityDispatch
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/live-activities/end",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return LiveActivityDispatch::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Counts the contacts in an audience (audienceCount) and those with an active device on the selected platforms (eligibleCount). Email status does not affect push eligibility. Requires the campaigns:read scope.
      *
      * Example:
@@ -617,6 +684,87 @@ class PushClient
                     return null;
                 }
                 return GetPushSettingsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->listLiveActivities(
+     *     new ListLiveActivitiesRequest([]),
+     * );
+     * ```
+     *
+     * @param ListLiveActivitiesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListLiveActivitiesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listLiveActivities(ListLiveActivitiesRequest $request = new ListLiveActivitiesRequest(), ?array $options = null): ?ListLiveActivitiesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->activityId != null) {
+            $query['activityId'] = $request->activityId;
+        }
+        if ($request->activityType != null) {
+            $query['activityType'] = $request->activityType;
+        }
+        if ($request->cursor != null) {
+            $query['cursor'] = $request->cursor;
+        }
+        if ($request->email != null) {
+            $query['email'] = $request->email;
+        }
+        if ($request->kind != null) {
+            $query['kind'] = $request->kind;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->status != null) {
+            $query['status'] = $request->status;
+        }
+        if ($request->subscriberId != null) {
+            $query['subscriberId'] = $request->subscriberId;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/live-activities",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListLiveActivitiesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1064,6 +1212,70 @@ class PushClient
     }
 
     /**
+     * Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->startLiveActivity(
+     *     new StartLiveActivityRequest([
+     *         'activityId' => 'order-1234',
+     *         'activityType' => 'DeliveryAttributes',
+     *         'alert' => new LiveActivityAlert([]),
+     *         'contentState' => [
+     *             'minutesAway' => 8,
+     *             'status' => "out_for_delivery",
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param StartLiveActivityRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?LiveActivityDispatch
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function startLiveActivity(StartLiveActivityRequest $request, ?array $options = null): ?LiveActivityDispatch
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/live-activities/start",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return LiveActivityDispatch::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Moves a scheduled push campaign back to draft. The queued send is discarded. Requires the campaigns:send scope.
      *
      * Example:
@@ -1105,6 +1317,68 @@ class PushClient
                     return null;
                 }
                 return UnschedulePushCampaignResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->updateLiveActivity(
+     *     new UpdateLiveActivityRequest([
+     *         'activityId' => 'order-1234',
+     *         'contentState' => [
+     *             'minutesAway' => 8,
+     *             'status' => "out_for_delivery",
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param UpdateLiveActivityRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?LiveActivityDispatch
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function updateLiveActivity(UpdateLiveActivityRequest $request, ?array $options = null): ?LiveActivityDispatch
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/live-activities/update",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return LiveActivityDispatch::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

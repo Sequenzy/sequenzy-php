@@ -10,6 +10,7 @@ use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailLengthPreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailPreset;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailStylePreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailTheme;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterStyle;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestReplyTrackingDomainMode;
 use Sequenzy\Core\Types\Union;
 
@@ -86,6 +87,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('fontFamily')]
     public ?string $fontFamily;
+
+    /**
+     * @var ?value-of<UpdateCompaniesRequestFooterStyle> $footerStyle Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
+     */
+    #[JsonProperty('footerStyle')]
+    public ?string $footerStyle;
 
     /**
      * @var ?bool $forwardReplies Enable or disable forwarding captured replies to the configured mailbox.
@@ -239,6 +246,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   emailStylePreference?: ?value-of<UpdateCompaniesRequestEmailStylePreference>,
      *   emailTheme?: ?UpdateCompaniesRequestEmailTheme,
      *   fontFamily?: ?string,
+     *   footerStyle?: ?value-of<UpdateCompaniesRequestFooterStyle>,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
      *   fromEmail?: ?string,
@@ -279,6 +287,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
+        $this->footerStyle = $values['footerStyle'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
