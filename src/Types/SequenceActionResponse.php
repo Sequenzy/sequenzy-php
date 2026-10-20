@@ -63,7 +63,7 @@ class SequenceActionResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
-     * @var ?array<string> $warnings Enable only. Non-blocking readiness warnings, such as empty branch paths or a `contact_added` trigger with no list, which enrolls every contact added to the company. Absent when there is nothing to report.
+     * @var ?array<string> $warnings Enable only. Non-blocking readiness warnings, such as empty branch paths, a `contact_added` trigger with no list, which enrolls every contact added to the company, or an email that uses `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves a result under that key, so those tags send empty. Absent when there is nothing to report.
      */
     #[JsonProperty('warnings'), ArrayType(['string'])]
     public ?array $warnings;

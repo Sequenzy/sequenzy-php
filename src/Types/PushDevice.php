@@ -64,7 +64,7 @@ class PushDevice extends JsonSerializableType
     public ?string $platform;
 
     /**
-     * @var ?value-of<PushDeviceSource> $source
+     * @var ?value-of<PushDeviceSource> $source web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
      */
     #[JsonProperty('source')]
     public ?string $source;

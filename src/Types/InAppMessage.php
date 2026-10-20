@@ -68,6 +68,12 @@ class InAppMessage extends JsonSerializableType
     public ?DateTime $expiresAt;
 
     /**
+     * @var ?string $eyebrow Short line above the title, such as "3 days left"; empty when the step has none.
+     */
+    #[JsonProperty('eyebrow')]
+    public ?string $eyebrow;
+
+    /**
      * @var ?value-of<InAppMessageFormat> $format How a message is shown; null for cards.
      */
     #[JsonProperty('format')]
@@ -78,6 +84,12 @@ class InAppMessage extends JsonSerializableType
      */
     #[JsonProperty('id')]
     public ?string $id;
+
+    /**
+     * @var ?value-of<InAppMessageImagePlacement> $imagePlacement Modals and full screens with an image: top (image above the text) or background (image fills the message, text on a dark scrim over it). Null otherwise.
+     */
+    #[JsonProperty('imagePlacement')]
+    public ?string $imagePlacement;
 
     /**
      * @var ?string $imageUrl
@@ -98,7 +110,7 @@ class InAppMessage extends JsonSerializableType
     public ?bool $pinned;
 
     /**
-     * @var ?value-of<InAppMessagePosition> $position Banner position; null for other formats and cards.
+     * @var ?value-of<InAppMessagePosition> $position Banners: top or bottom. Modals: bottom (a sheet rising from the bottom edge) or center. Null for full screens and cards.
      */
     #[JsonProperty('position')]
     public ?string $position;
@@ -144,8 +156,10 @@ class InAppMessage extends JsonSerializableType
      *   dismissedAt?: ?DateTime,
      *   displayedAt?: ?DateTime,
      *   expiresAt?: ?DateTime,
+     *   eyebrow?: ?string,
      *   format?: ?value-of<InAppMessageFormat>,
      *   id?: ?string,
+     *   imagePlacement?: ?value-of<InAppMessageImagePlacement>,
      *   imageUrl?: ?string,
      *   kind?: ?value-of<InAppMessageKind>,
      *   pinned?: ?bool,
@@ -169,8 +183,10 @@ class InAppMessage extends JsonSerializableType
         $this->dismissedAt = $values['dismissedAt'] ?? null;
         $this->displayedAt = $values['displayedAt'] ?? null;
         $this->expiresAt = $values['expiresAt'] ?? null;
+        $this->eyebrow = $values['eyebrow'] ?? null;
         $this->format = $values['format'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->imagePlacement = $values['imagePlacement'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
         $this->kind = $values['kind'] ?? null;
         $this->pinned = $values['pinned'] ?? null;

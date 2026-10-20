@@ -15,8 +15,11 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\InApp\Types\GetInAppStepStatsResponse;
 use Sequenzy\InApp\Requests\ListInAppMessagesRequest;
 use Sequenzy\InApp\Types\ListInAppMessagesResponse;
+use Sequenzy\InApp\Types\ListInAppTemplatesResponse;
 use Sequenzy\InApp\Requests\RecordInAppEventRequest;
 use Sequenzy\InApp\Types\RecordInAppEventResponse;
+use Sequenzy\InApp\Requests\WriteInAppCopyRequest;
+use Sequenzy\InApp\Types\WriteInAppCopyResponse;
 
 class InAppClient
 {
@@ -240,6 +243,58 @@ class InAppClient
     }
 
     /**
+     * Built-in starting points for in_app sequence steps. Each config is a complete step without a label; link buttons have no url until you add one. Requires the sequences:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->inApp->listInAppTemplates();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListInAppTemplatesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listInAppTemplates(?array $options = null): ?ListInAppTemplatesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "in-app/templates",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListInAppTemplatesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Records that the app displayed, clicked, dismissed or read an item. The first report of each type sets its timestamp; repeats change nothing except clickCount, and recorded is false. Clicks, dismissals and reads also mark the item displayed. Messages leave the open feed once displayed, clicked or dismissed; cards once dismissed. Requires the subscribers:write scope.
      *
      * Example:
@@ -286,6 +341,64 @@ class InAppClient
                     return null;
                 }
                 return RecordInAppEventResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Writes an in-app message's eyebrow, title, message and button labels with AI from a brief. Nothing is saved. Requires the sequences:write scope; limited to 20 requests a minute per workspace.
+     *
+     * Example:
+     * ```php
+     * $client->inApp->writeInAppCopy(
+     *     new WriteInAppCopyRequest([
+     *         'brief' => 'brief',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param WriteInAppCopyRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?WriteInAppCopyResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function writeInAppCopy(WriteInAppCopyRequest $request, ?array $options = null): ?WriteInAppCopyResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "in-app/copy",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return WriteInAppCopyResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

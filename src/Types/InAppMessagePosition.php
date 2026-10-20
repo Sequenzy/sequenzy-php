@@ -6,4 +6,5 @@ enum InAppMessagePosition: string
 {
     case Top = "top";
     case Bottom = "bottom";
+    case Center = "center";
 }

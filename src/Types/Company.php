@@ -216,7 +216,7 @@ class Company extends JsonSerializableType
     public ?bool $replyTrackingEnabled;
 
     /**
-     * @var ?array<string, ?string> $socialLinks
+     * @var ?array<string, ?string> $socialLinks Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs.
      */
     #[JsonProperty('socialLinks'), ArrayType(['string' => new Union('string', 'null')])]
     public ?array $socialLinks;

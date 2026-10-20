@@ -58,7 +58,7 @@ class WebTrackingKeysClient
     }
 
     /**
-     * Creates a publishable key for the browser tracking SDK and returns the script tag to install. The key ships in page source by design and authorizes storefront events only, never the rest of the API. Events start flowing once the snippet is deployed and nothing is backfilled for the period before that. Always pass allowedOrigins - an empty allowlist accepts events from any site. Requires the integrations:manage scope.
+     * Creates a publishable key for the browser tracking SDK and returns the script tag to install. The key ships in page source by design and authorizes storefront events only, never the rest of the API. Events start flowing once the snippet is deployed and nothing is backfilled for the period before that. Always pass allowedOrigins for a website or allowedAppIds for an iOS or Android app - a key with neither accepts events from any site or app. Requires the integrations:manage scope.
      *
      * Example:
      * ```php
@@ -336,7 +336,7 @@ class WebTrackingKeysClient
     }
 
     /**
-     * Renames a key, replaces its allowed origins, or revokes it. allowedOrigins replaces the whole list rather than appending. Revoking stops events within about a minute while preserving the key value, so the matching snippet can still be found and removed from the site. Requires the integrations:manage scope.
+     * Renames a key, replaces its allowed origins or app IDs, or revokes it. allowedOrigins and allowedAppIds each replace the whole list rather than appending. Revoking stops events within about a minute while preserving the key value, so the matching snippet can still be found and removed from the site. Requires the integrations:manage scope.
      *
      * Example:
      * ```php

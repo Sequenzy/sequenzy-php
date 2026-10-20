@@ -9,12 +9,18 @@ use DateTime;
 use Sequenzy\Core\Types\Date;
 
 /**
- * A publishable key for the browser tracking SDK. The key ships in the customer's page source by design, so it is not a secret; it authorizes storefront customer events only and carries an origin allowlist instead of scopes.
+ * A publishable key for the browser tracking SDK and the mobile SDKs. The key ships in the customer's page source or app by design, so it is not a secret; it authorizes client events only and carries origin and app ID allowlists instead of scopes.
  */
 class WebTrackingKey extends JsonSerializableType
 {
     /**
-     * @var ?array<string> $allowedOrigins Normalized origins allowed to use this key. Empty means any origin.
+     * @var ?array<string> $allowedAppIds iOS bundle IDs and Android package names allowed to use this key from the mobile SDKs, matched case-insensitively against the x-sequenzy-app-id header on requests without an Origin header. A key with app IDs and no origins is rejected from browsers.
+     */
+    #[JsonProperty('allowedAppIds'), ArrayType(['string'])]
+    public ?array $allowedAppIds;
+
+    /**
+     * @var ?array<string> $allowedOrigins Normalized origins allowed to use this key from a browser.
      */
     #[JsonProperty('allowedOrigins'), ArrayType(['string'])]
     public ?array $allowedOrigins;
@@ -68,7 +74,7 @@ class WebTrackingKey extends JsonSerializableType
     public ?string $publicKey;
 
     /**
-     * @var ?bool $unrestricted True when the allowlist is empty, so any site can send events with this key.
+     * @var ?bool $unrestricted True when both allowedOrigins and allowedAppIds are empty, so any site or app can send events with this key.
      */
     #[JsonProperty('unrestricted')]
     public ?bool $unrestricted;
@@ -87,6 +93,7 @@ class WebTrackingKey extends JsonSerializableType
 
     /**
      * @param array{
+     *   allowedAppIds?: ?array<string>,
      *   allowedOrigins?: ?array<string>,
      *   createdAt?: ?DateTime,
      *   endpoint?: ?string,
@@ -104,6 +111,7 @@ class WebTrackingKey extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->allowedAppIds = $values['allowedAppIds'] ?? null;
         $this->allowedOrigins = $values['allowedOrigins'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
         $this->endpoint = $values['endpoint'] ?? null;

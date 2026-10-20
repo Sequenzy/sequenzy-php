@@ -9,7 +9,13 @@ use Sequenzy\Core\Types\ArrayType;
 class UpdateWebTrackingKeysRequest extends JsonSerializableType
 {
     /**
-     * @var ?array<string> $allowedOrigins Replacement allowlist. Pass an empty array to make the key unrestricted.
+     * @var ?array<string> $allowedAppIds Replacement list of iOS bundle IDs and Android package names.
+     */
+    #[JsonProperty('allowedAppIds'), ArrayType(['string'])]
+    public ?array $allowedAppIds;
+
+    /**
+     * @var ?array<string> $allowedOrigins Replacement origin allowlist. The key becomes unrestricted when both this and allowedAppIds are empty.
      */
     #[JsonProperty('allowedOrigins'), ArrayType(['string'])]
     public ?array $allowedOrigins;
@@ -28,6 +34,7 @@ class UpdateWebTrackingKeysRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   allowedAppIds?: ?array<string>,
      *   allowedOrigins?: ?array<string>,
      *   isActive?: ?bool,
      *   name?: ?string,
@@ -36,6 +43,7 @@ class UpdateWebTrackingKeysRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->allowedAppIds = $values['allowedAppIds'] ?? null;
         $this->allowedOrigins = $values['allowedOrigins'] ?? null;
         $this->isActive = $values['isActive'] ?? null;
         $this->name = $values['name'] ?? null;

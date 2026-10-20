@@ -21,7 +21,7 @@ class SimulateSequencesResponse extends JsonSerializableType
     public ?array $path;
 
     /**
-     * @var SimulateSequencesResponseReadiness $readiness Activation blockers and warnings.
+     * @var SimulateSequencesResponseReadiness $readiness Activation blockers and warnings. Warnings never block activation; they include empty branch paths and emails that use `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves that key.
      */
     #[JsonProperty('readiness')]
     public SimulateSequencesResponseReadiness $readiness;
