@@ -18,7 +18,7 @@ class SequenceAudience extends JsonSerializableType
     public ?array $exclude;
 
     /**
-     * @var ?array<string> $excludedSubscriberIds
+     * @var ?array<string> $excludedSubscriberIds Contacts removed from the include rules. Does not remove contacts listed in includedSubscriberIds.
      */
     #[JsonProperty('excludedSubscriberIds'), ArrayType(['string'])]
     public ?array $excludedSubscriberIds;
@@ -40,6 +40,12 @@ class SequenceAudience extends JsonSerializableType
      */
     #[JsonProperty('include'), ArrayType([['string' => 'mixed']])]
     public ?array $include;
+
+    /**
+     * @var ?array<string> $includedSubscriberIds Specific contacts to enroll in addition to the include rules. Use type rules with an empty include array to enroll only these contacts, with no per-request cap. IDs that belong to another company, or to contacts who are unsubscribed, bounced or without an email, are skipped.
+     */
+    #[JsonProperty('includedSubscriberIds'), ArrayType(['string'])]
+    public ?array $includedSubscriberIds;
 
     /**
      * @var ?array<string> $listIds For type lists.
@@ -67,6 +73,7 @@ class SequenceAudience extends JsonSerializableType
      *   filterJoinOperator?: ?value-of<SequenceAudienceFilterJoinOperator>,
      *   filters?: ?array<array<string, mixed>>,
      *   include?: ?array<array<string, mixed>>,
+     *   includedSubscriberIds?: ?array<string>,
      *   listIds?: ?array<string>,
      *   segmentId?: ?string,
      * } $values
@@ -79,6 +86,7 @@ class SequenceAudience extends JsonSerializableType
         $this->filterJoinOperator = $values['filterJoinOperator'] ?? null;
         $this->filters = $values['filters'] ?? null;
         $this->include = $values['include'] ?? null;
+        $this->includedSubscriberIds = $values['includedSubscriberIds'] ?? null;
         $this->listIds = $values['listIds'] ?? null;
         $this->segmentId = $values['segmentId'] ?? null;
         $this->type = $values['type'];

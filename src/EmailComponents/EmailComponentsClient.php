@@ -14,6 +14,8 @@ use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\EmailComponents\Types\DeleteEmailComponentsResponse;
+use Sequenzy\EmailComponents\Requests\DuplicateEmailComponentsRequest;
+use Sequenzy\EmailComponents\Types\DuplicateEmailComponentsResponse;
 use Sequenzy\EmailComponents\Types\GetEmailComponentsResponse;
 use Sequenzy\EmailComponents\Types\GetDefaultEmailComponentsRequestSlot;
 use Sequenzy\EmailComponents\Types\GetDefaultEmailComponentsResponse;
@@ -169,6 +171,64 @@ class EmailComponentsClient
                     return null;
                 }
                 return DeleteEmailComponentsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Creates a new component with the same description, type and blocks as an existing one. Without a name, the copy is called "<name> (Copy)", or "<name> (Copy 2)" and so on when that name is taken. Duplicating a copy keeps a single "(Copy N)" suffix. The copy is never pinned as a default, so duplicating the default footer gives a regular component.
+     *
+     * Example:
+     * ```php
+     * $client->emailComponents->duplicate(
+     *     'componentId',
+     *     new DuplicateEmailComponentsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $componentId ID of the component to copy.
+     * @param DuplicateEmailComponentsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?DuplicateEmailComponentsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function duplicate(string $componentId, DuplicateEmailComponentsRequest $request = new DuplicateEmailComponentsRequest(), ?array $options = null): ?DuplicateEmailComponentsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "email-components/{$componentId}/duplicate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return DuplicateEmailComponentsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

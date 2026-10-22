@@ -121,7 +121,7 @@ class IntegrationsClient
     }
 
     /**
-     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
      *
      * Example:
      * ```php
@@ -289,7 +289,7 @@ class IntegrationsClient
     }
 
     /**
-     * Reads a connected Attio integration's saved Sequenzy-to-Attio list map, this company's Sequenzy lists, and live Attio people-lists using the stored access token. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
+     * Reads a connected Attio integration's two-way sync settings (every saved map in both directions, syncRemovals, inbound sync health), this company's Sequenzy lists, and live Attio people-lists using the stored access token. Tag names are not included; use the tags API. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
      *
      * Example:
      * ```php
@@ -646,7 +646,7 @@ class IntegrationsClient
     }
 
     /**
-     * Saves Sequenzy-to-Attio list mappings and/or company-matching on an already-connected Attio integration using the stored access token. Does not require the secret again. listMap is a full replacement when provided; an empty object clears every mapping. Provide at least one of listMap or syncCompanyFromDomain. Idempotent. Attio only. Requires the integrations:manage scope.
+     * Saves the two-way sync of an already-connected Attio integration using the stored access token. listMap and tagMap push Sequenzy lists and tags to Attio lists; inboundListMap and inboundTagMap pull Attio lists into Sequenzy lists and tags, which creates or updates subscribers and triggers list and tag automations. Saving an inbound map registers an Attio webhook with the stored token and needs the webhook:read-write scope; without it the request fails and nothing is saved. syncRemovals mirrors removals in every mapped direction. Each map is a full replacement when provided; an empty object clears it. Does not require the secret again. Provide at least one field. Idempotent. Attio only. Requires the integrations:manage scope.
      *
      * Example:
      * ```php

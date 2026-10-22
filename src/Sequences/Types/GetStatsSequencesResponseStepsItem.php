@@ -5,6 +5,7 @@ namespace Sequenzy\Sequences\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\PollResultsSummary;
 use Sequenzy\Types\EngagementStats;
 
 class GetStatsSequencesResponseStepsItem extends JsonSerializableType
@@ -26,6 +27,12 @@ class GetStatsSequencesResponseStepsItem extends JsonSerializableType
      */
     #[JsonProperty('nodeId')]
     public ?string $nodeId;
+
+    /**
+     * @var ?array<PollResultsSummary> $polls Lifetime Poll and NPS summaries for this step, in the same shape as the campaign stats polls. Each subscriber counts once per poll block with their latest answer. Not limited by period, start or end. Omitted when the step has no responses.
+     */
+    #[JsonProperty('polls'), ArrayType([PollResultsSummary::class])]
+    public ?array $polls;
 
     /**
      * @var ?EngagementStats $stats
@@ -50,6 +57,7 @@ class GetStatsSequencesResponseStepsItem extends JsonSerializableType
      *   failedCount?: ?int,
      *   failedSubscribers?: ?array<GetStatsSequencesResponseStepsItemFailedSubscribersItem>,
      *   nodeId?: ?string,
+     *   polls?: ?array<PollResultsSummary>,
      *   stats?: ?EngagementStats,
      *   step?: ?int,
      *   subject?: ?string,
@@ -61,6 +69,7 @@ class GetStatsSequencesResponseStepsItem extends JsonSerializableType
         $this->failedCount = $values['failedCount'] ?? null;
         $this->failedSubscribers = $values['failedSubscribers'] ?? null;
         $this->nodeId = $values['nodeId'] ?? null;
+        $this->polls = $values['polls'] ?? null;
         $this->stats = $values['stats'] ?? null;
         $this->step = $values['step'] ?? null;
         $this->subject = $values['subject'] ?? null;

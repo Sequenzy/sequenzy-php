@@ -10362,6 +10362,71 @@ $client->emailComponents->delete(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;emailComponents-&gt;duplicate($componentId, $request) -> ?DuplicateEmailComponentsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new component with the same description, type and blocks as an existing one. Without a name, the copy is called "<name> (Copy)", or "<name> (Copy 2)" and so on when that name is taken. Duplicating a copy keeps a single "(Copy N)" suffix. The copy is never pinned as a default, so duplicating the default footer gives a regular component.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->emailComponents->duplicate(
+    'componentId',
+    new DuplicateEmailComponentsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$componentId:** `string` — ID of the component to copy.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` — Name for the copy, unique within the company. Omit it to use the default copy name.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;emailComponents-&gt;get($componentId) -> ?GetEmailComponentsResponse</code></summary>
 <dl>
 <dd>
@@ -12543,7 +12608,7 @@ $client->integrations->activatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -12617,7 +12682,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
+**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
     
 </dd>
 </dl>
@@ -12753,7 +12818,7 @@ $client->integrations->get(
 <dl>
 <dd>
 
-Reads a connected Attio integration's saved Sequenzy-to-Attio list map, this company's Sequenzy lists, and live Attio people-lists using the stored access token. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
+Reads a connected Attio integration's two-way sync settings (every saved map in both directions, syncRemovals, inbound sync health), this company's Sequenzy lists, and live Attio people-lists using the stored access token. Tag names are not included; use the tags API. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
 </dd>
 </dl>
 </dd>
@@ -13121,7 +13186,7 @@ $client->integrations->sync(
 <dl>
 <dd>
 
-Saves Sequenzy-to-Attio list mappings and/or company-matching on an already-connected Attio integration using the stored access token. Does not require the secret again. listMap is a full replacement when provided; an empty object clears every mapping. Provide at least one of listMap or syncCompanyFromDomain. Idempotent. Attio only. Requires the integrations:manage scope.
+Saves the two-way sync of an already-connected Attio integration using the stored access token. listMap and tagMap push Sequenzy lists and tags to Attio lists; inboundListMap and inboundTagMap pull Attio lists into Sequenzy lists and tags, which creates or updates subscribers and triggers list and tag automations. Saving an inbound map registers an Attio webhook with the stored token and needs the webhook:read-write scope; without it the request fails and nothing is saved. syncRemovals mirrors removals in every mapped direction. Each map is a full replacement when provided; an empty object clears it. Does not require the secret again. Provide at least one field. Idempotent. Attio only. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -13162,7 +13227,23 @@ $client->integrations->updateAttioSettings(
 <dl>
 <dd>
 
-**$listMap:** `?array` — Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
+**$inboundListMap:** `?array` — Attio to Sequenzy. Complete Attio list UUID or api slug to Sequenzy list id map. Saved with Attio list UUIDs. Needs webhook:read-write on the Attio token.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$inboundTagMap:** `?array` — Attio to Sequenzy. Complete Attio list UUID or api slug to Sequenzy tag name map. Needs webhook:read-write on the Attio token.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$listMap:** `?array` — Sequenzy to Attio. Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
     
 </dd>
 </dl>
@@ -13171,6 +13252,22 @@ $client->integrations->updateAttioSettings(
 <dd>
 
 **$syncCompanyFromDomain:** `?bool` — When true, upsert a company from the person's non-free-mail email domain.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$syncRemovals:** `?bool` — Mirror removals in every mapped direction. Defaults to false (add-only).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$tagMap:** `?array` — Sequenzy to Attio. Complete Sequenzy tag name to Attio list UUID or api slug map. Tag names are normalized (lowercase, spaces become dashes), at most 255 characters.
     
 </dd>
 </dl>

@@ -68,6 +68,12 @@ class SequenceAudienceEnrollment extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?int $includedSubscriberCount Number of hand-picked contacts in `audience.includedSubscriberIds`, 0 when none.
+     */
+    #[JsonProperty('includedSubscriberCount')]
+    public ?int $includedSubscriberCount;
+
+    /**
      * @var ?int $processedCount Subscribers scanned so far.
      */
     #[JsonProperty('processedCount')]
@@ -126,6 +132,7 @@ class SequenceAudienceEnrollment extends JsonSerializableType
      *   error?: ?string,
      *   estimatedCount?: ?int,
      *   id?: ?string,
+     *   includedSubscriberCount?: ?int,
      *   processedCount?: ?int,
      *   scheduledFor?: ?DateTime,
      *   sequenceId?: ?string,
@@ -148,6 +155,7 @@ class SequenceAudienceEnrollment extends JsonSerializableType
         $this->error = $values['error'] ?? null;
         $this->estimatedCount = $values['estimatedCount'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->includedSubscriberCount = $values['includedSubscriberCount'] ?? null;
         $this->processedCount = $values['processedCount'] ?? null;
         $this->scheduledFor = $values['scheduledFor'] ?? null;
         $this->sequenceId = $values['sequenceId'] ?? null;
