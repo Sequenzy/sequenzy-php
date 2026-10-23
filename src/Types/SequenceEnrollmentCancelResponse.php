@@ -33,7 +33,7 @@ class SequenceEnrollmentCancelResponse extends JsonSerializableType
     public ?bool $hasMore;
 
     /**
-     * @var ?float $matchedCount Active or waiting enrollments matching the target when the request started.
+     * @var ?float $matchedCount Active, waiting, or paused enrollments matching the target when the request started.
      */
     #[JsonProperty('matchedCount')]
     public ?float $matchedCount;

@@ -61,12 +61,16 @@ use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentMoveRequest;
 use Sequenzy\Types\SequenceEnrollmentMoveResponse;
+use Sequenzy\Sequences\Requests\SequenceEnrollmentPauseRequest;
+use Sequenzy\Types\SequenceEnrollmentPauseResponse;
 use Sequenzy\Sequences\Requests\PreviewFromExampleSequencesRequest;
 use Sequenzy\Sequences\Types\PreviewFromExampleSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentRealignRequest;
 use Sequenzy\Types\SequenceEnrollmentRealignResponse;
 use Sequenzy\Sequences\Requests\RenderStepSequencesRequest;
 use Sequenzy\Types\RenderEmailResponse;
+use Sequenzy\Sequences\Requests\SequenceEnrollmentResumeRequest;
+use Sequenzy\Types\SequenceEnrollmentResumeResponse;
 use Sequenzy\Sequences\Types\RotateInboundWebhookSecretSequencesResponse;
 use Sequenzy\Sequences\Requests\SendTestEmailSequencesRequest;
 use Sequenzy\Sequences\Types\SendTestEmailSequencesResponse;
@@ -230,7 +234,7 @@ class SequencesClient
     }
 
     /**
-     * Cancels active or waiting enrollments in one sequence. Target every enrollment with cancelAll, a batch with subscriberIds, one contact with subscriberId, or matching stored entry event property values with fieldValues. Bulk cancellation is capped at 1000 enrollments per request; repeat the request while remainingCount is above zero.
+     * Cancels active, waiting, or paused enrollments in one sequence. Target every enrollment with cancelAll, a batch with subscriberIds, one contact with subscriberId, or matching stored entry event property values with fieldValues. Bulk cancellation is capped at 1000 enrollments per request; repeat the request while remainingCount is above zero.
      *
      * Example:
      * ```php
@@ -983,7 +987,7 @@ class SequencesClient
     }
 
     /**
-     * Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active or waiting in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
+     * Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active, waiting, or paused in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
      *
      * Example:
      * ```php
@@ -1888,7 +1892,7 @@ class SequencesClient
     }
 
     /**
-     * Lists the individual contacts enrolled in one sequence, with the node each one is currently sitting on. Defaults to active and waiting enrollments. Use this when sequence stats give you enrollmentCounts and you need the actual subscribers behind a number.
+     * Lists the individual contacts enrolled in one sequence, with the node each one is currently sitting on. Defaults to active, waiting, and paused enrollments, which is everyone still in the sequence. Use this when sequence stats give you enrollmentCounts and you need the actual subscribers behind a number.
      *
      * Example:
      * ```php
@@ -2147,6 +2151,69 @@ class SequencesClient
     }
 
     /**
+     * Holds specific contacts on the sequence step they are on. A paused enrollment gets no further steps, keeps its entry event properties and stop-condition snapshots, and still counts as enrolled, so the same contact cannot enter this sequence again while paused. Unsubscribes, bounces, and enrollment cancellation still end it. A wait-for-event step does not react while paused; an event that arrived meanwhile is picked up on resume. Applies immediately with no dry run. An enrollment whose current step is running at that moment is left alone with outcome in_progress; repeat the request shortly. To stop new contacts entering the whole sequence instead, use POST /sequences/{sequenceId}/pause-enrollments.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->pauseSubscribers(
+     *     'sequenceId',
+     *     new SequenceEnrollmentPauseRequest([
+     *         'emails' => [
+     *             'ada@example.com',
+     *         ],
+     *         'reason' => 'Project blocked',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param SequenceEnrollmentPauseRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceEnrollmentPauseResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function pauseSubscribers(string $sequenceId, SequenceEnrollmentPauseRequest $request = new SequenceEnrollmentPauseRequest(), ?array $options = null): ?SequenceEnrollmentPauseResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/enrollments/pause",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceEnrollmentPauseResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Rewrites the first 3 emails of a public gallery sequence for your brand, or for another `website`, and returns them without creating anything. Emails that could not be written are counted in `failedEmailCount`; the call fails only when none could be written. Usually takes 10 to 30 seconds. Requires `sequences:write`.
      *
      * Example:
@@ -2364,6 +2431,68 @@ class SequencesClient
                     return null;
                 }
                 return SequenceActionResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Continues paused contacts from the step they were paused on, with the status they had. Nothing restarts or is skipped. Waits keep their original wall-clock time, like a whole-sequence pause - a wait that ran out while paused continues right away, and one that has not still ends when it would have. Enrollments of the targeted contacts that are not paused are reported with outcome not_paused and left alone. When the sequence itself is disabled, sequenceRunning is false and the resumed contacts continue once it is enabled.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->resumeSubscribers(
+     *     'sequenceId',
+     *     new SequenceEnrollmentResumeRequest([
+     *         'emails' => [
+     *             'ada@example.com',
+     *         ],
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param SequenceEnrollmentResumeRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceEnrollmentResumeResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function resumeSubscribers(string $sequenceId, SequenceEnrollmentResumeRequest $request = new SequenceEnrollmentResumeRequest(), ?array $options = null): ?SequenceEnrollmentResumeResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/enrollments/resume",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceEnrollmentResumeResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

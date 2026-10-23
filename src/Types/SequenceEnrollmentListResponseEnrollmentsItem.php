@@ -131,13 +131,25 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
     public ?string $moveReason;
 
     /**
+     * @var ?DateTime $pausedAt When the current pause began, or null when the enrollment is not paused.
+     */
+    #[JsonProperty('pausedAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $pausedAt;
+
+    /**
+     * @var ?string $pauseReason Reason given when the enrollment was paused, or null.
+     */
+    #[JsonProperty('pauseReason')]
+    public ?string $pauseReason;
+
+    /**
      * @var ?string $sequenceId
      */
     #[JsonProperty('sequenceId')]
     public ?string $sequenceId;
 
     /**
-     * @var ?value-of<SequenceEnrollmentListResponseEnrollmentsItemStatus> $status
+     * @var ?value-of<SequenceEnrollmentListResponseEnrollmentsItemStatus> $status `paused` means the enrollment is held on its current step by POST /sequences/{sequenceId}/enrollments/pause.
      */
     #[JsonProperty('status')]
     public ?string $status;
@@ -167,7 +179,7 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
     public ?string $subscriberStatus;
 
     /**
-     * @var ?DateTime $waitUntil When a waiting enrollment is scheduled to resume, or null when nothing is scheduled.
+     * @var ?DateTime $waitUntil When a waiting enrollment is scheduled to resume, or null when nothing is scheduled. Always null for a paused enrollment, because nothing runs until it is resumed.
      */
     #[JsonProperty('waitUntil'), Date(Date::TYPE_DATETIME)]
     public ?DateTime $waitUntil;
@@ -194,6 +206,8 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
      *   movedAt?: ?DateTime,
      *   movedFromNodeId?: ?string,
      *   moveReason?: ?string,
+     *   pausedAt?: ?DateTime,
+     *   pauseReason?: ?string,
      *   sequenceId?: ?string,
      *   status?: ?value-of<SequenceEnrollmentListResponseEnrollmentsItemStatus>,
      *   stopConditionMatches?: ?bool,
@@ -226,6 +240,8 @@ class SequenceEnrollmentListResponseEnrollmentsItem extends JsonSerializableType
         $this->movedAt = $values['movedAt'] ?? null;
         $this->movedFromNodeId = $values['movedFromNodeId'] ?? null;
         $this->moveReason = $values['moveReason'] ?? null;
+        $this->pausedAt = $values['pausedAt'] ?? null;
+        $this->pauseReason = $values['pauseReason'] ?? null;
         $this->sequenceId = $values['sequenceId'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->stopConditionMatches = $values['stopConditionMatches'] ?? null;

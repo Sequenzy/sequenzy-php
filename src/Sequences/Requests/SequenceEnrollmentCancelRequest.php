@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 class SequenceEnrollmentCancelRequest extends JsonSerializableType
 {
     /**
-     * @var ?bool $cancelAll Cancel every active or waiting enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
+     * @var ?bool $cancelAll Cancel every active, waiting, or paused enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
      */
     #[JsonProperty('cancelAll')]
     public ?bool $cancelAll;

@@ -222,7 +222,7 @@ class Company extends JsonSerializableType
     public ?bool $replyTrackingEnabled;
 
     /**
-     * @var ?array<string, ?string> $socialLinks Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs.
+     * @var ?array<string, ?string> $socialLinks Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs. Branded footers show an icon for `x` (or `twitter`), `threads`, `bluesky`, `linkedin`, `instagram`, `facebook`, `youtube`, `tiktok`, `pinterest`, `discord`, `reddit`, and the mobile app store listings `appstore` and `googleplay`. Other keys are stored but get no icon.
      */
     #[JsonProperty('socialLinks'), ArrayType(['string' => new Union('string', 'null')])]
     public ?array $socialLinks;

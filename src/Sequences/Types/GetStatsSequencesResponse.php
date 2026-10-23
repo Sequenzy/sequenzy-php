@@ -5,6 +5,7 @@ namespace Sequenzy\Sequences\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Types\SequenceEnrollmentCounts;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\SequencePausedEnrollmentCounts;
 use Sequenzy\Types\RecommendationMetrics;
 use Sequenzy\Types\EngagementStats;
 use Sequenzy\Core\Types\ArrayType;
@@ -22,6 +23,12 @@ class GetStatsSequencesResponse extends JsonSerializableType
      */
     #[JsonProperty('enrollmentSkipped')]
     public ?GetStatsSequencesResponseEnrollmentSkipped $enrollmentSkipped;
+
+    /**
+     * @var ?SequencePausedEnrollmentCounts $pausedEnrollments
+     */
+    #[JsonProperty('pausedEnrollments')]
+    public ?SequencePausedEnrollmentCounts $pausedEnrollments;
 
     /**
      * @var ?string $period Echoed back when `period` is provided.
@@ -63,6 +70,7 @@ class GetStatsSequencesResponse extends JsonSerializableType
      * @param array{
      *   enrollmentCounts?: ?SequenceEnrollmentCounts,
      *   enrollmentSkipped?: ?GetStatsSequencesResponseEnrollmentSkipped,
+     *   pausedEnrollments?: ?SequencePausedEnrollmentCounts,
      *   period?: ?string,
      *   recommendations?: ?RecommendationMetrics,
      *   sequenceId?: ?string,
@@ -76,6 +84,7 @@ class GetStatsSequencesResponse extends JsonSerializableType
     ) {
         $this->enrollmentCounts = $values['enrollmentCounts'] ?? null;
         $this->enrollmentSkipped = $values['enrollmentSkipped'] ?? null;
+        $this->pausedEnrollments = $values['pausedEnrollments'] ?? null;
         $this->period = $values['period'] ?? null;
         $this->recommendations = $values['recommendations'] ?? null;
         $this->sequenceId = $values['sequenceId'] ?? null;

@@ -20132,7 +20132,7 @@ $client->sequences->cancelAudienceEnrollment(
 <dl>
 <dd>
 
-Cancels active or waiting enrollments in one sequence. Target every enrollment with cancelAll, a batch with subscriberIds, one contact with subscriberId, or matching stored entry event property values with fieldValues. Bulk cancellation is capped at 1000 enrollments per request; repeat the request while remainingCount is above zero.
+Cancels active, waiting, or paused enrollments in one sequence. Target every enrollment with cancelAll, a batch with subscriberIds, one contact with subscriberId, or matching stored entry event property values with fieldValues. Bulk cancellation is capped at 1000 enrollments per request; repeat the request while remainingCount is above zero.
 </dd>
 </dl>
 </dd>
@@ -20177,7 +20177,7 @@ $client->sequences->cancelEnrollments(
 <dl>
 <dd>
 
-**$cancelAll:** `?bool` — Cancel every active or waiting enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
+**$cancelAll:** `?bool` — Cancel every active, waiting, or paused enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
     
 </dd>
 </dl>
@@ -21384,7 +21384,7 @@ $client->sequences->enable(
 <dl>
 <dd>
 
-Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active or waiting in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
+Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active, waiting, or paused in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
 </dd>
 </dl>
 </dd>
@@ -22496,7 +22496,7 @@ $client->sequences->listEmailVariations(
 <dl>
 <dd>
 
-Lists the individual contacts enrolled in one sequence, with the node each one is currently sitting on. Defaults to active and waiting enrollments. Use this when sequence stats give you enrollmentCounts and you need the actual subscribers behind a number.
+Lists the individual contacts enrolled in one sequence, with the node each one is currently sitting on. Defaults to active, waiting, and paused enrollments, which is everyone still in the sequence. Use this when sequence stats give you enrollmentCounts and you need the actual subscribers behind a number.
 </dd>
 </dl>
 </dd>
@@ -22582,7 +22582,7 @@ $client->sequences->listEnrollments(
 <dl>
 <dd>
 
-**$status:** `?string` — Comma-separated enrollment statuses: active, waiting, completed, failed, cancelled. Defaults to active,waiting.
+**$status:** `?string` — Comma-separated enrollment statuses: active, waiting, paused, completed, failed, cancelled. Defaults to active,waiting,paused.
     
 </dd>
 </dl>
@@ -22843,6 +22843,92 @@ $client->sequences->pauseEnrollments(
 <dd>
 
 **$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;pauseSubscribers($sequenceId, $request) -> ?SequenceEnrollmentPauseResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Holds specific contacts on the sequence step they are on. A paused enrollment gets no further steps, keeps its entry event properties and stop-condition snapshots, and still counts as enrolled, so the same contact cannot enter this sequence again while paused. Unsubscribes, bounces, and enrollment cancellation still end it. A wait-for-event step does not react while paused; an event that arrived meanwhile is picked up on resume. Applies immediately with no dry run. An enrollment whose current step is running at that moment is left alone with outcome in_progress; repeat the request shortly. To stop new contacts entering the whole sequence instead, use POST /sequences/{sequenceId}/pause-enrollments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->pauseSubscribers(
+    'sequenceId',
+    new SequenceEnrollmentPauseRequest([
+        'emails' => [
+            'ada@example.com',
+        ],
+        'reason' => 'Project blocked',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emails:** `?array` — Subscriber emails to pause, matched case-insensitively. Emails that match no contact come back in notFound.emails.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$reason:** `?string` — Note stored on each paused enrollment and returned as pauseReason by list enrollments.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberIds:** `?array` — Subscriber IDs to pause. IDs that match no contact come back in notFound.subscriberIds.
     
 </dd>
 </dl>
@@ -23152,6 +23238,83 @@ $client->sequences->resumeEnrollments(
 <dd>
 
 **$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;resumeSubscribers($sequenceId, $request) -> ?SequenceEnrollmentResumeResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Continues paused contacts from the step they were paused on, with the status they had. Nothing restarts or is skipped. Waits keep their original wall-clock time, like a whole-sequence pause - a wait that ran out while paused continues right away, and one that has not still ends when it would have. Enrollments of the targeted contacts that are not paused are reported with outcome not_paused and left alone. When the sequence itself is disabled, sequenceRunning is false and the resumed contacts continue once it is enabled.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->resumeSubscribers(
+    'sequenceId',
+    new SequenceEnrollmentResumeRequest([
+        'emails' => [
+            'ada@example.com',
+        ],
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$emails:** `?array` — Subscriber emails to resume, matched case-insensitively.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$subscriberIds:** `?array` — Subscriber IDs to resume.
     
 </dd>
 </dl>

@@ -33,7 +33,7 @@ class ListEnrollmentsSequencesRequest extends JsonSerializableType
     public ?string $sort;
 
     /**
-     * @var ?string $status Comma-separated enrollment statuses: active, waiting, completed, failed, cancelled. Defaults to active,waiting.
+     * @var ?string $status Comma-separated enrollment statuses: active, waiting, paused, completed, failed, cancelled. Defaults to active,waiting,paused.
      */
     public ?string $status;
 

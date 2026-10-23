@@ -28,7 +28,7 @@ class SubscriberSequenceEnrollment extends JsonSerializableType
     public ?string $currentNodeType;
 
     /**
-     * @var ?string $enrollmentStatus
+     * @var ?string $enrollmentStatus active, waiting, paused, completed, failed, or cancelled. paused means the enrollment is held on its step by POST /sequences/{sequenceId}/enrollments/pause; its scheduledFor is the wake-up time it keeps for when it is resumed.
      */
     #[JsonProperty('enrollmentStatus')]
     public ?string $enrollmentStatus;
