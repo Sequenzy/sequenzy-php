@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class DisconnectIntegrationsResponse extends JsonSerializableType
 {
     /**
-     * @var ?string $cleanupWarning Null when cleanup succeeded or no managed webhook exists. Otherwise repeat disconnect to retry provider cleanup.
+     * @var ?string $cleanupWarning Null when cleanup succeeded or no managed webhook exists. Otherwise repeat disconnect to retry Lemon Squeezy cleanup, or delete the SparkLoop webhook in SparkLoop.
      */
     #[JsonProperty('cleanupWarning')]
     public ?string $cleanupWarning;

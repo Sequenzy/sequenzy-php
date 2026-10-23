@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
+ * PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
  */
 class ConnectIntegrationsRequestSettings extends JsonSerializableType
 {
@@ -16,6 +16,12 @@ class ConnectIntegrationsRequestSettings extends JsonSerializableType
      */
     #[JsonProperty('eventAllowlist'), ArrayType(['string'])]
     public ?array $eventAllowlist;
+
+    /**
+     * @var ?array<string> $listIds SparkLoop only. Lists new referrals join. Omit to keep the current choice (the workspace default lists on a first connect), null to reset to the workspace default lists, or an empty array for none.
+     */
+    #[JsonProperty('listIds'), ArrayType(['string'])]
+    public ?array $listIds;
 
     /**
      * @var ?array<string, string> $listMap Attio only. Sequenzy list id to Attio list UUID or slug.
@@ -38,6 +44,7 @@ class ConnectIntegrationsRequestSettings extends JsonSerializableType
     /**
      * @param array{
      *   eventAllowlist?: ?array<string>,
+     *   listIds?: ?array<string>,
      *   listMap?: ?array<string, string>,
      *   syncAllEvents?: ?bool,
      *   syncCompanyFromDomain?: ?bool,
@@ -47,6 +54,7 @@ class ConnectIntegrationsRequestSettings extends JsonSerializableType
         array $values = [],
     ) {
         $this->eventAllowlist = $values['eventAllowlist'] ?? null;
+        $this->listIds = $values['listIds'] ?? null;
         $this->listMap = $values['listMap'] ?? null;
         $this->syncAllEvents = $values['syncAllEvents'] ?? null;
         $this->syncCompanyFromDomain = $values['syncCompanyFromDomain'] ?? null;

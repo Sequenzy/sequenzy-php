@@ -18,4 +18,5 @@ enum ConnectIntegrationsRequestProvider: string
     case Segment = "segment";
     case Affonso = "affonso";
     case Attio = "attio";
+    case Sparkloop = "sparkloop";
 }

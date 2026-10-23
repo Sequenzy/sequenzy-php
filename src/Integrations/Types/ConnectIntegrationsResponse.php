@@ -27,6 +27,12 @@ class ConnectIntegrationsResponse extends JsonSerializableType
     public ?IntegrationSummary $integration;
 
     /**
+     * @var ?ConnectIntegrationsResponsePublication $publication SparkLoop only. The publication whose partner referrals this workspace receives.
+     */
+    #[JsonProperty('publication')]
+    public ?ConnectIntegrationsResponsePublication $publication;
+
+    /**
      * @var ?bool $revenueSyncQueued Payment providers only. Whether the initial revenue backfill was queued.
      */
     #[JsonProperty('revenueSyncQueued')]
@@ -51,7 +57,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
     public ?string $webhookProvisioning;
 
     /**
-     * @var ?string $webhookUrl Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. Empty for Attio.
+     * @var ?string $webhookUrl Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. SparkLoop's is already registered in SparkLoop. Empty for Attio.
      */
     #[JsonProperty('webhookUrl')]
     public ?string $webhookUrl;
@@ -61,6 +67,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
      *   backfillQueued?: ?bool,
      *   history?: ?ConnectIntegrationsResponseHistory,
      *   integration?: ?IntegrationSummary,
+     *   publication?: ?ConnectIntegrationsResponsePublication,
      *   revenueSyncQueued?: ?bool,
      *   success?: ?bool,
      *   testMode?: ?bool,
@@ -74,6 +81,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
         $this->backfillQueued = $values['backfillQueued'] ?? null;
         $this->history = $values['history'] ?? null;
         $this->integration = $values['integration'] ?? null;
+        $this->publication = $values['publication'] ?? null;
         $this->revenueSyncQueued = $values['revenueSyncQueued'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->testMode = $values['testMode'] ?? null;

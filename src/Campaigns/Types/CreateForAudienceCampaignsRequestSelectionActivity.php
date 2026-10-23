@@ -35,7 +35,7 @@ class CreateForAudienceCampaignsRequestSelectionActivity extends JsonSerializabl
     public ?string $bounceSubType;
 
     /**
-     * @var ?value-of<CreateForAudienceCampaignsRequestSelectionActivityBounceType> $bounceType Only for bounce activity.
+     * @var ?value-of<CreateForAudienceCampaignsRequestSelectionActivityBounceType> $bounceType Only for bounce activity. Transient is every temporary bounce; Blocked is the part the receiver refused over content, policy or reputation, and Soft is the rest.
      */
     #[JsonProperty('bounceType')]
     public ?string $bounceType;

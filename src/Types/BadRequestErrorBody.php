@@ -3,50 +3,39 @@
 namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Traits\Error;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 class BadRequestErrorBody extends JsonSerializableType
 {
-    /**
-     * @var ?string $code
-     */
-    #[JsonProperty('code')]
-    public ?string $code;
+    use Error;
 
     /**
-     * @var ?string $error
+     * @var ?array<BadRequestErrorBodyPublicationsItem> $publications SparkLoop only, with code sparkloop_publication_required. The publications to pass as providerAccountId.
      */
-    #[JsonProperty('error')]
-    public ?string $error;
-
-    /**
-     * @var ?array<DesignMdIssue> $issues
-     */
-    #[JsonProperty('issues'), ArrayType([DesignMdIssue::class])]
-    public ?array $issues;
-
-    /**
-     * @var ?bool $success
-     */
-    #[JsonProperty('success')]
-    public ?bool $success;
+    #[JsonProperty('publications'), ArrayType([BadRequestErrorBodyPublicationsItem::class])]
+    public ?array $publications;
 
     /**
      * @param array{
+     *   error: string,
      *   code?: ?string,
-     *   error?: ?string,
-     *   issues?: ?array<DesignMdIssue>,
+     *   issues?: ?array<InputIssue>,
+     *   retryable?: ?bool,
      *   success?: ?bool,
+     *   publications?: ?array<BadRequestErrorBodyPublicationsItem>,
      * } $values
      */
     public function __construct(
-        array $values = [],
+        array $values,
     ) {
         $this->code = $values['code'] ?? null;
-        $this->error = $values['error'] ?? null;
+        $this->error = $values['error'];
         $this->issues = $values['issues'] ?? null;
+        $this->retryable = $values['retryable'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->publications = $values['publications'] ?? null;
     }
 
     /**

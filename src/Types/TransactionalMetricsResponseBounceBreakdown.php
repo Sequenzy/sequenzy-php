@@ -9,6 +9,12 @@ use Sequenzy\Core\Types\ArrayType;
 class TransactionalMetricsResponseBounceBreakdown extends JsonSerializableType
 {
     /**
+     * @var ?int $blocked Temporary bounces the receiving server refused over content, policy, reputation or sender authentication (subtypes ContentRejected, AttachmentRejected, ReputationBlocked, NonRecipientFailure and AppleRelayUnregistered). A subset of transient; soft bounces are transient minus blocked. Blocked bounces never suppress the address.
+     */
+    #[JsonProperty('blocked')]
+    public ?int $blocked;
+
+    /**
      * @var ?int $permanent
      */
     #[JsonProperty('permanent')]
@@ -21,7 +27,7 @@ class TransactionalMetricsResponseBounceBreakdown extends JsonSerializableType
     public ?array $subtypes;
 
     /**
-     * @var ?int $transient
+     * @var ?int $transient Every temporary bounce, including blocked ones.
      */
     #[JsonProperty('transient')]
     public ?int $transient;
@@ -34,6 +40,7 @@ class TransactionalMetricsResponseBounceBreakdown extends JsonSerializableType
 
     /**
      * @param array{
+     *   blocked?: ?int,
      *   permanent?: ?int,
      *   subtypes?: ?array<TransactionalMetricsResponseBounceBreakdownSubtypesItem>,
      *   transient?: ?int,
@@ -43,6 +50,7 @@ class TransactionalMetricsResponseBounceBreakdown extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->blocked = $values['blocked'] ?? null;
         $this->permanent = $values['permanent'] ?? null;
         $this->subtypes = $values['subtypes'] ?? null;
         $this->transient = $values['transient'] ?? null;

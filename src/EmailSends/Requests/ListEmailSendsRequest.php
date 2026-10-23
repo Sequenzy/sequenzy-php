@@ -22,7 +22,7 @@ class ListEmailSendsRequest extends JsonSerializableType
     public ?string $automationNodeId;
 
     /**
-     * @var ?value-of<ListEmailSendsRequestBounceType> $bounceType
+     * @var ?value-of<ListEmailSendsRequestBounceType> $bounceType Transient is every temporary bounce. Blocked is the part the receiving server refused over content, policy or reputation, and Soft is the rest.
      */
     public ?string $bounceType;
 

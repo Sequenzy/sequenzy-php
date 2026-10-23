@@ -121,7 +121,7 @@ class IntegrationsClient
     }
 
     /**
-     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
      *
      * Example:
      * ```php
@@ -179,7 +179,7 @@ class IntegrationsClient
     }
 
     /**
-     * Disconnects Lemon Squeezy locally before removing its managed webhook. Manual webhooks remain under your control. Requires integrations:manage; personal keys require owner or admin access. A cleanupWarning means ingestion is stopped but provider cleanup failed; repeat this request to retry cleanup, including when the integration is already inactive. Other providers require the dashboard. Existing subscribers and history are retained. No request body is required.
+     * Disconnects Lemon Squeezy or SparkLoop locally before removing its managed webhook. Manual webhooks remain under your control. Requires integrations:manage; personal keys require owner or admin access. A cleanupWarning means ingestion is stopped but provider cleanup failed. For Lemon Squeezy, repeat this request to retry cleanup, including when the integration is already inactive. SparkLoop clears its stored credentials, so delete a leftover webhook in SparkLoop. Other providers require the dashboard. Existing subscribers and history are retained. No request body is required.
      *
      * Example:
      * ```php
@@ -188,7 +188,7 @@ class IntegrationsClient
      * );
      * ```
      *
-     * @param string $id Lemon Squeezy integration ID.
+     * @param string $id Lemon Squeezy or SparkLoop integration ID.
      * @param ?array{
      *   baseUrl?: string,
      *   maxRetries?: int,

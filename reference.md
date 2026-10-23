@@ -11395,7 +11395,7 @@ $client->emailSends->list(
 <dl>
 <dd>
 
-**$bounceType:** `?string` 
+**$bounceType:** `?string` — Transient is every temporary bounce. Blocked is the part the receiving server refused over content, policy or reputation, and Soft is the rest.
     
 </dd>
 </dl>
@@ -12608,7 +12608,7 @@ $client->integrations->activatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -12642,7 +12642,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, and attio. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token.
+**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
     
 </dd>
 </dl>
@@ -12666,7 +12666,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one.
+**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
     
 </dd>
 </dl>
@@ -12674,7 +12674,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$settings:** `?ConnectIntegrationsRequestSettings` — PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
+**$settings:** `?ConnectIntegrationsRequestSettings` — PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
     
 </dd>
 </dl>
@@ -12682,7 +12682,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
+**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, pass the webhook authentication token from SparkLoop Settings → Integrations (sent as the SparkLoop-Token header).
     
 </dd>
 </dl>
@@ -12706,7 +12706,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-Disconnects Lemon Squeezy locally before removing its managed webhook. Manual webhooks remain under your control. Requires integrations:manage; personal keys require owner or admin access. A cleanupWarning means ingestion is stopped but provider cleanup failed; repeat this request to retry cleanup, including when the integration is already inactive. Other providers require the dashboard. Existing subscribers and history are retained. No request body is required.
+Disconnects Lemon Squeezy or SparkLoop locally before removing its managed webhook. Manual webhooks remain under your control. Requires integrations:manage; personal keys require owner or admin access. A cleanupWarning means ingestion is stopped but provider cleanup failed. For Lemon Squeezy, repeat this request to retry cleanup, including when the integration is already inactive. SparkLoop clears its stored credentials, so delete a leftover webhook in SparkLoop. Other providers require the dashboard. Existing subscribers and history are retained. No request body is required.
 </dd>
 </dl>
 </dd>
@@ -12738,7 +12738,7 @@ $client->integrations->disconnect(
 <dl>
 <dd>
 
-**$id:** `string` — Lemon Squeezy integration ID.
+**$id:** `string` — Lemon Squeezy or SparkLoop integration ID.
     
 </dd>
 </dl>
@@ -32228,7 +32228,7 @@ $client->websites->list();
 <dl>
 <dd>
 
-Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles, sequences and tracking stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. Some domains get a new DKIM key during the upgrade; you still publish the same four CNAMEs. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
+Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles, sequences and tracking stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. The domain also gets a new 2048-bit DKIM key; you still publish the same four CNAMEs. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
 </dd>
 </dl>
 </dd>
