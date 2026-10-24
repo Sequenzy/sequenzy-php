@@ -60,10 +60,22 @@ class CreateAbTestsRequest extends JsonSerializableType
     public ?array $variants;
 
     /**
-     * @var ?value-of<CreateAbTestsRequestWinnerCriteria> $winnerCriteria Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default.
+     * @var ?value-of<CreateAbTestsRequestWinnerCriteria> $winnerCriteria Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, revenue and campaign goals also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
      */
     #[JsonProperty('winnerCriteria')]
     public ?string $winnerCriteria;
+
+    /**
+     * @var ?string $winnerEventName Required for `event_rate`. The event a recipient must fire after receiving the variant.
+     */
+    #[JsonProperty('winnerEventName')]
+    public ?string $winnerEventName;
+
+    /**
+     * @var ?string $winnerGoalId Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
+     */
+    #[JsonProperty('winnerGoalId')]
+    public ?string $winnerGoalId;
 
     /**
      * @var ?int $winnerThreshold Number of sequence recipients in the test sample.
@@ -82,6 +94,8 @@ class CreateAbTestsRequest extends JsonSerializableType
      *   testType?: ?value-of<CreateAbTestsRequestTestType>,
      *   variants?: ?array<CreateAbTestsRequestVariantsItem>,
      *   winnerCriteria?: ?value-of<CreateAbTestsRequestWinnerCriteria>,
+     *   winnerEventName?: ?string,
+     *   winnerGoalId?: ?string,
      *   winnerThreshold?: ?int,
      * } $values
      */
@@ -97,6 +111,8 @@ class CreateAbTestsRequest extends JsonSerializableType
         $this->testType = $values['testType'] ?? null;
         $this->variants = $values['variants'] ?? null;
         $this->winnerCriteria = $values['winnerCriteria'] ?? null;
+        $this->winnerEventName = $values['winnerEventName'] ?? null;
+        $this->winnerGoalId = $values['winnerGoalId'] ?? null;
         $this->winnerThreshold = $values['winnerThreshold'] ?? null;
     }
 }

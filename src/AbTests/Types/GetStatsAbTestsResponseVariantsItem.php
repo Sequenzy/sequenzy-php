@@ -27,6 +27,12 @@ class GetStatsAbTestsResponseVariantsItem extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?GetStatsAbTestsResponseVariantsItemOutcome $outcome Present when the test is judged on a goal or event. Covers every send of the test, whatever the requested period.
+     */
+    #[JsonProperty('outcome')]
+    public ?GetStatsAbTestsResponseVariantsItemOutcome $outcome;
+
+    /**
      * @var ?array<string, mixed> $stats
      */
     #[JsonProperty('stats'), ArrayType(['string' => 'mixed'])]
@@ -43,6 +49,7 @@ class GetStatsAbTestsResponseVariantsItem extends JsonSerializableType
      *   id?: ?string,
      *   isWinner?: ?bool,
      *   label?: ?string,
+     *   outcome?: ?GetStatsAbTestsResponseVariantsItemOutcome,
      *   stats?: ?array<string, mixed>,
      *   subject?: ?string,
      * } $values
@@ -53,6 +60,7 @@ class GetStatsAbTestsResponseVariantsItem extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->isWinner = $values['isWinner'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->stats = $values['stats'] ?? null;
         $this->subject = $values['subject'] ?? null;
     }

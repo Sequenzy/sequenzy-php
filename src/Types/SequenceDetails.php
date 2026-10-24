@@ -81,6 +81,7 @@ class SequenceDetails extends JsonSerializableType
     /**
      * @param array{
      *   acceptsNewEnrollments?: ?bool,
+     *   activeSubscribersOnly?: ?bool,
      *   audienceAutoEnroll?: ?SequenceAudienceAutoEnroll,
      *   bccEmails?: ?array<string>,
      *   createdAt?: ?DateTime,
@@ -129,6 +130,7 @@ class SequenceDetails extends JsonSerializableType
         array $values = [],
     ) {
         $this->acceptsNewEnrollments = $values['acceptsNewEnrollments'] ?? null;
+        $this->activeSubscribersOnly = $values['activeSubscribersOnly'] ?? null;
         $this->audienceAutoEnroll = $values['audienceAutoEnroll'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;

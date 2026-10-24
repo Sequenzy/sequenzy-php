@@ -14,6 +14,12 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     public ?bool $acceptsNewEnrollments;
 
     /**
+     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+     */
+    #[JsonProperty('activeSubscribersOnly')]
+    public ?bool $activeSubscribersOnly;
+
+    /**
      * @var ?float $discountCount
      */
     #[JsonProperty('discountCount')]
@@ -118,6 +124,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     /**
      * @param array{
      *   acceptsNewEnrollments?: ?bool,
+     *   activeSubscribersOnly?: ?bool,
      *   discountCount?: ?float,
      *   effectiveStatus?: ?value-of<SequenceEffectiveStatus>,
      *   effectiveStatusSummary?: ?string,
@@ -141,6 +148,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
         array $values = [],
     ) {
         $this->acceptsNewEnrollments = $values['acceptsNewEnrollments'] ?? null;
+        $this->activeSubscribersOnly = $values['activeSubscribersOnly'] ?? null;
         $this->discountCount = $values['discountCount'] ?? null;
         $this->effectiveStatus = $values['effectiveStatus'] ?? null;
         $this->effectiveStatusSummary = $values['effectiveStatusSummary'] ?? null;

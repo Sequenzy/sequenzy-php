@@ -35,7 +35,7 @@ class AbTestSignificance extends JsonSerializableType
     public ?string $leaderVariantLabel;
 
     /**
-     * @var value-of<AbTestSignificanceMetric> $metric Metric compared, taken from the test's winner criteria.
+     * @var value-of<AbTestSignificanceMetric> $metric Metric compared, taken from the test's winner criteria. Goal and event criteria compare whether recipients converted; `goal_value` does too, since value has no yes/no outcome per recipient.
      */
     #[JsonProperty('metric')]
     public string $metric;

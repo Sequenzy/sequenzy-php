@@ -3,8 +3,8 @@
 namespace Sequenzy\Sequences\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Types\SequenceAudienceAutoEnroll;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\SequenceAudienceAutoEnroll;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\SequenceBranchInput;
 use Sequenzy\Types\SequenceEmailUpdateInput;
@@ -24,6 +24,12 @@ use Sequenzy\Types\SequenceTriggerType;
 
 class SequenceUpdateRequest extends JsonSerializableType
 {
+    /**
+     * @var ?bool $activeSubscribersOnly Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+     */
+    #[JsonProperty('activeSubscribersOnly')]
+    public ?bool $activeSubscribersOnly;
+
     /**
      * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
      */
@@ -302,6 +308,7 @@ class SequenceUpdateRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   activeSubscribersOnly?: ?bool,
      *   audienceAutoEnroll?: ?SequenceAudienceAutoEnroll,
      *   bccEmails?: ?array<string>,
      *   branch?: ?SequenceBranchInput,
@@ -353,6 +360,7 @@ class SequenceUpdateRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->activeSubscribersOnly = $values['activeSubscribersOnly'] ?? null;
         $this->audienceAutoEnroll = $values['audienceAutoEnroll'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->branch = $values['branch'] ?? null;

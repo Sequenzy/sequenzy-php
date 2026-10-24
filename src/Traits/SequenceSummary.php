@@ -15,6 +15,7 @@ use Sequenzy\Core\Types\Date;
 
 /**
  * @property ?bool $acceptsNewEnrollments
+ * @property ?bool $activeSubscribersOnly
  * @property ?SequenceAudienceAutoEnroll $audienceAutoEnroll
  * @property ?array<string> $bccEmails
  * @property ?DateTime $createdAt
@@ -54,6 +55,12 @@ trait SequenceSummary
      */
     #[JsonProperty('acceptsNewEnrollments')]
     public ?bool $acceptsNewEnrollments;
+
+    /**
+     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+     */
+    #[JsonProperty('activeSubscribersOnly')]
+    public ?bool $activeSubscribersOnly;
 
     /**
      * @var ?SequenceAudienceAutoEnroll $audienceAutoEnroll

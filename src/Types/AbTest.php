@@ -71,7 +71,7 @@ class AbTest extends JsonSerializableType
     public ?AbTestProgress $progress;
 
     /**
-     * @var ?array<string, mixed> $settings Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, and winnerCriteria; sequence tests return testType, winnerThreshold, and winnerCriteria.
+     * @var ?array<string, mixed> $settings Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, winnerCriteria, winnerGoalId, and winnerEventName; sequence tests return testType, winnerThreshold, winnerCriteria, winnerGoalId, and winnerEventName.
      */
     #[JsonProperty('settings'), ArrayType(['string' => 'mixed'])]
     public ?array $settings;
@@ -125,10 +125,22 @@ class AbTest extends JsonSerializableType
     public ?array $variants;
 
     /**
-     * @var ?string $winnerCriteria
+     * @var ?value-of<AbTestWinnerCriteria> $winnerCriteria
      */
     #[JsonProperty('winnerCriteria')]
     public ?string $winnerCriteria;
+
+    /**
+     * @var ?string $winnerEventName Event judged by `event_rate`. Null for other criteria.
+     */
+    #[JsonProperty('winnerEventName')]
+    public ?string $winnerEventName;
+
+    /**
+     * @var ?string $winnerGoalId Goal judged by `goal_conversion_rate` or `goal_value` (a goal ID or `default-revenue`). Null for other criteria.
+     */
+    #[JsonProperty('winnerGoalId')]
+    public ?string $winnerGoalId;
 
     /**
      * @var ?DateTime $winnerSelectedAt
@@ -169,7 +181,9 @@ class AbTest extends JsonSerializableType
      *   testType?: ?value-of<AbTestTestType>,
      *   updatedAt?: ?DateTime,
      *   variants?: ?array<AbTestVariant>,
-     *   winnerCriteria?: ?string,
+     *   winnerCriteria?: ?value-of<AbTestWinnerCriteria>,
+     *   winnerEventName?: ?string,
+     *   winnerGoalId?: ?string,
      *   winnerSelectedAt?: ?DateTime,
      *   winnerThreshold?: ?int,
      *   winningVariantId?: ?string,
@@ -198,6 +212,8 @@ class AbTest extends JsonSerializableType
         $this->updatedAt = $values['updatedAt'] ?? null;
         $this->variants = $values['variants'] ?? null;
         $this->winnerCriteria = $values['winnerCriteria'] ?? null;
+        $this->winnerEventName = $values['winnerEventName'] ?? null;
+        $this->winnerGoalId = $values['winnerGoalId'] ?? null;
         $this->winnerSelectedAt = $values['winnerSelectedAt'] ?? null;
         $this->winnerThreshold = $values['winnerThreshold'] ?? null;
         $this->winningVariantId = $values['winningVariantId'] ?? null;

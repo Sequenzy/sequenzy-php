@@ -19,6 +19,12 @@ use Sequenzy\Types\SequenceTriggerType;
 class SequenceCreateRequest extends JsonSerializableType
 {
     /**
+     * @var ?bool $activeSubscribersOnly Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+     */
+    #[JsonProperty('activeSubscribersOnly')]
+    public ?bool $activeSubscribersOnly;
+
+    /**
      * @var ?array<string> $bccEmails Addresses blind-copied on every sequence email.
      */
     #[JsonProperty('bccEmails'), ArrayType(['string'])]
@@ -255,6 +261,7 @@ class SequenceCreateRequest extends JsonSerializableType
     /**
      * @param array{
      *   name: string,
+     *   activeSubscribersOnly?: ?bool,
      *   bccEmails?: ?array<string>,
      *   customIntegration?: ?array<string, mixed>,
      *   description?: ?string,
@@ -298,6 +305,7 @@ class SequenceCreateRequest extends JsonSerializableType
     public function __construct(
         array $values,
     ) {
+        $this->activeSubscribersOnly = $values['activeSubscribersOnly'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->customIntegration = $values['customIntegration'] ?? null;
         $this->description = $values['description'] ?? null;

@@ -30,6 +30,12 @@ class UpdateAbTestsRequest extends JsonSerializableType
     public ?bool $confirmLiveChange;
 
     /**
+     * @var ?bool $endTestNow Campaign-only. End a running test now: the winner is picked by winnerCriteria from the results so far and sent to the remaining audience. Requires campaigns:send. Cannot be combined with testDurationMinutes; returns 400 for tests that are not running and 409 while a sample change is pending.
+     */
+    #[JsonProperty('endTestNow')]
+    public ?bool $endTestNow;
+
+    /**
      * @var ?DateTime $expectedUpdatedAt Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
      */
     #[JsonProperty('expectedUpdatedAt'), Date(Date::TYPE_DATETIME)]
@@ -60,10 +66,22 @@ class UpdateAbTestsRequest extends JsonSerializableType
     public ?string $testType;
 
     /**
-     * @var ?value-of<UpdateAbTestsRequestWinnerCriteria> $winnerCriteria Winner metric for campaign or sequence tests; immutable once campaign testing starts.
+     * @var ?value-of<UpdateAbTestsRequestWinnerCriteria> $winnerCriteria Winner metric for campaign or sequence tests; immutable once campaign testing starts, together with winnerGoalId and winnerEventName. Changing the criterion clears a goal or event the new criterion does not use.
      */
     #[JsonProperty('winnerCriteria')]
     public ?string $winnerCriteria;
+
+    /**
+     * @var ?string $winnerEventName Required for `event_rate`. The event a recipient must fire after receiving the variant.
+     */
+    #[JsonProperty('winnerEventName')]
+    public ?string $winnerEventName;
+
+    /**
+     * @var ?string $winnerGoalId Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
+     */
+    #[JsonProperty('winnerGoalId')]
+    public ?string $winnerGoalId;
 
     /**
      * @var ?int $winnerThreshold Sequence-only recipient threshold.
@@ -76,12 +94,15 @@ class UpdateAbTestsRequest extends JsonSerializableType
      *   autoSelectWinner?: ?bool,
      *   cancelSampleUpdate?: ?bool,
      *   confirmLiveChange?: ?bool,
+     *   endTestNow?: ?bool,
      *   expectedUpdatedAt?: ?DateTime,
      *   name?: ?string,
      *   testDurationMinutes?: ?int,
      *   testPercentage?: ?int,
      *   testType?: ?value-of<UpdateAbTestsRequestTestType>,
      *   winnerCriteria?: ?value-of<UpdateAbTestsRequestWinnerCriteria>,
+     *   winnerEventName?: ?string,
+     *   winnerGoalId?: ?string,
      *   winnerThreshold?: ?int,
      * } $values
      */
@@ -91,12 +112,15 @@ class UpdateAbTestsRequest extends JsonSerializableType
         $this->autoSelectWinner = $values['autoSelectWinner'] ?? null;
         $this->cancelSampleUpdate = $values['cancelSampleUpdate'] ?? null;
         $this->confirmLiveChange = $values['confirmLiveChange'] ?? null;
+        $this->endTestNow = $values['endTestNow'] ?? null;
         $this->expectedUpdatedAt = $values['expectedUpdatedAt'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->testDurationMinutes = $values['testDurationMinutes'] ?? null;
         $this->testPercentage = $values['testPercentage'] ?? null;
         $this->testType = $values['testType'] ?? null;
         $this->winnerCriteria = $values['winnerCriteria'] ?? null;
+        $this->winnerEventName = $values['winnerEventName'] ?? null;
+        $this->winnerGoalId = $values['winnerGoalId'] ?? null;
         $this->winnerThreshold = $values['winnerThreshold'] ?? null;
     }
 }

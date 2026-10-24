@@ -70,7 +70,7 @@ class UpdateByExternalIdSubscribersRequest extends JsonSerializableType
     public ?bool $smsConsent;
 
     /**
-     * @var ?value-of<UpdateByExternalIdSubscribersRequestStatus> $status Setting `unsubscribed` performs the unsubscribe workflow.
+     * @var ?value-of<UpdateByExternalIdSubscribersRequestStatus> $status Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
      */
     #[JsonProperty('status')]
     public ?string $status;
