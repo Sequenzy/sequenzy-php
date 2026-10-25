@@ -24,6 +24,8 @@ use Sequenzy\Analytics\Requests\GetLinkClickMetricsRequest;
 use Sequenzy\Analytics\Types\GetLinkClickMetricsResponse;
 use Sequenzy\Analytics\Requests\GetMetricsRequest;
 use Sequenzy\Analytics\Types\GetMetricsResponse;
+use Sequenzy\Analytics\Requests\GetMetricsBreakdownRequest;
+use Sequenzy\Analytics\Types\GetMetricsBreakdownResponse;
 use Sequenzy\Analytics\Requests\GetRecipientsRequest;
 use Sequenzy\Analytics\Types\GetRecipientsResponse;
 use Sequenzy\Analytics\Requests\GetSequenceMetricsRequest;
@@ -488,6 +490,12 @@ class AnalyticsClient
         if ($request->period != null) {
             $query['period'] = $request->period;
         }
+        if ($request->recipientDomain != null) {
+            $query['recipientDomain'] = $request->recipientDomain;
+        }
+        if ($request->source != null) {
+            $query['source'] = $request->source;
+        }
         if ($request->start != null) {
             $query['start'] = JsonSerializer::serializeDateTime($request->start);
         }
@@ -508,6 +516,93 @@ class AnalyticsClient
                     return null;
                 }
                 return GetMetricsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns the delivery funnel for each value of one dimension, most sends first, so you can find the email, sequence, provider or domain behind a number and drill into it. Rows count the sends made in the window and the engagement they earned. Defaults to the last 30 days and 25 rows.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getMetricsBreakdown(
+     *     new GetMetricsBreakdownRequest([]),
+     * );
+     * ```
+     *
+     * @param GetMetricsBreakdownRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetMetricsBreakdownResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getMetricsBreakdown(GetMetricsBreakdownRequest $request = new GetMetricsBreakdownRequest(), ?array $options = null): ?GetMetricsBreakdownResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->by != null) {
+            $query['by'] = $request->by;
+        }
+        if ($request->emailType != null) {
+            $query['emailType'] = $request->emailType;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->mailboxProvider != null) {
+            $query['mailboxProvider'] = $request->mailboxProvider;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->recipientDomain != null) {
+            $query['recipientDomain'] = $request->recipientDomain;
+        }
+        if ($request->source != null) {
+            $query['source'] = $request->source;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/breakdown",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetMetricsBreakdownResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

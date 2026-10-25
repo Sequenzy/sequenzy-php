@@ -470,7 +470,7 @@ class AccountsClient
     }
 
     /**
-     * Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin.
+     * Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin. Organizations is the dashboard name for accounts, and every `/accounts` path also works as `/organizations`, and `/account-suggestions` as `/organization-suggestions`.
      *
      * Example:
      * ```php

@@ -40,6 +40,18 @@ class GetMetricsResponse extends JsonSerializableType
     public ?string $period;
 
     /**
+     * @var ?string $recipientDomain Echoed back, lowercased, when `recipientDomain` is provided.
+     */
+    #[JsonProperty('recipientDomain')]
+    public ?string $recipientDomain;
+
+    /**
+     * @var ?string $source Echoed back when `source` is provided.
+     */
+    #[JsonProperty('source')]
+    public ?string $source;
+
+    /**
      * @var ?EngagementStats $stats
      */
     #[JsonProperty('stats')]
@@ -64,6 +76,8 @@ class GetMetricsResponse extends JsonSerializableType
      *   emailType?: ?value-of<GetMetricsResponseEmailType>,
      *   mailboxProvider?: ?string,
      *   period?: ?string,
+     *   recipientDomain?: ?string,
+     *   source?: ?string,
      *   stats?: ?EngagementStats,
      *   subscriberCount?: ?int,
      *   success?: ?bool,
@@ -77,6 +91,8 @@ class GetMetricsResponse extends JsonSerializableType
         $this->emailType = $values['emailType'] ?? null;
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
         $this->period = $values['period'] ?? null;
+        $this->recipientDomain = $values['recipientDomain'] ?? null;
+        $this->source = $values['source'] ?? null;
         $this->stats = $values['stats'] ?? null;
         $this->subscriberCount = $values['subscriberCount'] ?? null;
         $this->success = $values['success'] ?? null;

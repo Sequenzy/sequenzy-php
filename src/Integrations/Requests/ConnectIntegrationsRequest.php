@@ -41,7 +41,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public ?ConnectIntegrationsRequestSettings $settings;
 
     /**
-     * @var ?string $webhookSecret Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, pass the webhook authentication token from SparkLoop Settings → Integrations (sent as the SparkLoop-Token header).
+     * @var ?string $webhookSecret Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
      */
     #[JsonProperty('webhookSecret')]
     public ?string $webhookSecret;

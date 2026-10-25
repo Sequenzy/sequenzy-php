@@ -24,6 +24,7 @@ use Sequenzy\Integrations\Requests\ListActivityIntegrationsRequest;
 use Sequenzy\Integrations\Types\ListActivityIntegrationsResponse;
 use Sequenzy\Integrations\Requests\ListCapabilitiesIntegrationsRequest;
 use Sequenzy\Integrations\Types\ListCapabilitiesIntegrationsResponse;
+use Sequenzy\Integrations\Types\ListSuggestionsIntegrationsResponse;
 use Sequenzy\Integrations\Types\SyncIntegrationsResponse;
 use Sequenzy\Integrations\Requests\UpdateAttioSettingsRequest;
 use Sequenzy\Integrations\Requests\UpdateSyncIntegrationsRequest;
@@ -577,6 +578,58 @@ class IntegrationsClient
                     return null;
                 }
                 return ListCapabilitiesIntegrationsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->integrations->listSuggestions();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListSuggestionsIntegrationsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listSuggestions(?array $options = null): ?ListSuggestionsIntegrationsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "integrations/suggestions",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListSuggestionsIntegrationsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

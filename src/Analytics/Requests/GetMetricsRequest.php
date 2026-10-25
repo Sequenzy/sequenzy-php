@@ -35,6 +35,16 @@ class GetMetricsRequest extends JsonSerializableType
     public ?string $period;
 
     /**
+     * @var ?string $recipientDomain Recipient domain filter (e.g. gmail.com). Case-insensitive.
+     */
+    public ?string $recipientDomain;
+
+    /**
+     * @var ?string $source Email source filter as `<type>:<id>`: `campaign:<campaignId>`, `sequence:<sequenceId>`, `sequence_step:<email step id>` or `transactional:<transactional email id>`. Responses filtered by recipientDomain or source report replies as 0 and omit the commerce forecast. Returns 404 when the source is not in the company or not visible to the key.
+     */
+    public ?string $source;
+
+    /**
      * @var ?DateTime $start Start of custom time range (ISO 8601). Must be used with `end`.
      */
     public ?DateTime $start;
@@ -46,6 +56,8 @@ class GetMetricsRequest extends JsonSerializableType
      *   includeMachineEngagement?: ?bool,
      *   mailboxProvider?: ?string,
      *   period?: ?value-of<GetMetricsRequestPeriod>,
+     *   recipientDomain?: ?string,
+     *   source?: ?string,
      *   start?: ?DateTime,
      * } $values
      */
@@ -57,6 +69,8 @@ class GetMetricsRequest extends JsonSerializableType
         $this->includeMachineEngagement = $values['includeMachineEngagement'] ?? null;
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
         $this->period = $values['period'] ?? null;
+        $this->recipientDomain = $values['recipientDomain'] ?? null;
+        $this->source = $values['source'] ?? null;
         $this->start = $values['start'] ?? null;
     }
 }
