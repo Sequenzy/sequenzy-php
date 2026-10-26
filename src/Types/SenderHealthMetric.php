@@ -20,7 +20,7 @@ class SenderHealthMetric extends JsonSerializableType
     public ?SenderHealthThresholdBound $pauseThreshold;
 
     /**
-     * @var ?float $rate Percentage of the applicable bounceScopedSent or complaintScopedSent denominator.
+     * @var ?float $rate Percentage of the applicable bounceScopedSent, blockScopedSent or complaintScopedSent denominator.
      */
     #[JsonProperty('rate')]
     public ?float $rate;

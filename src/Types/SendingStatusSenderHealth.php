@@ -11,6 +11,18 @@ use Sequenzy\Core\Json\JsonProperty;
 class SendingStatusSenderHealth extends JsonSerializableType
 {
     /**
+     * @var ?SenderHealthMetric $block Refusals the sender caused - spam or content, the sending domain's reputation, policy, or failed SPF, DKIM or DMARC. Refusals caused by our infrastructure never count.
+     */
+    #[JsonProperty('block')]
+    public ?SenderHealthMetric $block;
+
+    /**
+     * @var ?int $blockScopedSent Sends, test sends included, counted from the bounce reset watermark - the denominator for the block rate.
+     */
+    #[JsonProperty('blockScopedSent')]
+    public ?int $blockScopedSent;
+
+    /**
      * @var ?int $bounceScopedSent Non-test sends counted from the bounce reset watermark - the denominator for hard- and soft-bounce rates.
      */
     #[JsonProperty('bounceScopedSent')]
@@ -54,6 +66,8 @@ class SendingStatusSenderHealth extends JsonSerializableType
 
     /**
      * @param array{
+     *   block?: ?SenderHealthMetric,
+     *   blockScopedSent?: ?int,
      *   bounceScopedSent?: ?int,
      *   complaint?: ?SenderHealthMetric,
      *   complaintScopedSent?: ?int,
@@ -66,6 +80,8 @@ class SendingStatusSenderHealth extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->block = $values['block'] ?? null;
+        $this->blockScopedSent = $values['blockScopedSent'] ?? null;
         $this->bounceScopedSent = $values['bounceScopedSent'] ?? null;
         $this->complaint = $values['complaint'] ?? null;
         $this->complaintScopedSent = $values['complaintScopedSent'] ?? null;

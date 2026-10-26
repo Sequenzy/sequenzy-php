@@ -136,7 +136,7 @@ class EmailSend extends JsonSerializableType
     public ?string $id;
 
     /**
-     * @var ?value-of<EmailSendInternalFailureCode> $internalFailureCode Why a send reached status "failed". Present only for terminal delivery failures. "transport_exhausted" means every available delivery route was refused by the recipient provider; "admin_bounce" means an operator removed the message from the delivery queue; "crash_orphaned_claim" means the sending worker stopped between claiming the send and recording a transport outcome, so the message was never confirmed as reaching the provider. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
+     * @var ?value-of<EmailSendInternalFailureCode> $internalFailureCode Why a send reached status "failed". Present only for terminal delivery failures, each of which has outcome "failed": "transport_exhausted" means we could not deliver the email; "admin_bounce" means the message was withdrawn before delivery; "crash_orphaned_claim" means sending stopped before the message was confirmed as handed off. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
      */
     #[JsonProperty('internalFailureCode')]
     public ?string $internalFailureCode;
@@ -160,7 +160,7 @@ class EmailSend extends JsonSerializableType
     public ?bool $isTransactional;
 
     /**
-     * @var ?string $observedSendingIpAddress
+     * @var ?string $observedSendingIpAddress Always null. Sending IPs are not shared with customers.
      */
     #[JsonProperty('observedSendingIpAddress')]
     public ?string $observedSendingIpAddress;
@@ -178,10 +178,22 @@ class EmailSend extends JsonSerializableType
     public ?string $originalReplyTo;
 
     /**
+     * @var ?value-of<EmailSendOutcome> $outcome Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+     */
+    #[JsonProperty('outcome')]
+    public ?string $outcome;
+
+    /**
      * @var ?string $primaryEmailSendId Primary email send ID for a copied-recipient delivery, or null for ordinary sends and when the primary record is unavailable.
      */
     #[JsonProperty('primaryEmailSendId')]
     public ?string $primaryEmailSendId;
+
+    /**
+     * @var ?string $reason One plain sentence about the outcome, with the receiver's status code when there is one. Null when outcome is null.
+     */
+    #[JsonProperty('reason')]
+    public ?string $reason;
 
     /**
      * @var ?string $recipientEmail
@@ -202,7 +214,7 @@ class EmailSend extends JsonSerializableType
     public ?string $senderName;
 
     /**
-     * @var ?string $sendingIpAddress
+     * @var ?string $sendingIpAddress Always null. Sending IPs are not shared with customers.
      */
     #[JsonProperty('sendingIpAddress')]
     public ?string $sendingIpAddress;
@@ -309,7 +321,9 @@ class EmailSend extends JsonSerializableType
      *   observedSendingIpAddress?: ?string,
      *   openedAt?: ?DateTime,
      *   originalReplyTo?: ?string,
+     *   outcome?: ?value-of<EmailSendOutcome>,
      *   primaryEmailSendId?: ?string,
+     *   reason?: ?string,
      *   recipientEmail?: ?string,
      *   senderEmail?: ?string,
      *   senderName?: ?string,
@@ -359,7 +373,9 @@ class EmailSend extends JsonSerializableType
         $this->observedSendingIpAddress = $values['observedSendingIpAddress'] ?? null;
         $this->openedAt = $values['openedAt'] ?? null;
         $this->originalReplyTo = $values['originalReplyTo'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->primaryEmailSendId = $values['primaryEmailSendId'] ?? null;
+        $this->reason = $values['reason'] ?? null;
         $this->recipientEmail = $values['recipientEmail'] ?? null;
         $this->senderEmail = $values['senderEmail'] ?? null;
         $this->senderName = $values['senderName'] ?? null;

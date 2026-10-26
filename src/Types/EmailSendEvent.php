@@ -119,7 +119,7 @@ class EmailSendEvent extends JsonSerializableType
     public ?string $ipAddress;
 
     /**
-     * @var ?array<string, mixed> $metadata
+     * @var ?array<string, mixed> $metadata Event details. Receiver replies (recipients[].diagnosticCode) are masked for bounced and blocked outcomes, generic for failed ones, and kept for delays only when the sender caused them. Sending infrastructure is never included.
      */
     #[JsonProperty('metadata'), ArrayType(['string' => 'mixed'])]
     public ?array $metadata;

@@ -6,6 +6,7 @@ enum SendingStatusPauseReasonKind: string
 {
     case HighHardBounceRate = "high_hard_bounce_rate";
     case HighSoftBounceRate = "high_soft_bounce_rate";
+    case HighBlockRate = "high_block_rate";
     case HighComplaintRate = "high_complaint_rate";
     case PhishingGuard = "phishing_guard";
     case OverEmailLimit = "over_email_limit";

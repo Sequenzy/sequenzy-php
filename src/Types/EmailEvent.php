@@ -113,10 +113,22 @@ class EmailEvent extends JsonSerializableType
     public ?string $ipAddress;
 
     /**
-     * @var ?array<string, mixed> $metadata
+     * @var ?array<string, mixed> $metadata Event details. Receiver replies (recipients[].diagnosticCode) are masked for bounced and blocked outcomes, generic for failed ones, and kept for delays only when the sender caused them. Sending infrastructure is never included.
      */
     #[JsonProperty('metadata'), ArrayType(['string' => 'mixed'])]
     public ?array $metadata;
+
+    /**
+     * @var ?value-of<EmailEventOutcome> $outcome Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+     */
+    #[JsonProperty('outcome')]
+    public ?string $outcome;
+
+    /**
+     * @var ?string $reason One plain sentence about the outcome, with the receiver's status code when there is one. Null when outcome is null.
+     */
+    #[JsonProperty('reason')]
+    public ?string $reason;
 
     /**
      * @var ?string $subscriberId
@@ -156,6 +168,8 @@ class EmailEvent extends JsonSerializableType
      *   id?: ?string,
      *   ipAddress?: ?string,
      *   metadata?: ?array<string, mixed>,
+     *   outcome?: ?value-of<EmailEventOutcome>,
+     *   reason?: ?string,
      *   subscriberId?: ?string,
      *   transactionalEmailId?: ?string,
      *   userAgent?: ?string,
@@ -182,6 +196,8 @@ class EmailEvent extends JsonSerializableType
         $this->id = $values['id'] ?? null;
         $this->ipAddress = $values['ipAddress'] ?? null;
         $this->metadata = $values['metadata'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
+        $this->reason = $values['reason'] ?? null;
         $this->subscriberId = $values['subscriberId'] ?? null;
         $this->transactionalEmailId = $values['transactionalEmailId'] ?? null;
         $this->userAgent = $values['userAgent'] ?? null;

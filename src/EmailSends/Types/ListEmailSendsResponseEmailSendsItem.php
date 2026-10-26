@@ -12,6 +12,7 @@ use Sequenzy\Types\EmailSendAutomation;
 use Sequenzy\Types\EmailSendCampaign;
 use Sequenzy\Types\EmailSendEmailType;
 use Sequenzy\Types\EmailSendInternalFailureCode;
+use Sequenzy\Types\EmailSendOutcome;
 use Sequenzy\Types\EmailSendStatus;
 use Sequenzy\Types\EmailSendSubscriber;
 use Sequenzy\Types\EmailSendSuppressionReason;
@@ -69,7 +70,9 @@ class ListEmailSendsResponseEmailSendsItem extends JsonSerializableType
      *   observedSendingIpAddress?: ?string,
      *   openedAt?: ?DateTime,
      *   originalReplyTo?: ?string,
+     *   outcome?: ?value-of<EmailSendOutcome>,
      *   primaryEmailSendId?: ?string,
+     *   reason?: ?string,
      *   recipientEmail?: ?string,
      *   senderEmail?: ?string,
      *   senderName?: ?string,
@@ -122,7 +125,9 @@ class ListEmailSendsResponseEmailSendsItem extends JsonSerializableType
         $this->observedSendingIpAddress = $values['observedSendingIpAddress'] ?? null;
         $this->openedAt = $values['openedAt'] ?? null;
         $this->originalReplyTo = $values['originalReplyTo'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->primaryEmailSendId = $values['primaryEmailSendId'] ?? null;
+        $this->reason = $values['reason'] ?? null;
         $this->recipientEmail = $values['recipientEmail'] ?? null;
         $this->senderEmail = $values['senderEmail'] ?? null;
         $this->senderName = $values['senderName'] ?? null;
