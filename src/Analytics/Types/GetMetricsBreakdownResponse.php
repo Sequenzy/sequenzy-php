@@ -35,6 +35,12 @@ class GetMetricsBreakdownResponse extends JsonSerializableType
     public ?string $mailboxProvider;
 
     /**
+     * @var ?string $outcome
+     */
+    #[JsonProperty('outcome')]
+    public ?string $outcome;
+
+    /**
      * @var ?string $period Applied period, or `custom` when start/end were provided.
      */
     #[JsonProperty('period')]
@@ -79,6 +85,7 @@ class GetMetricsBreakdownResponse extends JsonSerializableType
      *   success: bool,
      *   emailType?: ?string,
      *   mailboxProvider?: ?string,
+     *   outcome?: ?string,
      *   period?: ?string,
      *   recipientDomain?: ?string,
      *   source?: ?string,
@@ -91,6 +98,7 @@ class GetMetricsBreakdownResponse extends JsonSerializableType
         $this->emailType = $values['emailType'] ?? null;
         $this->end = $values['end'];
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->period = $values['period'] ?? null;
         $this->recipientDomain = $values['recipientDomain'] ?? null;
         $this->rows = $values['rows'];

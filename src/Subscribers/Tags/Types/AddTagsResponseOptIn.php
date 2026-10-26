@@ -11,7 +11,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class AddTagsResponseOptIn extends JsonSerializableType
 {
     /**
-     * @var ?bool $emailQueued
+     * @var ?bool $emailQueued False when no confirmation email was queued because the last one went out less than 24 hours ago, the contact already got three, or it unsubscribed or complained. The latest link keeps working.
      */
     #[JsonProperty('emailQueued')]
     public ?bool $emailQueued;

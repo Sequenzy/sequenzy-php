@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Numeric layout settings.
+ * Layout settings. Every field is a number except contentAlign.
  */
 class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
 {
@@ -41,6 +41,12 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
     public ?float $buttonPaddingY;
 
     /**
+     * @var ?float $buttonRadius
+     */
+    #[JsonProperty('buttonRadius')]
+    public ?float $buttonRadius;
+
+    /**
      * @var ?float $containerPaddingX
      */
     #[JsonProperty('containerPaddingX')]
@@ -51,6 +57,12 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
      */
     #[JsonProperty('containerPaddingY')]
     public ?float $containerPaddingY;
+
+    /**
+     * @var ?value-of<UpdateCompaniesRequestEmailThemeLayoutContentAlign> $contentAlign Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+     */
+    #[JsonProperty('contentAlign')]
+    public ?string $contentAlign;
 
     /**
      * @var ?float $contentWidth
@@ -71,8 +83,10 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
      *   borderedBlockPadding?: ?float,
      *   buttonPaddingX?: ?float,
      *   buttonPaddingY?: ?float,
+     *   buttonRadius?: ?float,
      *   containerPaddingX?: ?float,
      *   containerPaddingY?: ?float,
+     *   contentAlign?: ?value-of<UpdateCompaniesRequestEmailThemeLayoutContentAlign>,
      *   contentWidth?: ?float,
      *   sectionPadding?: ?float,
      * } $values
@@ -85,8 +99,10 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
         $this->borderedBlockPadding = $values['borderedBlockPadding'] ?? null;
         $this->buttonPaddingX = $values['buttonPaddingX'] ?? null;
         $this->buttonPaddingY = $values['buttonPaddingY'] ?? null;
+        $this->buttonRadius = $values['buttonRadius'] ?? null;
         $this->containerPaddingX = $values['containerPaddingX'] ?? null;
         $this->containerPaddingY = $values['containerPaddingY'] ?? null;
+        $this->contentAlign = $values['contentAlign'] ?? null;
         $this->contentWidth = $values['contentWidth'] ?? null;
         $this->sectionPadding = $values['sectionPadding'] ?? null;
     }

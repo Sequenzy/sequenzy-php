@@ -35,6 +35,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?string $companyContext;
 
     /**
+     * @var ?string $darkModeLogoUrl Your own dark-mode version of the logo. Every email uses it instead of the automatic outlined copy, in light and dark inboxes, so it must read on both. Requires a logo (here or already saved); changing the logo later drops it. Send null to go back to the automatic one.
+     */
+    #[JsonProperty('darkModeLogoUrl')]
+    public ?string $darkModeLogoUrl;
+
+    /**
      * @var ?array<string> $defaultSubscriberListIds Which lists new contacts join when something creates a subscriber without explicit list targeting - forms, API writes, events, tag actions, imports, and any integration without its own list targeting. null means every current and future list, [] means no list at all, and an array means exactly those lists. Unknown or foreign list IDs are rejected rather than skipped. Applies only to later writes; nobody is moved or removed retroactively. Requires the companies:manage scope.
      */
     #[JsonProperty('defaultSubscriberListIds'), ArrayType(['string'])]
@@ -237,6 +243,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   address?: ?string,
      *   brandColors?: ?array<string, mixed>,
      *   companyContext?: ?string,
+     *   darkModeLogoUrl?: ?string,
      *   defaultSubscriberListIds?: ?array<string>,
      *   description?: ?string,
      *   emailDesignPrompt?: ?string,
@@ -278,6 +285,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->address = $values['address'] ?? null;
         $this->brandColors = $values['brandColors'] ?? null;
         $this->companyContext = $values['companyContext'] ?? null;
+        $this->darkModeLogoUrl = $values['darkModeLogoUrl'] ?? null;
         $this->defaultSubscriberListIds = $values['defaultSubscriberListIds'] ?? null;
         $this->description = $values['description'] ?? null;
         $this->emailDesignPrompt = $values['emailDesignPrompt'] ?? null;

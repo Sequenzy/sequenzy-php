@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight.
+ * Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, and layout.contentAlign (center or left).
  */
 class EmailAiStyleCanvasTheme extends JsonSerializableType
 {
@@ -18,10 +18,10 @@ class EmailAiStyleCanvasTheme extends JsonSerializableType
     public array $colors;
 
     /**
-     * @var array<string, float> $layout
+     * @var EmailAiStyleCanvasThemeLayout $layout
      */
-    #[JsonProperty('layout'), ArrayType(['string' => 'float'])]
-    public array $layout;
+    #[JsonProperty('layout')]
+    public EmailAiStyleCanvasThemeLayout $layout;
 
     /**
      * @var value-of<EmailAiStyleCanvasThemePresetId> $presetId
@@ -38,7 +38,7 @@ class EmailAiStyleCanvasTheme extends JsonSerializableType
     /**
      * @param array{
      *   colors: array<string, string>,
-     *   layout: array<string, float>,
+     *   layout: EmailAiStyleCanvasThemeLayout,
      *   presetId: value-of<EmailAiStyleCanvasThemePresetId>,
      *   typography: array<string, mixed>,
      * } $values

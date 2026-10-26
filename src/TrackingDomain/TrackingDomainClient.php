@@ -106,7 +106,7 @@ class TrackingDomainClient
     }
 
     /**
-     * Removes the company tracking domain. New emails use the shared Sequenzy tracking domain, and links in emails already sent through the removed domain stop working. Removing when none is set succeeds with removed false. Requires the companies:manage scope plus owner or admin access.
+     * Removes the company tracking domain. New emails use the shared Sequenzy tracking domain, and links and images in emails already sent through the removed domain stop working. Removing when none is set succeeds with removed false. Requires the companies:manage scope plus owner or admin access.
      *
      * Example:
      * ```php

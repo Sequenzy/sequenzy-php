@@ -5,6 +5,7 @@ namespace Sequenzy\Analytics\Requests;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Analytics\Types\GetMetricsRequestEmailType;
 use DateTime;
+use Sequenzy\Analytics\Types\GetMetricsRequestOutcome;
 use Sequenzy\Analytics\Types\GetMetricsRequestPeriod;
 
 class GetMetricsRequest extends JsonSerializableType
@@ -28,6 +29,11 @@ class GetMetricsRequest extends JsonSerializableType
      * @var ?string $mailboxProvider Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud). Scopes engagement metrics to recipients of that provider. Provider-filtered responses report replies as 0 (replies cannot be segmented per provider) and omit the commerce forecast.
      */
     public ?string $mailboxProvider;
+
+    /**
+     * @var ?value-of<GetMetricsRequestOutcome> $outcome Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
+     */
+    public ?string $outcome;
 
     /**
      * @var ?value-of<GetMetricsRequestPeriod> $period Sliding time window. Ignored when start/end are provided.
@@ -55,6 +61,7 @@ class GetMetricsRequest extends JsonSerializableType
      *   end?: ?DateTime,
      *   includeMachineEngagement?: ?bool,
      *   mailboxProvider?: ?string,
+     *   outcome?: ?value-of<GetMetricsRequestOutcome>,
      *   period?: ?value-of<GetMetricsRequestPeriod>,
      *   recipientDomain?: ?string,
      *   source?: ?string,
@@ -68,6 +75,7 @@ class GetMetricsRequest extends JsonSerializableType
         $this->end = $values['end'] ?? null;
         $this->includeMachineEngagement = $values['includeMachineEngagement'] ?? null;
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->period = $values['period'] ?? null;
         $this->recipientDomain = $values['recipientDomain'] ?? null;
         $this->source = $values['source'] ?? null;

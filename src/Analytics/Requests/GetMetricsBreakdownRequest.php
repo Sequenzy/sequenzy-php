@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Analytics\Types\GetMetricsBreakdownRequestBy;
 use Sequenzy\Analytics\Types\GetMetricsBreakdownRequestEmailType;
 use DateTime;
+use Sequenzy\Analytics\Types\GetMetricsBreakdownRequestOutcome;
 use Sequenzy\Analytics\Types\GetMetricsBreakdownRequestPeriod;
 
 class GetMetricsBreakdownRequest extends JsonSerializableType
@@ -41,6 +42,11 @@ class GetMetricsBreakdownRequest extends JsonSerializableType
     public ?string $mailboxProvider;
 
     /**
+     * @var ?value-of<GetMetricsBreakdownRequestOutcome> $outcome Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
+     */
+    public ?string $outcome;
+
+    /**
      * @var ?value-of<GetMetricsBreakdownRequestPeriod> $period Sliding window over send times. Ignored when start/end are provided.
      */
     public ?string $period;
@@ -68,6 +74,7 @@ class GetMetricsBreakdownRequest extends JsonSerializableType
      *   includeMachineEngagement?: ?bool,
      *   limit?: ?int,
      *   mailboxProvider?: ?string,
+     *   outcome?: ?value-of<GetMetricsBreakdownRequestOutcome>,
      *   period?: ?value-of<GetMetricsBreakdownRequestPeriod>,
      *   recipientDomain?: ?string,
      *   source?: ?string,
@@ -83,6 +90,7 @@ class GetMetricsBreakdownRequest extends JsonSerializableType
         $this->includeMachineEngagement = $values['includeMachineEngagement'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->period = $values['period'] ?? null;
         $this->recipientDomain = $values['recipientDomain'] ?? null;
         $this->source = $values['source'] ?? null;

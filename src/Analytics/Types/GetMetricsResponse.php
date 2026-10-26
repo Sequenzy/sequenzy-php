@@ -34,6 +34,12 @@ class GetMetricsResponse extends JsonSerializableType
     public ?string $mailboxProvider;
 
     /**
+     * @var ?string $outcome Echoed back when `outcome` is provided.
+     */
+    #[JsonProperty('outcome')]
+    public ?string $outcome;
+
+    /**
      * @var ?string $period
      */
     #[JsonProperty('period')]
@@ -75,6 +81,7 @@ class GetMetricsResponse extends JsonSerializableType
      *   commerceForecast?: ?CommerceValueForecast,
      *   emailType?: ?value-of<GetMetricsResponseEmailType>,
      *   mailboxProvider?: ?string,
+     *   outcome?: ?string,
      *   period?: ?string,
      *   recipientDomain?: ?string,
      *   source?: ?string,
@@ -90,6 +97,7 @@ class GetMetricsResponse extends JsonSerializableType
         $this->commerceForecast = $values['commerceForecast'] ?? null;
         $this->emailType = $values['emailType'] ?? null;
         $this->mailboxProvider = $values['mailboxProvider'] ?? null;
+        $this->outcome = $values['outcome'] ?? null;
         $this->period = $values['period'] ?? null;
         $this->recipientDomain = $values['recipientDomain'] ?? null;
         $this->source = $values['source'] ?? null;

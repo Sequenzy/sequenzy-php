@@ -487,6 +487,9 @@ class AnalyticsClient
         if ($request->mailboxProvider != null) {
             $query['mailboxProvider'] = $request->mailboxProvider;
         }
+        if ($request->outcome != null) {
+            $query['outcome'] = $request->outcome;
+        }
         if ($request->period != null) {
             $query['period'] = $request->period;
         }
@@ -573,6 +576,9 @@ class AnalyticsClient
         }
         if ($request->mailboxProvider != null) {
             $query['mailboxProvider'] = $request->mailboxProvider;
+        }
+        if ($request->outcome != null) {
+            $query['outcome'] = $request->outcome;
         }
         if ($request->period != null) {
             $query['period'] = $request->period;

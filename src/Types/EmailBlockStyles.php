@@ -47,6 +47,12 @@ class EmailBlockStyles extends JsonSerializableType
     public ?float $borderWidth;
 
     /**
+     * @var ?bool $keepAlign Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left). Without it a left email moves these blocks left; right always stays.
+     */
+    #[JsonProperty('keepAlign')]
+    public ?bool $keepAlign;
+
+    /**
      * @var ?float $paddingBottom
      */
     #[JsonProperty('paddingBottom')]
@@ -90,6 +96,7 @@ class EmailBlockStyles extends JsonSerializableType
      *   borderColor?: ?string,
      *   borderRadius?: ?float,
      *   borderWidth?: ?float,
+     *   keepAlign?: ?bool,
      *   paddingBottom?: ?float,
      *   paddingLeft?: ?float,
      *   paddingRight?: ?float,
@@ -107,6 +114,7 @@ class EmailBlockStyles extends JsonSerializableType
         $this->borderColor = $values['borderColor'] ?? null;
         $this->borderRadius = $values['borderRadius'] ?? null;
         $this->borderWidth = $values['borderWidth'] ?? null;
+        $this->keepAlign = $values['keepAlign'] ?? null;
         $this->paddingBottom = $values['paddingBottom'] ?? null;
         $this->paddingLeft = $values['paddingLeft'] ?? null;
         $this->paddingRight = $values['paddingRight'] ?? null;

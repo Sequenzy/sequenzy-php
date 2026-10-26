@@ -56,6 +56,12 @@ class EmailThemePatchLayout extends JsonSerializableType
     public ?float $containerPaddingY;
 
     /**
+     * @var ?value-of<EmailThemePatchLayoutContentAlign> $contentAlign Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+     */
+    #[JsonProperty('contentAlign')]
+    public ?string $contentAlign;
+
+    /**
      * @var ?float $contentWidth
      */
     #[JsonProperty('contentWidth')]
@@ -77,6 +83,7 @@ class EmailThemePatchLayout extends JsonSerializableType
      *   buttonRadius?: ?float,
      *   containerPaddingX?: ?float,
      *   containerPaddingY?: ?float,
+     *   contentAlign?: ?value-of<EmailThemePatchLayoutContentAlign>,
      *   contentWidth?: ?float,
      *   sectionPadding?: ?float,
      * } $values
@@ -92,6 +99,7 @@ class EmailThemePatchLayout extends JsonSerializableType
         $this->buttonRadius = $values['buttonRadius'] ?? null;
         $this->containerPaddingX = $values['containerPaddingX'] ?? null;
         $this->containerPaddingY = $values['containerPaddingY'] ?? null;
+        $this->contentAlign = $values['contentAlign'] ?? null;
         $this->contentWidth = $values['contentWidth'] ?? null;
         $this->sectionPadding = $values['sectionPadding'] ?? null;
     }

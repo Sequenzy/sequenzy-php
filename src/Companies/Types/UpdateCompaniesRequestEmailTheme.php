@@ -23,7 +23,7 @@ class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
     public ?UpdateCompaniesRequestEmailThemeColors $colors;
 
     /**
-     * @var ?UpdateCompaniesRequestEmailThemeLayout $layout Numeric layout settings.
+     * @var ?UpdateCompaniesRequestEmailThemeLayout $layout Layout settings. Every field is a number except contentAlign.
      */
     #[JsonProperty('layout')]
     public ?UpdateCompaniesRequestEmailThemeLayout $layout;

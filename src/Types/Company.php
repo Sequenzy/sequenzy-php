@@ -36,6 +36,18 @@ class Company extends JsonSerializableType
     public ?DateTime $createdAt;
 
     /**
+     * @var ?value-of<CompanyDarkModeLogoStatus> $darkModeLogoStatus Read-only. How the logo is handled in dark-mode inboxes. `outlined` and `custom` emails use darkModeLogoUrl (`custom` is one you uploaded); `pending` is checked within about 10 minutes; null without a logo.
+     */
+    #[JsonProperty('darkModeLogoStatus')]
+    public ?string $darkModeLogoStatus;
+
+    /**
+     * @var ?string $darkModeLogoUrl The logo emails use instead of logoUrl when darkModeLogoStatus is `outlined` (automatic, with a thin white outline) or `custom` (uploaded, set via PATCH), otherwise null.
+     */
+    #[JsonProperty('darkModeLogoUrl')]
+    public ?string $darkModeLogoUrl;
+
+    /**
      * @var ?string $defaultFromEmail
      */
     #[JsonProperty('defaultFromEmail')]
@@ -275,6 +287,8 @@ class Company extends JsonSerializableType
      *   brandColors?: ?array<string, mixed>,
      *   companyContext?: ?string,
      *   createdAt?: ?DateTime,
+     *   darkModeLogoStatus?: ?value-of<CompanyDarkModeLogoStatus>,
+     *   darkModeLogoUrl?: ?string,
      *   defaultFromEmail?: ?string,
      *   defaultFromName?: ?string,
      *   defaultReplyProfileId?: ?string,
@@ -323,6 +337,8 @@ class Company extends JsonSerializableType
         $this->brandColors = $values['brandColors'] ?? null;
         $this->companyContext = $values['companyContext'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
+        $this->darkModeLogoStatus = $values['darkModeLogoStatus'] ?? null;
+        $this->darkModeLogoUrl = $values['darkModeLogoUrl'] ?? null;
         $this->defaultFromEmail = $values['defaultFromEmail'] ?? null;
         $this->defaultFromName = $values['defaultFromName'] ?? null;
         $this->defaultReplyProfileId = $values['defaultReplyProfileId'] ?? null;

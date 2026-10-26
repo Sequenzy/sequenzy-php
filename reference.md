@@ -3533,6 +3533,14 @@ $client->analytics->getMetrics(
 <dl>
 <dd>
 
+**$outcome:** `?string` — Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$period:** `?string` — Sliding time window. Ignored when start/end are provided.
     
 </dd>
@@ -3654,6 +3662,14 @@ $client->analytics->getMetricsBreakdown(
 <dd>
 
 **$mailboxProvider:** `?string` — Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$outcome:** `?string` — Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
     
 </dd>
 </dl>
@@ -8193,6 +8209,14 @@ $client->companies->update(
 <dd>
 
 **$companyContext:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$darkModeLogoUrl:** `?string` — Your own dark-mode version of the logo. Every email uses it instead of the automatic outlined copy, in light and dark inboxes, so it must read on both. Requires a logo (here or already saved); changing the logo later drops it. Send null to go back to the automatic one.
     
 </dd>
 </dl>
@@ -29540,7 +29564,7 @@ $client->trackingDomain->getTrackingDomain();
 <dl>
 <dd>
 
-Removes the company tracking domain. New emails use the shared Sequenzy tracking domain, and links in emails already sent through the removed domain stop working. Removing when none is set succeeds with removed false. Requires the companies:manage scope plus owner or admin access.
+Removes the company tracking domain. New emails use the shared Sequenzy tracking domain, and links and images in emails already sent through the removed domain stop working. Removing when none is set succeeds with removed false. Requires the companies:manage scope plus owner or admin access.
 </dd>
 </dl>
 </dd>
