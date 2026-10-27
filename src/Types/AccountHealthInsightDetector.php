@@ -14,4 +14,5 @@ enum AccountHealthInsightDetector: string
     case MissingSequence = "missing_sequence";
     case OverEmailing = "over_emailing";
     case NeglectedSubscribers = "neglected_subscribers";
+    case UnengagedSignups = "unengaged_signups";
 }

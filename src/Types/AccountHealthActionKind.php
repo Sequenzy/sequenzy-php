@@ -16,4 +16,5 @@ enum AccountHealthActionKind: string
     case ReviewDeliverability = "review_deliverability";
     case OpenFrequencyCapSettings = "open_frequency_cap_settings";
     case ApplyFrequencyCap = "apply_frequency_cap";
+    case ReviewSubscribers = "review_subscribers";
 }
