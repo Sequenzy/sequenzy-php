@@ -58,7 +58,7 @@ class WebsitesClient
     }
 
     /**
-     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it on its root (links.<root>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
+     * Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it under itself (links.<domain>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
      *
      * Example:
      * ```php

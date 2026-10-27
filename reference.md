@@ -32255,7 +32255,7 @@ $client->webhooks->update(
 <dl>
 <dd>
 
-Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it on its root (links.<root>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
+Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it under itself (links.<domain>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
 </dd>
 </dl>
 </dd>
@@ -32305,7 +32305,7 @@ $client->websites->add(
 <dl>
 <dd>
 
-**$trackingPrefix:** `?string` — Label of the company tracking domain created on the domain's root (<label>.<root>) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
+**$trackingPrefix:** `?string` — Label of the company tracking domain created under the domain (<label>.<domain>, or <label>.<root> when it equals mailFromPrefix) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
     
 </dd>
 </dl>
