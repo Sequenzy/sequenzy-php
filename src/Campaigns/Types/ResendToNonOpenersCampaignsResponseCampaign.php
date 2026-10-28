@@ -3,6 +3,7 @@
 namespace Sequenzy\Campaigns\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\StoredCampaignAttachment;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\EmailBlock;
@@ -14,6 +15,12 @@ use Sequenzy\Types\CampaignChannel;
 
 class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
 {
+    /**
+     * @var ?array<StoredCampaignAttachment> $attachments Files sent with every recipient's email for this campaign, or null when there are none.
+     */
+    #[JsonProperty('attachments'), ArrayType([StoredCampaignAttachment::class])]
+    public ?array $attachments;
+
     /**
      * @var ?array<string> $bccEmails Addresses BCC'd on every recipient's email for this campaign.
      */
@@ -226,6 +233,7 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
 
     /**
      * @param array{
+     *   attachments?: ?array<StoredCampaignAttachment>,
      *   bccEmails?: ?array<string>,
      *   blocks?: ?array<EmailBlock>,
      *   campaignData?: ?array<string, mixed>,
@@ -266,6 +274,7 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->attachments = $values['attachments'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
         $this->campaignData = $values['campaignData'] ?? null;

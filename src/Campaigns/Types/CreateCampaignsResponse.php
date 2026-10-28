@@ -4,6 +4,7 @@ namespace Sequenzy\Campaigns\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Types\IgnoredFieldsItem;
 use Sequenzy\Core\Types\ArrayType;
 
 class CreateCampaignsResponse extends JsonSerializableType
@@ -13,6 +14,12 @@ class CreateCampaignsResponse extends JsonSerializableType
      */
     #[JsonProperty('campaign')]
     public ?CreateCampaignsResponseCampaign $campaign;
+
+    /**
+     * @var ?array<IgnoredFieldsItem> $ignoredFields
+     */
+    #[JsonProperty('ignoredFields'), ArrayType([IgnoredFieldsItem::class])]
+    public ?array $ignoredFields;
 
     /**
      * @var ?bool $success
@@ -29,6 +36,7 @@ class CreateCampaignsResponse extends JsonSerializableType
     /**
      * @param array{
      *   campaign?: ?CreateCampaignsResponseCampaign,
+     *   ignoredFields?: ?array<IgnoredFieldsItem>,
      *   success?: ?bool,
      *   warnings?: ?array<string>,
      * } $values
@@ -37,6 +45,7 @@ class CreateCampaignsResponse extends JsonSerializableType
         array $values = [],
     ) {
         $this->campaign = $values['campaign'] ?? null;
+        $this->ignoredFields = $values['ignoredFields'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->warnings = $values['warnings'] ?? null;
     }

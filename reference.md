@@ -5258,6 +5258,14 @@ $client->campaigns->create(
 <dl>
 <dd>
 
+**$attachments:** `?array` — Files sent with every recipient's email, including CC/BCC copies and test sends. Up to 10 files and 5MB in total. Every entry is validated before any Base64 content is stored. URL files are fetched and size-checked when sending starts; if one cannot be loaded, nothing is sent and the campaign returns to draft.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$blocks:** `?array` — Sequenzy email blocks. Mutually exclusive with html. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
     
 </dd>
@@ -7457,6 +7465,14 @@ $client->campaigns->update(
 <dd>
 
 **$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$attachments:** `?array` — Replaces the files sent with every recipient's email (up to 10 files, 5MB in total). Send an empty array or null to remove them; omit to leave them unchanged. Base64 content is stored only after every other field in the request has been validated; if storing fails, the response is 503 and the campaign is unchanged.
     
 </dd>
 </dl>

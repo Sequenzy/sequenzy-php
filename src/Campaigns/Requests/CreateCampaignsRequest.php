@@ -3,6 +3,7 @@
 namespace Sequenzy\Campaigns\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\CampaignAttachmentInput;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Campaigns\Types\CreateCampaignsRequestEmailPreset;
@@ -12,6 +13,12 @@ use Sequenzy\Campaigns\Types\CreateCampaignsRequestStatus;
 
 class CreateCampaignsRequest extends JsonSerializableType
 {
+    /**
+     * @var ?array<CampaignAttachmentInput> $attachments Files sent with every recipient's email, including CC/BCC copies and test sends. Up to 10 files and 5MB in total. Every entry is validated before any Base64 content is stored. URL files are fetched and size-checked when sending starts; if one cannot be loaded, nothing is sent and the campaign returns to draft.
+     */
+    #[JsonProperty('attachments'), ArrayType([CampaignAttachmentInput::class])]
+    public ?array $attachments;
+
     /**
      * @var ?array<array<string, mixed>> $blocks Sequenzy email blocks. Mutually exclusive with html. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
      */
@@ -177,6 +184,7 @@ class CreateCampaignsRequest extends JsonSerializableType
     /**
      * @param array{
      *   name: string,
+     *   attachments?: ?array<CampaignAttachmentInput>,
      *   blocks?: ?array<array<string, mixed>>,
      *   campaignData?: ?array<string, mixed>,
      *   computedLists?: ?array<array<string, mixed>>,
@@ -208,6 +216,7 @@ class CreateCampaignsRequest extends JsonSerializableType
     public function __construct(
         array $values,
     ) {
+        $this->attachments = $values['attachments'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
         $this->campaignData = $values['campaignData'] ?? null;
         $this->computedLists = $values['computedLists'] ?? null;

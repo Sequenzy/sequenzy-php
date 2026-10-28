@@ -13,6 +13,12 @@ class CampaignDetail extends JsonSerializableType
     use CampaignSummary;
 
     /**
+     * @var ?array<StoredCampaignAttachment> $attachments Files sent with every recipient's email for this campaign, or null when there are none.
+     */
+    #[JsonProperty('attachments'), ArrayType([StoredCampaignAttachment::class])]
+    public ?array $attachments;
+
+    /**
      * @var ?array<string> $bccEmails Addresses BCC'd on every recipient's email for this campaign.
      */
     #[JsonProperty('bccEmails'), ArrayType(['string'])]
@@ -124,6 +130,7 @@ class CampaignDetail extends JsonSerializableType
      *   subject?: ?string,
      *   trackingCode?: ?string,
      *   type?: ?value-of<CampaignChannel>,
+     *   attachments?: ?array<StoredCampaignAttachment>,
      *   bccEmails?: ?array<string>,
      *   blocks?: ?array<EmailBlock>,
      *   campaignData?: ?array<string, mixed>,
@@ -164,6 +171,7 @@ class CampaignDetail extends JsonSerializableType
         $this->subject = $values['subject'] ?? null;
         $this->trackingCode = $values['trackingCode'] ?? null;
         $this->type = $values['type'] ?? null;
+        $this->attachments = $values['attachments'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
         $this->campaignData = $values['campaignData'] ?? null;

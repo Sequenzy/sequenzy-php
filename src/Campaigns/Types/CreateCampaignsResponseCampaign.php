@@ -3,14 +3,21 @@
 namespace Sequenzy\Campaigns\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\StoredCampaignAttachment;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Types\EmailPreset;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\EmailPreset;
 use DateTime;
 use Sequenzy\Core\Types\Date;
 
 class CreateCampaignsResponseCampaign extends JsonSerializableType
 {
+    /**
+     * @var ?array<StoredCampaignAttachment> $attachments
+     */
+    #[JsonProperty('attachments'), ArrayType([StoredCampaignAttachment::class])]
+    public ?array $attachments;
+
     /**
      * @var ?string $emailId The linked email body, reusable as `templateId` when creating later campaigns.
      */
@@ -121,6 +128,7 @@ class CreateCampaignsResponseCampaign extends JsonSerializableType
 
     /**
      * @param array{
+     *   attachments?: ?array<StoredCampaignAttachment>,
      *   emailId?: ?string,
      *   emailPreset?: ?value-of<EmailPreset>,
      *   fromEmail?: ?string,
@@ -144,6 +152,7 @@ class CreateCampaignsResponseCampaign extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->attachments = $values['attachments'] ?? null;
         $this->emailId = $values['emailId'] ?? null;
         $this->emailPreset = $values['emailPreset'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;

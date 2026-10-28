@@ -3,12 +3,19 @@
 namespace Sequenzy\Campaigns\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\StoredCampaignAttachment;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\EmailPreset;
 
 class UpdateCampaignsResponseCampaign extends JsonSerializableType
 {
+    /**
+     * @var ?array<StoredCampaignAttachment> $attachments
+     */
+    #[JsonProperty('attachments'), ArrayType([StoredCampaignAttachment::class])]
+    public ?array $attachments;
+
     /**
      * @var ?array<string> $bccEmails
      */
@@ -107,6 +114,7 @@ class UpdateCampaignsResponseCampaign extends JsonSerializableType
 
     /**
      * @param array{
+     *   attachments?: ?array<StoredCampaignAttachment>,
      *   bccEmails?: ?array<string>,
      *   ccEmails?: ?array<string>,
      *   emailId?: ?string,
@@ -128,6 +136,7 @@ class UpdateCampaignsResponseCampaign extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->attachments = $values['attachments'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->ccEmails = $values['ccEmails'] ?? null;
         $this->emailId = $values['emailId'] ?? null;

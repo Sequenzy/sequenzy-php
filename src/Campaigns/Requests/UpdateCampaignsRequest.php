@@ -3,12 +3,19 @@
 namespace Sequenzy\Campaigns\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
+use Sequenzy\Types\CampaignAttachmentInput;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Campaigns\Types\UpdateCampaignsRequestEmailPreset;
 
 class UpdateCampaignsRequest extends JsonSerializableType
 {
+    /**
+     * @var ?array<CampaignAttachmentInput> $attachments Replaces the files sent with every recipient's email (up to 10 files, 5MB in total). Send an empty array or null to remove them; omit to leave them unchanged. Base64 content is stored only after every other field in the request has been validated; if storing fails, the response is 503 and the campaign is unchanged.
+     */
+    #[JsonProperty('attachments'), ArrayType([CampaignAttachmentInput::class])]
+    public ?array $attachments;
+
     /**
      * @var ?array<string> $bccEmails Addresses BCC'd on every recipient's email for this campaign. Send an empty array or null to clear them.
      */
@@ -167,6 +174,7 @@ class UpdateCampaignsRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   attachments?: ?array<CampaignAttachmentInput>,
      *   bccEmails?: ?array<string>,
      *   blocks?: ?array<array<string, mixed>>,
      *   campaignData?: ?array<string, mixed>,
@@ -198,6 +206,7 @@ class UpdateCampaignsRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->attachments = $values['attachments'] ?? null;
         $this->bccEmails = $values['bccEmails'] ?? null;
         $this->blocks = $values['blocks'] ?? null;
         $this->campaignData = $values['campaignData'] ?? null;
