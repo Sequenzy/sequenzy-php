@@ -18,6 +18,12 @@ class SequenceKeyDates extends JsonSerializableType
     public array $dates;
 
     /**
+     * @var ?SequenceKeyDatesSendWindow $sendWindow How sends timed from these moments are spread out, so a whole audience is not emailed in the same second. Each contact gets their own stable send time within the spread, after the moment for steps at or after it and in the hours leading up to the step's time for steps timed before it, so a "1 hour before Black Friday ends" email never lands after the sale ended. Omit it on update to keep the current spread, and send null to reset it to the default. Responses always include the effective value.
+     */
+    #[JsonProperty('sendWindow')]
+    public ?SequenceKeyDatesSendWindow $sendWindow;
+
+    /**
      * @var ?string $timezone IANA timezone the dates are shown and edited in. Required when dates is non-empty.
      */
     #[JsonProperty('timezone')]
@@ -26,6 +32,7 @@ class SequenceKeyDates extends JsonSerializableType
     /**
      * @param array{
      *   dates: array<SequenceKeyDate>,
+     *   sendWindow?: ?SequenceKeyDatesSendWindow,
      *   timezone?: ?string,
      * } $values
      */
@@ -33,6 +40,7 @@ class SequenceKeyDates extends JsonSerializableType
         array $values,
     ) {
         $this->dates = $values['dates'];
+        $this->sendWindow = $values['sendWindow'] ?? null;
         $this->timezone = $values['timezone'] ?? null;
     }
 

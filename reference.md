@@ -12832,7 +12832,7 @@ $client->integrations->activatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat and Superwall, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -12890,7 +12890,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall and Adapty do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
     
 </dd>
 </dl>
@@ -12906,7 +12906,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
+**$webhookSecret:** `?string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Adapty, pass at least 16 characters: the authorization header value set on the Adapty webhook. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
     
 </dd>
 </dl>

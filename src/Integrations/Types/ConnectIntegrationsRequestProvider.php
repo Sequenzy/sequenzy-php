@@ -11,6 +11,7 @@ enum ConnectIntegrationsRequestProvider: string
     case Whop = "whop";
     case Revenuecat = "revenuecat";
     case Superwall = "superwall";
+    case Adapty = "adapty";
     case Creem = "creem";
     case Chargebee = "chargebee";
     case Clerk = "clerk";
