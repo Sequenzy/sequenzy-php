@@ -20,6 +20,7 @@ use Sequenzy\Templates\Types\CreateFromExampleTemplatesResponse;
 use Sequenzy\Templates\Types\CreateShareLinkTemplatesResponse;
 use Sequenzy\Templates\Types\DeleteTemplatesResponse;
 use Sequenzy\Templates\Types\GetTemplatesResponse;
+use Sequenzy\Templates\Types\GetLocalizationCoverageTemplatesResponse;
 use Sequenzy\Templates\Requests\ListTemplatesRequest;
 use Sequenzy\Templates\Types\ListTemplatesResponse;
 use Sequenzy\Templates\Requests\PreviewFromExampleTemplatesRequest;
@@ -31,6 +32,8 @@ use Sequenzy\Templates\Requests\SetLocalizationTemplatesRequest;
 use Sequenzy\Templates\Types\SetLocalizationTemplatesResponse;
 use Sequenzy\Templates\Requests\SyncLocalizationsTemplatesRequest;
 use Sequenzy\Templates\Types\SyncLocalizationsTemplatesResponse;
+use Sequenzy\Templates\Requests\TranslateMissingLocalizationsTemplatesRequest;
+use Sequenzy\Templates\Types\TranslateMissingLocalizationsTemplatesResponse;
 use Sequenzy\Templates\Requests\UpdateTemplatesRequest;
 use Sequenzy\Templates\Types\UpdateTemplatesResponse;
 
@@ -410,6 +413,58 @@ class TemplatesClient
     }
 
     /**
+     * Counts, per enabled non-primary language, how many emails that keep sending are translated. Covers every email step and A/B variant in sequences that are not archived, plus enabled transactional emails. Personal API keys with the marketer role do not see transactional emails, so they are left out of the counts. Campaigns are not counted.
+     *
+     * Example:
+     * ```php
+     * $client->templates->getLocalizationCoverage();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetLocalizationCoverageTemplatesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getLocalizationCoverage(?array $options = null): ?GetLocalizationCoverageTemplatesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "templates/localizations/coverage",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetLocalizationCoverageTemplatesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Content snapshots of code-managed transactional emails (created by sends with `trackAs`) are not listed and cannot be used as `templateId`. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
      *
      * Example:
@@ -756,6 +811,62 @@ class TemplatesClient
                     return null;
                 }
                 return SyncLocalizationsTemplatesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Queues AI translation for every sequence email (including sequence A/B variants) and enabled transactional email that has no translation in a language yet, or whose last translation failed. Translations someone edited, up-to-date translations and outdated ones are left alone; use Sync template localizations to retranslate one template. Adding a language in the dashboard already does this for the new language. Personal API keys with the marketer role only translate sequence emails.
+     *
+     * Example:
+     * ```php
+     * $client->templates->translateMissingLocalizations(
+     *     new TranslateMissingLocalizationsTemplatesRequest([]),
+     * );
+     * ```
+     *
+     * @param TranslateMissingLocalizationsTemplatesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?TranslateMissingLocalizationsTemplatesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function translateMissingLocalizations(TranslateMissingLocalizationsTemplatesRequest $request = new TranslateMissingLocalizationsTemplatesRequest(), ?array $options = null): ?TranslateMissingLocalizationsTemplatesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "templates/localizations/translate-missing",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return TranslateMissingLocalizationsTemplatesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

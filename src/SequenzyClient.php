@@ -57,6 +57,13 @@ use Sequenzy\WebTrackingKeys\WebTrackingKeysClient;
 use Sequenzy\Widgets\WidgetsClient;
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
+use Sequenzy\Types\GetMcpDiscoveryResponse;
+use Sequenzy\Exceptions\SequenzyException;
+use Sequenzy\Exceptions\SequenzyApiException;
+use Sequenzy\Core\Json\JsonApiRequest;
+use Sequenzy\Core\Client\HttpMethod;
+use JsonException;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class SequenzyClient
 {
@@ -427,5 +434,57 @@ class SequenzyClient
         $this->websites = new WebsitesClient($this->client, $this->options);
         $this->webTrackingKeys = new WebTrackingKeysClient($this->client, $this->options);
         $this->widgets = new WidgetsClient($this->client, $this->options);
+    }
+
+    /**
+     * Static public metadata for directory crawlers. This is not an MCP transport. No credentials or parameters are required.
+     *
+     * Example:
+     * ```php
+     * $client->getMcpDiscovery();
+     * ```
+     *
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetMcpDiscoveryResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getMcpDiscovery(?array $options = null): ?GetMcpDiscoveryResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: ".well-known/mcp.json",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetMcpDiscoveryResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 }

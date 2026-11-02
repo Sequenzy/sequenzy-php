@@ -4,7 +4,7 @@ namespace Sequenzy\Sequences\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Types\SequenceSummary;
+use Sequenzy\Types\SequenceListItem;
 use Sequenzy\Core\Types\ArrayType;
 
 class ListSequencesResponse extends JsonSerializableType
@@ -16,9 +16,9 @@ class ListSequencesResponse extends JsonSerializableType
     public ?ListSequencesResponsePagination $pagination;
 
     /**
-     * @var ?array<SequenceSummary> $sequences
+     * @var ?array<SequenceListItem> $sequences
      */
-    #[JsonProperty('sequences'), ArrayType([SequenceSummary::class])]
+    #[JsonProperty('sequences'), ArrayType([SequenceListItem::class])]
     public ?array $sequences;
 
     /**
@@ -30,7 +30,7 @@ class ListSequencesResponse extends JsonSerializableType
     /**
      * @param array{
      *   pagination?: ?ListSequencesResponsePagination,
-     *   sequences?: ?array<SequenceSummary>,
+     *   sequences?: ?array<SequenceListItem>,
      *   success?: ?bool,
      * } $values
      */

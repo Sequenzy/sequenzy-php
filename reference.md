@@ -1,4 +1,43 @@
 # Reference
+<details><summary><code>$client-&gt;getMcpDiscovery() -> ?GetMcpDiscoveryResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Static public metadata for directory crawlers. This is not an MCP transport. No credentials or parameters are required.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->getMcpDiscovery();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## AbTests
 <details><summary><code>$client-&gt;abTests-&gt;addVariant($abTestId, $request) -> ?AddVariantAbTestsResponse</code></summary>
 <dl>
@@ -28927,6 +28966,45 @@ $client->templates->get(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;templates-&gt;getLocalizationCoverage() -> ?GetLocalizationCoverageTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Counts, per enabled non-primary language, how many emails that keep sending are translated. Covers every email step and A/B variant in sequences that are not archived, plus enabled transactional emails. Personal API keys with the marketer role do not see transactional emails, so they are left out of the counts. Campaigns are not counted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->templates->getLocalizationCoverage();
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;templates-&gt;list($request) -> ?ListTemplatesResponse</code></summary>
 <dl>
 <dd>
@@ -29388,6 +29466,62 @@ $client->templates->syncLocalizations(
 <dd>
 
 **$skipEdited:** `?bool` — Keep translations someone edited instead of retranslating them. Kept locales are returned in skippedLocales.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;templates-&gt;translateMissingLocalizations($request) -> ?TranslateMissingLocalizationsTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Queues AI translation for every sequence email (including sequence A/B variants) and enabled transactional email that has no translation in a language yet, or whose last translation failed. Translations someone edited, up-to-date translations and outdated ones are left alone; use Sync template localizations to retranslate one template. Adding a language in the dashboard already does this for the new language. Personal API keys with the marketer role only translate sequence emails.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->templates->translateMissingLocalizations(
+    new TranslateMissingLocalizationsTemplatesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$locales:** `?array` — Enabled non-primary locale codes to translate into. Omit to translate into all of them.
     
 </dd>
 </dl>
