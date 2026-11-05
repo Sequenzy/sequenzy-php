@@ -42,7 +42,7 @@ class SequenceWaitUntilWeekdayInput extends JsonSerializableType
     public ?string $startTime;
 
     /**
-     * @var ?string $timezone IANA timezone used to evaluate the window. Required. When timezoneSource is subscriber, this is the fallback for contacts without a valid timezone.
+     * @var ?string $timezone IANA timezone used to evaluate the window. Required. When timezoneSource is subscriber, this is the fallback for contacts without a valid timezone and without an active push device that reported one.
      */
     #[JsonProperty('timezone')]
     public ?string $timezone;

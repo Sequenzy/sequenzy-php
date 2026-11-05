@@ -23,10 +23,13 @@ use Sequenzy\Sequences\Requests\SequenceCreateRequest;
 use Sequenzy\Types\SequenceCreateResponse;
 use Sequenzy\Sequences\Requests\CreateFromExampleSequencesRequest;
 use Sequenzy\Sequences\Types\CreateFromExampleSequencesResponse;
+use Sequenzy\Sequences\Requests\CreateFromTemplateSequencesRequest;
+use Sequenzy\Sequences\Types\CreateFromTemplateSequencesResponse;
 use Sequenzy\Sequences\Requests\CreateGoalSequencesRequest;
 use Sequenzy\Sequences\Types\CreateGoalSequencesResponse;
 use Sequenzy\Types\SequenceActionResponse;
 use Sequenzy\Sequences\Types\DeleteGoalSequencesResponse;
+use Sequenzy\Types\SequenceRecurringEnrollmentResponse;
 use Sequenzy\Sequences\Types\DiscardEmailVariationSequencesResponse;
 use Sequenzy\Sequences\Requests\DuplicateSequencesRequest;
 use Sequenzy\Sequences\Types\DuplicateSequencesResponse;
@@ -59,6 +62,8 @@ use Sequenzy\Sequences\Types\ListEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Requests\ListEnrollmentsSequencesRequest;
 use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
+use Sequenzy\Sequences\Requests\ListTemplatesSequencesRequest;
+use Sequenzy\Sequences\Types\ListTemplatesSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentMoveRequest;
 use Sequenzy\Types\SequenceEnrollmentMoveResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentPauseRequest;
@@ -74,6 +79,7 @@ use Sequenzy\Types\SequenceEnrollmentResumeResponse;
 use Sequenzy\Sequences\Types\RotateInboundWebhookSecretSequencesResponse;
 use Sequenzy\Sequences\Requests\SendTestEmailSequencesRequest;
 use Sequenzy\Sequences\Types\SendTestEmailSequencesResponse;
+use Sequenzy\Sequences\Requests\SetRecurringEnrollmentSequencesRequest;
 use Sequenzy\Sequences\Requests\SimulateSequencesRequest;
 use Sequenzy\Sequences\Types\SimulateSequencesResponse;
 use Sequenzy\Sequences\Requests\StartTestRunSequencesRequest;
@@ -530,6 +536,64 @@ class SequencesClient
     }
 
     /**
+     * Creates a draft sequence from a template returned by List Sequence Templates, exactly as the dashboard does. Push-first templates start with a branch on whether the contact is reachable by push (an active device on a platform with APNs, FCM or web push set up); those contacts get push and in-app, everyone else gets email. Waits land between 09:00 and 21:00 in each contact's own timezone, email steps respect the company frequency cap when the template enables it, the template's continue condition becomes the stop condition, and its attribution goal is created on the sequence. Email steps are written by AI in the background; push and in-app copy comes from the template. Every successful call creates another sequence. Requires `sequences:write`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->createFromTemplate(
+     *     new CreateFromTemplateSequencesRequest([
+     *         'templateId' => 'templateId',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param CreateFromTemplateSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CreateFromTemplateSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createFromTemplate(CreateFromTemplateSequencesRequest $request, ?array $options = null): ?CreateFromTemplateSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/from-template",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CreateFromTemplateSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Creates a conversion goal for an event, subscriber attribute change, or applied tag.
      *
      * Example:
@@ -686,6 +750,61 @@ class SequencesClient
                     return null;
                 }
                 return DeleteGoalSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Stops future runs. Runs already started and contacts already enrolled are not affected. Removing a schedule that does not exist succeeds. Requires `sequences:write`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->deleteRecurringEnrollment(
+     *     'sequenceId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceRecurringEnrollmentResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function deleteRecurringEnrollment(string $sequenceId, ?array $options = null): ?SequenceRecurringEnrollmentResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/recurring-enrollment",
+                    method: HttpMethod::DELETE,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceRecurringEnrollmentResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1570,6 +1689,61 @@ class SequencesClient
     }
 
     /**
+     * The schedule that re-enrolls an audience into a manual-trigger sequence, with a readable summary and the next run times. `recurringEnrollment` is null when the sequence has no schedule. Requires `sequences:read`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getRecurringEnrollment(
+     *     'sequenceId',
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceRecurringEnrollmentResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getRecurringEnrollment(string $sequenceId, ?array $options = null): ?SequenceRecurringEnrollmentResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/recurring-enrollment",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceRecurringEnrollmentResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Returns aggregated engagement metrics plus a live active/waiting enrollment breakdown by current node for a specific sequence. This is an alias for /metrics/sequences/{sequenceId}.
      *
      * Example:
@@ -2021,6 +2195,66 @@ class SequencesClient
                     return null;
                 }
                 return ListGoalsSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Lists the ready-made sequence templates the dashboard offers, including push-first journeys for mobile apps. Filtered to the company's category (`websiteType` on the company) by default, with templates built for that category first and general ones after. Requires `sequences:read`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->listTemplates(
+     *     new ListTemplatesSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param ListTemplatesSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListTemplatesSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listTemplates(ListTemplatesSequencesRequest $request = new ListTemplatesSequencesRequest(), ?array $options = null): ?ListTemplatesSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->websiteType != null) {
+            $query['websiteType'] = $request->websiteType;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/templates",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListTemplatesSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -2612,6 +2846,73 @@ class SequencesClient
                     return null;
                 }
                 return SendTestEmailSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Re-enrolls an audience into a manual-trigger sequence daily, on chosen weekdays, or on chosen days of the month (including the last day) at a time in an IANA timezone. Each run is an audience enrollment run with source `recurring`. Contacts who finished an earlier run enter again, contacts still in the sequence are skipped, one_time sequences never re-enroll anyone, and unsubscribed or bounced contacts never join. Nothing is enrolled until the first scheduled time. Occurrences while the sequence is paused, disabled or closed to new entrants are skipped, and a run that cannot start within 6 hours of its time is skipped (see `lastSkipReason`). A run waits while another audience enrollment is in progress. Replaces any existing schedule; an unchanged save keeps the pending next run. Changing the trigger away from manual switches the schedule off. Requires `sequences:write`.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->setRecurringEnrollment(
+     *     'sequenceId',
+     *     new SetRecurringEnrollmentSequencesRequest([
+     *         'audience' => new SequenceAudience([
+     *             'type' => SequenceAudienceType::All->value,
+     *         ]),
+     *         'schedule' => new SequenceRecurringSchedule([
+     *             'frequency' => SequenceRecurringScheduleFrequency::Daily->value,
+     *             'time' => '10:00',
+     *             'timezone' => 'Europe/London',
+     *         ]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID.
+     * @param SetRecurringEnrollmentSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceRecurringEnrollmentResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function setRecurringEnrollment(string $sequenceId, SetRecurringEnrollmentSequencesRequest $request, ?array $options = null): ?SequenceRecurringEnrollmentResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/recurring-enrollment",
+                    method: HttpMethod::PUT,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceRecurringEnrollmentResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

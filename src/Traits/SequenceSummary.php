@@ -7,6 +7,7 @@ use DateTime;
 use Sequenzy\Types\SequenceEffectiveStatus;
 use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Types\SequenceSummaryPausedByUser;
+use Sequenzy\Types\SequenceRecurringEnrollment;
 use Sequenzy\Types\SequenceSendingWindow;
 use Sequenzy\Types\SequenceStatus;
 use Sequenzy\Core\Json\JsonProperty;
@@ -37,6 +38,7 @@ use Sequenzy\Core\Types\Date;
  * @property ?string $pauseReason
  * @property ?string $pauseSource
  * @property ?bool $processesExistingEnrollments
+ * @property ?SequenceRecurringEnrollment $recurringEnrollment
  * @property ?string $replyProfileId
  * @property ?string $replyToEmail
  * @property ?string $replyToName
@@ -187,6 +189,12 @@ trait SequenceSummary
      */
     #[JsonProperty('processesExistingEnrollments')]
     public ?bool $processesExistingEnrollments;
+
+    /**
+     * @var ?SequenceRecurringEnrollment $recurringEnrollment Recurring schedule of a manual-trigger sequence, or null. Change it with PUT /sequences/{sequenceId}/recurring-enrollment.
+     */
+    #[JsonProperty('recurringEnrollment')]
+    public ?SequenceRecurringEnrollment $recurringEnrollment;
 
     /**
      * @var ?string $replyProfileId

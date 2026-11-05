@@ -63,6 +63,12 @@ class ConnectIntegrationsResponse extends JsonSerializableType
     public ?string $webhookUrl;
 
     /**
+     * @var ?ConnectIntegrationsResponseWebsiteTypeSuggestion $websiteTypeSuggestion RevenueCat, Superwall and Adapty only, when the company category is not already `mobile_app` and was not chosen by a user (`websiteTypeSource` is not `user`). A suggestion to apply with [Update Company](/api-reference/companies/update) (`websiteType`); nothing is changed.
+     */
+    #[JsonProperty('websiteTypeSuggestion')]
+    public ?ConnectIntegrationsResponseWebsiteTypeSuggestion $websiteTypeSuggestion;
+
+    /**
      * @param array{
      *   backfillQueued?: ?bool,
      *   history?: ?ConnectIntegrationsResponseHistory,
@@ -73,6 +79,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
      *   testMode?: ?bool,
      *   webhookProvisioning?: ?value-of<ConnectIntegrationsResponseWebhookProvisioning>,
      *   webhookUrl?: ?string,
+     *   websiteTypeSuggestion?: ?ConnectIntegrationsResponseWebsiteTypeSuggestion,
      * } $values
      */
     public function __construct(
@@ -87,6 +94,7 @@ class ConnectIntegrationsResponse extends JsonSerializableType
         $this->testMode = $values['testMode'] ?? null;
         $this->webhookProvisioning = $values['webhookProvisioning'] ?? null;
         $this->webhookUrl = $values['webhookUrl'] ?? null;
+        $this->websiteTypeSuggestion = $values['websiteTypeSuggestion'] ?? null;
     }
 
     /**

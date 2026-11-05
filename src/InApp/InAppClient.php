@@ -18,6 +18,8 @@ use Sequenzy\InApp\Types\ListInAppMessagesResponse;
 use Sequenzy\InApp\Types\ListInAppTemplatesResponse;
 use Sequenzy\InApp\Requests\RecordInAppEventRequest;
 use Sequenzy\InApp\Types\RecordInAppEventResponse;
+use Sequenzy\InApp\Requests\ValidateInAppHtmlRequest;
+use Sequenzy\InApp\Types\ValidateInAppHtmlResponse;
 use Sequenzy\InApp\Requests\WriteInAppCopyRequest;
 use Sequenzy\InApp\Types\WriteInAppCopyResponse;
 
@@ -200,6 +202,9 @@ class InAppClient
         if ($request->externalId != null) {
             $query['externalId'] = $request->externalId;
         }
+        if ($request->formats != null) {
+            $query['formats'] = $request->formats;
+        }
         if ($request->kind != null) {
             $query['kind'] = $request->kind;
         }
@@ -341,6 +346,64 @@ class InAppClient
                     return null;
                 }
                 return RecordInAppEventResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Checks a custom HTML in-app message document without saving anything: size against the 100 KB limit, Braze Liquid converted to Sequenzy merge tags, script hosts a website CSP must allow, whether it closes itself, warnings and blocking errors. Requires the sequences:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->inApp->validateInAppHtml(
+     *     new ValidateInAppHtmlRequest([
+     *         'html' => 'html',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param ValidateInAppHtmlRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ValidateInAppHtmlResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function validateInAppHtml(ValidateInAppHtmlRequest $request, ?array $options = null): ?ValidateInAppHtmlResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "in-app/html/validate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ValidateInAppHtmlResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

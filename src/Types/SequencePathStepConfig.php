@@ -27,7 +27,7 @@ class SequencePathStepConfig extends JsonSerializableType
     public ?string $body;
 
     /**
-     * @var ?value-of<SequencePathStepConfigConditionType> $conditionType logic_condition. Condition evaluated before continuing. has_phone and sms_subscribed need no resource fields.
+     * @var ?value-of<SequencePathStepConfigConditionType> $conditionType logic_condition. Condition evaluated before continuing. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
      */
     #[JsonProperty('conditionType')]
     public ?string $conditionType;

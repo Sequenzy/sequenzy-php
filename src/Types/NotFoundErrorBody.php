@@ -8,10 +8,10 @@ use Sequenzy\Core\Json\JsonProperty;
 class NotFoundErrorBody extends JsonSerializableType
 {
     /**
-     * @var ?NotFoundErrorBodyError $error
+     * @var ?string $error
      */
     #[JsonProperty('error')]
-    public ?NotFoundErrorBodyError $error;
+    public ?string $error;
 
     /**
      * @var ?bool $success
@@ -21,7 +21,7 @@ class NotFoundErrorBody extends JsonSerializableType
 
     /**
      * @param array{
-     *   error?: ?NotFoundErrorBodyError,
+     *   error?: ?string,
      *   success?: ?bool,
      * } $values
      */

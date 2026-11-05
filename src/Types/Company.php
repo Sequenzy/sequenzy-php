@@ -276,6 +276,18 @@ class Company extends JsonSerializableType
     public ?array $valueProps;
 
     /**
+     * @var ?value-of<CompanyWebsiteType> $websiteType Company category. It decides which sequence templates are recommended (see [List Sequence Templates](/api-reference/sequences/templates)) and steers AI writing; `mobile_app` recommends push-first mobile journeys. `null` means not classified yet.
+     */
+    #[JsonProperty('websiteType')]
+    public ?string $websiteType;
+
+    /**
+     * @var ?value-of<CompanyWebsiteTypeSource> $websiteTypeSource `user` when the category was chosen (dashboard, API, CLI or MCP), `detected` when website processing set it. Detection never overwrites a `user` category. `null` when unset, or for categories set before the source was recorded.
+     */
+    #[JsonProperty('websiteTypeSource')]
+    public ?string $websiteTypeSource;
+
+    /**
      * @var ?string $websiteUrl
      */
     #[JsonProperty('websiteUrl')]
@@ -327,6 +339,8 @@ class Company extends JsonSerializableType
      *   toneVoice?: ?string,
      *   url?: ?string,
      *   valueProps?: ?array<array<string, mixed>>,
+     *   websiteType?: ?value-of<CompanyWebsiteType>,
+     *   websiteTypeSource?: ?value-of<CompanyWebsiteTypeSource>,
      *   websiteUrl?: ?string,
      * } $values
      */
@@ -377,6 +391,8 @@ class Company extends JsonSerializableType
         $this->toneVoice = $values['toneVoice'] ?? null;
         $this->url = $values['url'] ?? null;
         $this->valueProps = $values['valueProps'] ?? null;
+        $this->websiteType = $values['websiteType'] ?? null;
+        $this->websiteTypeSource = $values['websiteTypeSource'] ?? null;
         $this->websiteUrl = $values['websiteUrl'] ?? null;
     }
 

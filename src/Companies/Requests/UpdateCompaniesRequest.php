@@ -13,6 +13,7 @@ use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailTheme;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterStyle;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestReplyTrackingDomainMode;
 use Sequenzy\Core\Types\Union;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestWebsiteType;
 
 class UpdateCompaniesRequest extends JsonSerializableType
 {
@@ -239,6 +240,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?array $valueProps;
 
     /**
+     * @var ?value-of<UpdateCompaniesRequestWebsiteType> $websiteType Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
+     */
+    #[JsonProperty('websiteType')]
+    public ?string $websiteType;
+
+    /**
      * @param array{
      *   address?: ?string,
      *   brandColors?: ?array<string, mixed>,
@@ -277,6 +284,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   testimonials?: ?array<array<string, mixed>>,
      *   toneVoice?: ?string,
      *   valueProps?: ?array<array<string, mixed>>,
+     *   websiteType?: ?value-of<UpdateCompaniesRequestWebsiteType>,
      * } $values
      */
     public function __construct(
@@ -319,5 +327,6 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->testimonials = $values['testimonials'] ?? null;
         $this->toneVoice = $values['toneVoice'] ?? null;
         $this->valueProps = $values['valueProps'] ?? null;
+        $this->websiteType = $values['websiteType'] ?? null;
     }
 }

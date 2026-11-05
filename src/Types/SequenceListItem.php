@@ -42,6 +42,7 @@ class SequenceListItem extends JsonSerializableType
      *   pauseReason?: ?string,
      *   pauseSource?: ?string,
      *   processesExistingEnrollments?: ?bool,
+     *   recurringEnrollment?: ?SequenceRecurringEnrollment,
      *   replyProfileId?: ?string,
      *   replyToEmail?: ?string,
      *   replyToName?: ?string,
@@ -81,6 +82,7 @@ class SequenceListItem extends JsonSerializableType
         $this->pauseReason = $values['pauseReason'] ?? null;
         $this->pauseSource = $values['pauseSource'] ?? null;
         $this->processesExistingEnrollments = $values['processesExistingEnrollments'] ?? null;
+        $this->recurringEnrollment = $values['recurringEnrollment'] ?? null;
         $this->replyProfileId = $values['replyProfileId'] ?? null;
         $this->replyToEmail = $values['replyToEmail'] ?? null;
         $this->replyToName = $values['replyToName'] ?? null;

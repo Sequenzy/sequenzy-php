@@ -8,10 +8,10 @@ use Sequenzy\Core\Json\JsonProperty;
 class UnauthorizedErrorBody extends JsonSerializableType
 {
     /**
-     * @var ?UnauthorizedErrorBodyError $error
+     * @var ?string $error
      */
     #[JsonProperty('error')]
-    public ?UnauthorizedErrorBodyError $error;
+    public ?string $error;
 
     /**
      * @var ?bool $success
@@ -21,7 +21,7 @@ class UnauthorizedErrorBody extends JsonSerializableType
 
     /**
      * @param array{
-     *   error?: ?UnauthorizedErrorBodyError,
+     *   error?: ?string,
      *   success?: ?bool,
      * } $values
      */

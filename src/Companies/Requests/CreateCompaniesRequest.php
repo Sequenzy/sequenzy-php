@@ -4,6 +4,7 @@ namespace Sequenzy\Companies\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Companies\Types\CreateCompaniesRequestWebsiteType;
 
 class CreateCompaniesRequest extends JsonSerializableType
 {
@@ -32,6 +33,12 @@ class CreateCompaniesRequest extends JsonSerializableType
     public ?bool $noWebsite;
 
     /**
+     * @var ?value-of<CreateCompaniesRequestWebsiteType> $websiteType Optional company category, recorded as your choice. Omit it to let website processing detect it. Unknown values are ignored, as fields this endpoint did not know always were.
+     */
+    #[JsonProperty('websiteType')]
+    public ?string $websiteType;
+
+    /**
      * @var ?bool $withWelcomeSequence Set true to create a draft four-email welcome sequence and queue its generation. Defaults to false; any other value is treated as false.
      */
     #[JsonProperty('withWelcomeSequence')]
@@ -43,6 +50,7 @@ class CreateCompaniesRequest extends JsonSerializableType
      *   domain?: ?string,
      *   name?: ?string,
      *   noWebsite?: ?bool,
+     *   websiteType?: ?value-of<CreateCompaniesRequestWebsiteType>,
      *   withWelcomeSequence?: ?bool,
      * } $values
      */
@@ -53,6 +61,7 @@ class CreateCompaniesRequest extends JsonSerializableType
         $this->domain = $values['domain'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->noWebsite = $values['noWebsite'] ?? null;
+        $this->websiteType = $values['websiteType'] ?? null;
         $this->withWelcomeSequence = $values['withWelcomeSequence'] ?? null;
     }
 }

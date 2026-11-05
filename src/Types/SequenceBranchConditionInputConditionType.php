@@ -16,4 +16,5 @@ enum SequenceBranchConditionInputConditionType: string
     case FieldLessThan = "field_less_than";
     case HasPhone = "has_phone";
     case SmsSubscribed = "sms_subscribed";
+    case HasPushDevice = "has_push_device";
 }

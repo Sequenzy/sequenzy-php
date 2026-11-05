@@ -74,10 +74,16 @@ class InAppMessage extends JsonSerializableType
     public ?string $eyebrow;
 
     /**
-     * @var ?value-of<InAppMessageFormat> $format How a message is shown; null for cards.
+     * @var ?value-of<InAppMessageFormat> $format How a message is shown; null for cards. html: a custom HTML message, returned only when the caller lists html in formats.
      */
     #[JsonProperty('format')]
     public ?string $format;
+
+    /**
+     * @var ?string $html html messages when html was requested in formats: the document to render, with the Sequenzy JS bridge already added. Null otherwise.
+     */
+    #[JsonProperty('html')]
+    public ?string $html;
 
     /**
      * @var ?string $id
@@ -128,6 +134,12 @@ class InAppMessage extends JsonSerializableType
     public ?string $sequenceId;
 
     /**
+     * @var ?bool $showCloseButton html messages: draw a close control over the document. False for other formats.
+     */
+    #[JsonProperty('showCloseButton')]
+    public ?bool $showCloseButton;
+
+    /**
      * @var ?string $stepId The sequence step (node) that created it.
      */
     #[JsonProperty('stepId')]
@@ -158,6 +170,7 @@ class InAppMessage extends JsonSerializableType
      *   expiresAt?: ?DateTime,
      *   eyebrow?: ?string,
      *   format?: ?value-of<InAppMessageFormat>,
+     *   html?: ?string,
      *   id?: ?string,
      *   imagePlacement?: ?value-of<InAppMessageImagePlacement>,
      *   imageUrl?: ?string,
@@ -166,6 +179,7 @@ class InAppMessage extends JsonSerializableType
      *   position?: ?value-of<InAppMessagePosition>,
      *   readAt?: ?DateTime,
      *   sequenceId?: ?string,
+     *   showCloseButton?: ?bool,
      *   stepId?: ?string,
      *   style?: ?InAppStyle,
      *   title?: ?string,
@@ -185,6 +199,7 @@ class InAppMessage extends JsonSerializableType
         $this->expiresAt = $values['expiresAt'] ?? null;
         $this->eyebrow = $values['eyebrow'] ?? null;
         $this->format = $values['format'] ?? null;
+        $this->html = $values['html'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->imagePlacement = $values['imagePlacement'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
@@ -193,6 +208,7 @@ class InAppMessage extends JsonSerializableType
         $this->position = $values['position'] ?? null;
         $this->readAt = $values['readAt'] ?? null;
         $this->sequenceId = $values['sequenceId'] ?? null;
+        $this->showCloseButton = $values['showCloseButton'] ?? null;
         $this->stepId = $values['stepId'] ?? null;
         $this->style = $values['style'] ?? null;
         $this->title = $values['title'] ?? null;
