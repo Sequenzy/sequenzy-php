@@ -13,4 +13,5 @@ enum IntegrationProviderCapabilityActionsItem: string
     case SetListTargeting = "set_list_targeting";
     case ActivatePixel = "activate_pixel";
     case UpdateAttioSettings = "update_attio_settings";
+    case UpdateAmplitudeSettings = "update_amplitude_settings";
 }

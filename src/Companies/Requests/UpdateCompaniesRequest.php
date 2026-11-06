@@ -11,6 +11,7 @@ use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailPreset;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailStylePreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailTheme;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterStyle;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterTheme;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestReplyTrackingDomainMode;
 use Sequenzy\Core\Types\Union;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestWebsiteType;
@@ -100,6 +101,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('footerStyle')]
     public ?string $footerStyle;
+
+    /**
+     * @var ?UpdateCompaniesRequestFooterTheme $footerTheme Colors and copy of the auto-added footer, the compliance footer Sequenzy appends when an email has no footer block. Merged into the stored theme: omitted fields keep their value, `null` (or `""`, and `"transparent"` for `backgroundColor`, the values get returns for defaults) resets one field to its default, and `footerTheme: null` resets them all. Other brandColors keys are kept. Malformed values and unknown fields return 400, as does a `style` that differs from `footerStyle` in the same request; a value that is not an object or null returns 422. Footer font, size and line height are set in `emailTheme.typography`.
+     */
+    #[JsonProperty('footerTheme')]
+    public ?UpdateCompaniesRequestFooterTheme $footerTheme;
 
     /**
      * @var ?bool $forwardReplies Enable or disable forwarding captured replies to the configured mailbox.
@@ -261,6 +268,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   emailTheme?: ?UpdateCompaniesRequestEmailTheme,
      *   fontFamily?: ?string,
      *   footerStyle?: ?value-of<UpdateCompaniesRequestFooterStyle>,
+     *   footerTheme?: ?UpdateCompaniesRequestFooterTheme,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
      *   fromEmail?: ?string,
@@ -304,6 +312,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
         $this->footerStyle = $values['footerStyle'] ?? null;
+        $this->footerTheme = $values['footerTheme'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;

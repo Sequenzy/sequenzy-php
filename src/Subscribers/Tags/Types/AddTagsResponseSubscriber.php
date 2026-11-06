@@ -15,7 +15,7 @@ class AddTagsResponseSubscriber extends JsonSerializableType
     public ?bool $created;
 
     /**
-     * @var ?string $email Null for phone-only (SMS) contacts.
+     * @var ?string $email Null for phone-only (SMS) and push-only contacts.
      */
     #[JsonProperty('email')]
     public ?string $email;

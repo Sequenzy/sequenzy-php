@@ -6,6 +6,7 @@ use Sequenzy\Types\SequenceAudienceAutoEnroll;
 use DateTime;
 use Sequenzy\Types\SequenceEffectiveStatus;
 use Sequenzy\Types\SequenceKeyDates;
+use Sequenzy\Types\SequenceSummaryManagedBy;
 use Sequenzy\Types\SequenceSummaryPausedByUser;
 use Sequenzy\Types\SequenceRecurringEnrollment;
 use Sequenzy\Types\SequenceSendingWindow;
@@ -28,9 +29,11 @@ use Sequenzy\Core\Types\Date;
  * @property ?string $fromEmail
  * @property ?string $fromName
  * @property ?string $id
+ * @property ?string $key
  * @property ?SequenceKeyDates $keyDates
  * @property ?array<string> $labelIds
  * @property ?array<string> $labels
+ * @property ?value-of<SequenceSummaryManagedBy> $managedBy
  * @property ?string $name
  * @property ?DateTime $pausedAt
  * @property ?SequenceSummaryPausedByUser $pausedByUser
@@ -131,6 +134,12 @@ trait SequenceSummary
     public ?string $id;
 
     /**
+     * @var ?string $key Your key for the sequence, set by a definition push. Null until one is pushed.
+     */
+    #[JsonProperty('key')]
+    public ?string $key;
+
+    /**
      * @var ?SequenceKeyDates $keyDates
      */
     #[JsonProperty('keyDates')]
@@ -147,6 +156,12 @@ trait SequenceSummary
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
     public ?array $labels;
+
+    /**
+     * @var ?value-of<SequenceSummaryManagedBy> $managedBy `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+     */
+    #[JsonProperty('managedBy')]
+    public ?string $managedBy;
 
     /**
      * @var ?string $name

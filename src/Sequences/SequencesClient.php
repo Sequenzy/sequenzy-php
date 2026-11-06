@@ -47,6 +47,10 @@ use Sequenzy\Sequences\Requests\GenerateEmailVariationsSequencesRequest;
 use Sequenzy\Sequences\Types\GenerateEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Types\GetSequencesResponse;
 use Sequenzy\Sequences\Types\GetAudienceEnrollmentSequencesResponse;
+use Sequenzy\Sequences\Requests\GetDefinitionSequencesRequest;
+use Sequenzy\Sequences\Types\GetDefinitionSequencesResponse;
+use Sequenzy\Sequences\Requests\GetDefinitionByIdSequencesRequest;
+use Sequenzy\Sequences\Types\GetDefinitionByIdSequencesResponse;
 use Sequenzy\Types\SequenceEnrollmentGetResponse;
 use Sequenzy\Types\SequenceEnrollmentRealignJobResponse;
 use Sequenzy\Sequences\Types\GetInboundWebhookSequencesResponse;
@@ -70,6 +74,8 @@ use Sequenzy\Sequences\Requests\SequenceEnrollmentPauseRequest;
 use Sequenzy\Types\SequenceEnrollmentPauseResponse;
 use Sequenzy\Sequences\Requests\PreviewFromExampleSequencesRequest;
 use Sequenzy\Sequences\Types\PreviewFromExampleSequencesResponse;
+use Sequenzy\Sequences\Requests\PushDefinitionSequencesRequest;
+use Sequenzy\Types\SequenceDefinitionPushResult;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentRealignRequest;
 use Sequenzy\Types\SequenceEnrollmentRealignResponse;
 use Sequenzy\Sequences\Requests\RenderStepSequencesRequest;
@@ -1520,6 +1526,130 @@ class SequencesClient
     }
 
     /**
+     * Returns the sequence with this key as one definition document, in the readable format unless format=raw. Pushing the document back unchanged changes nothing.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getDefinition(
+     *     'key',
+     *     new GetDefinitionSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $key
+     * @param GetDefinitionSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetDefinitionSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getDefinition(string $key, GetDefinitionSequencesRequest $request = new GetDefinitionSequencesRequest(), ?array $options = null): ?GetDefinitionSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->format != null) {
+            $query['format'] = $request->format;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/definitions/{$key}",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetDefinitionSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns any sequence as a definition document, including one with no key yet (its key is empty). Set a key and push it to adopt the sequence.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getDefinitionById(
+     *     'sequenceId',
+     *     new GetDefinitionByIdSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param GetDefinitionByIdSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetDefinitionByIdSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getDefinitionById(string $sequenceId, GetDefinitionByIdSequencesRequest $request = new GetDefinitionByIdSequencesRequest(), ?array $options = null): ?GetDefinitionByIdSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->format != null) {
+            $query['format'] = $request->format;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/definition",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetDefinitionByIdSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Reads one enrollment token, including how it entered, which branches it already took, and the bounded recorded graph walk from ClickHouse. Use this when list enrollments shows a completed token with enteredVia unknown or sitting on the completion node and you need to know why the first branch took its else path. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Legacy node-completion metadata that stored an unredacted evaluation reason is redacted on read. Check nodeHistoryTruncated and branchDecisionsTruncated before treating either history as complete.
      *
      * Example:
@@ -2490,6 +2620,81 @@ class SequencesClient
                     return null;
                 }
                 return PreviewFromExampleSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Creates the sequence with this key, or updates it to match the document. Steps are matched by key: new keys are added, changed steps are updated in place, and missing steps are removed, with waiting contacts moved to the following step (or completed when nothing follows). A push never turns a sequence on or off or pauses it; new sequences start as drafts.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->pushDefinition(
+     *     'key',
+     *     new PushDefinitionSequencesRequest([
+     *         'body' => new SequenceDefinition([
+     *             'name' => 'name',
+     *             'steps' => [
+     *                 new SequenceDefinitionStep([
+     *                     'key' => 'key',
+     *                 ]),
+     *             ],
+     *         ]),
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $key
+     * @param PushDefinitionSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?SequenceDefinitionPushResult
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function pushDefinition(string $key, PushDefinitionSequencesRequest $request, ?array $options = null): ?SequenceDefinitionPushResult
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->confirmLiveChange != null) {
+            $query['confirmLiveChange'] = $request->confirmLiveChange;
+        }
+        if ($request->dryRun != null) {
+            $query['dryRun'] = $request->dryRun;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/definitions/{$key}",
+                    method: HttpMethod::PUT,
+                    query: $query,
+                    body: $request->body,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return SequenceDefinitionPushResult::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

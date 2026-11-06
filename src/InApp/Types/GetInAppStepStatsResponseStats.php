@@ -32,11 +32,25 @@ class GetInAppStepStatsResponseStats extends JsonSerializableType
     public ?int $displayed;
 
     /**
+     * @var ?int $pushPermissionDenied Push primers. Contacts who declined, or had notifications turned off.
+     */
+    #[JsonProperty('pushPermissionDenied')]
+    public ?int $pushPermissionDenied;
+
+    /**
+     * @var ?int $pushPermissionGranted Push primers. Contacts who allowed notifications (granted, provisional or ephemeral) from this step's message.
+     */
+    #[JsonProperty('pushPermissionGranted')]
+    public ?int $pushPermissionGranted;
+
+    /**
      * @param array{
      *   clicked?: ?int,
      *   created?: ?int,
      *   dismissed?: ?int,
      *   displayed?: ?int,
+     *   pushPermissionDenied?: ?int,
+     *   pushPermissionGranted?: ?int,
      * } $values
      */
     public function __construct(
@@ -46,6 +60,8 @@ class GetInAppStepStatsResponseStats extends JsonSerializableType
         $this->created = $values['created'] ?? null;
         $this->dismissed = $values['dismissed'] ?? null;
         $this->displayed = $values['displayed'] ?? null;
+        $this->pushPermissionDenied = $values['pushPermissionDenied'] ?? null;
+        $this->pushPermissionGranted = $values['pushPermissionGranted'] ?? null;
     }
 
     /**

@@ -9,6 +9,8 @@ enum ListSuggestionsIntegrationsResponseSuggestionsItemProvider: string
     case Supabase = "supabase";
     case Posthog = "posthog";
     case Segment = "segment";
+    case Mixpanel = "mixpanel";
+    case Amplitude = "amplitude";
     case Woocommerce = "woocommerce";
     case Wordpress = "wordpress";
     case Webflow = "webflow";

@@ -20,6 +20,12 @@ class PushDeviceCounts extends JsonSerializableType
     public ?int $identifiedActive;
 
     /**
+     * @var ?PushDeviceCountsPermissions $permissions Active iOS and Android devices by the notification permission the mobile SDK (or an API caller) last reported.
+     */
+    #[JsonProperty('permissions')]
+    public ?PushDeviceCountsPermissions $permissions;
+
+    /**
      * @var ?int $totalActive
      */
     #[JsonProperty('totalActive')]
@@ -29,6 +35,7 @@ class PushDeviceCounts extends JsonSerializableType
      * @param array{
      *   active?: ?PushDeviceCountsActive,
      *   identifiedActive?: ?int,
+     *   permissions?: ?PushDeviceCountsPermissions,
      *   totalActive?: ?int,
      * } $values
      */
@@ -37,6 +44,7 @@ class PushDeviceCounts extends JsonSerializableType
     ) {
         $this->active = $values['active'] ?? null;
         $this->identifiedActive = $values['identifiedActive'] ?? null;
+        $this->permissions = $values['permissions'] ?? null;
         $this->totalActive = $values['totalActive'] ?? null;
     }
 

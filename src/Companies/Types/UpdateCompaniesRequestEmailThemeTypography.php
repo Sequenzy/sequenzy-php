@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Numeric type settings.
+ * Type settings. Every field is a number except the headingFontFamily and footerFontFamily stacks.
  */
 class UpdateCompaniesRequestEmailThemeTypography extends JsonSerializableType
 {
@@ -33,6 +33,24 @@ class UpdateCompaniesRequestEmailThemeTypography extends JsonSerializableType
      */
     #[JsonProperty('buttonFontWeight')]
     public ?float $buttonFontWeight;
+
+    /**
+     * @var ?string $footerFontFamily Font stack for footers, both footer blocks and the auto-added footer. Omit or null to use the email font. A footer block's own fontFamily still wins.
+     */
+    #[JsonProperty('footerFontFamily')]
+    public ?string $footerFontFamily;
+
+    /**
+     * @var ?float $footerFontSize Footer text size in pixels, clamped to 10-16 (default 12). The company line is set 2px larger, 1px for the mono, band and editorial wordmark. null resets it.
+     */
+    #[JsonProperty('footerFontSize')]
+    public ?float $footerFontSize;
+
+    /**
+     * @var ?float $footerLineHeight Footer line height (unitless), clamped to 1-2 (default 1.333). null resets it.
+     */
+    #[JsonProperty('footerLineHeight')]
+    public ?float $footerLineHeight;
 
     /**
      * @var ?float $heading1Size
@@ -82,6 +100,9 @@ class UpdateCompaniesRequestEmailThemeTypography extends JsonSerializableType
      *   baseLineHeight?: ?float,
      *   buttonFontSize?: ?float,
      *   buttonFontWeight?: ?float,
+     *   footerFontFamily?: ?string,
+     *   footerFontSize?: ?float,
+     *   footerLineHeight?: ?float,
      *   heading1Size?: ?float,
      *   heading2Size?: ?float,
      *   heading3Size?: ?float,
@@ -98,6 +119,9 @@ class UpdateCompaniesRequestEmailThemeTypography extends JsonSerializableType
         $this->baseLineHeight = $values['baseLineHeight'] ?? null;
         $this->buttonFontSize = $values['buttonFontSize'] ?? null;
         $this->buttonFontWeight = $values['buttonFontWeight'] ?? null;
+        $this->footerFontFamily = $values['footerFontFamily'] ?? null;
+        $this->footerFontSize = $values['footerFontSize'] ?? null;
+        $this->footerLineHeight = $values['footerLineHeight'] ?? null;
         $this->heading1Size = $values['heading1Size'] ?? null;
         $this->heading2Size = $values['heading2Size'] ?? null;
         $this->heading3Size = $values['heading3Size'] ?? null;

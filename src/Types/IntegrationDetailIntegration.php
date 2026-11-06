@@ -4,9 +4,9 @@ namespace Sequenzy\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
 use DateTime;
 use Sequenzy\Core\Types\Date;
-use Sequenzy\Core\Types\ArrayType;
 
 class IntegrationDetailIntegration extends JsonSerializableType
 {
@@ -15,6 +15,12 @@ class IntegrationDetailIntegration extends JsonSerializableType
      */
     #[JsonProperty('category')]
     public ?string $category;
+
+    /**
+     * @var ?array<IntegrationSummaryCohortsItem> $cohorts Mixpanel and Amplitude only. The cohorts received so far, most recently synced first, and the tag each one is mirrored to. The tag is fixed when a cohort first syncs and survives renames. Absent for other providers.
+     */
+    #[JsonProperty('cohorts'), ArrayType([IntegrationSummaryCohortsItem::class])]
+    public ?array $cohorts;
 
     /**
      * @var ?DateTime $connectedAt
@@ -33,6 +39,12 @@ class IntegrationDetailIntegration extends JsonSerializableType
      */
     #[JsonProperty('disconnectedAt'), Date(Date::TYPE_DATETIME)]
     public ?DateTime $disconnectedAt;
+
+    /**
+     * @var ?IntegrationSummaryEventSettings $eventSettings Amplitude only. Which streamed events are synced. Absent for other providers.
+     */
+    #[JsonProperty('eventSettings')]
+    public ?IntegrationSummaryEventSettings $eventSettings;
 
     /**
      * @var ?string $id
@@ -109,9 +121,11 @@ class IntegrationDetailIntegration extends JsonSerializableType
     /**
      * @param array{
      *   category?: ?value-of<IntegrationDetailIntegrationCategory>,
+     *   cohorts?: ?array<IntegrationSummaryCohortsItem>,
      *   connectedAt?: ?DateTime,
      *   details?: ?array<string, mixed>,
      *   disconnectedAt?: ?DateTime,
+     *   eventSettings?: ?IntegrationSummaryEventSettings,
      *   id?: ?string,
      *   isActive?: ?bool,
      *   lastSyncAt?: ?DateTime,
@@ -130,9 +144,11 @@ class IntegrationDetailIntegration extends JsonSerializableType
         array $values = [],
     ) {
         $this->category = $values['category'] ?? null;
+        $this->cohorts = $values['cohorts'] ?? null;
         $this->connectedAt = $values['connectedAt'] ?? null;
         $this->details = $values['details'] ?? null;
         $this->disconnectedAt = $values['disconnectedAt'] ?? null;
+        $this->eventSettings = $values['eventSettings'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->isActive = $values['isActive'] ?? null;
         $this->lastSyncAt = $values['lastSyncAt'] ?? null;

@@ -26,6 +26,8 @@ use Sequenzy\Integrations\Requests\ListCapabilitiesIntegrationsRequest;
 use Sequenzy\Integrations\Types\ListCapabilitiesIntegrationsResponse;
 use Sequenzy\Integrations\Types\ListSuggestionsIntegrationsResponse;
 use Sequenzy\Integrations\Types\SyncIntegrationsResponse;
+use Sequenzy\Integrations\Requests\UpdateAmplitudeSettingsRequest;
+use Sequenzy\Integrations\Types\UpdateAmplitudeSettingsResponse;
 use Sequenzy\Integrations\Requests\UpdateAttioSettingsRequest;
 use Sequenzy\Integrations\Requests\UpdateSyncIntegrationsRequest;
 use Sequenzy\Integrations\Types\UpdateSyncIntegrationsResponse;
@@ -122,7 +124,7 @@ class IntegrationsClient
     }
 
     /**
-     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+     * Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
      *
      * Example:
      * ```php
@@ -592,7 +594,7 @@ class IntegrationsClient
     }
 
     /**
-     * Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+     * Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Mixpanel, Amplitude, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
      *
      * Example:
      * ```php
@@ -685,6 +687,64 @@ class IntegrationsClient
                     return null;
                 }
                 return SyncIntegrationsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Changes which streamed events a connected Amplitude integration records, without the webhook secret. Reconnecting would replace the secret, so use this to change events. syncAllEvents false with an eventAllowlist records only those event types. skipInternalEvents drops session_start, session_end, [Amplitude] autocapture, and other $ events unless allowlisted; identify calls always pass. Applies to deliveries processed after saving; dropped events are not replayed. Provide at least one field. Amplitude only. Requires the integrations:manage scope.
+     *
+     * Example:
+     * ```php
+     * $client->integrations->updateAmplitudeSettings(
+     *     'id',
+     *     new UpdateAmplitudeSettingsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $id Amplitude integration ID.
+     * @param UpdateAmplitudeSettingsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?UpdateAmplitudeSettingsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function updateAmplitudeSettings(string $id, UpdateAmplitudeSettingsRequest $request = new UpdateAmplitudeSettingsRequest(), ?array $options = null): ?UpdateAmplitudeSettingsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "integrations/{$id}/amplitude",
+                    method: HttpMethod::PATCH,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return UpdateAmplitudeSettingsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

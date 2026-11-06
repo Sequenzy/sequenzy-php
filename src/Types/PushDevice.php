@@ -58,13 +58,25 @@ class PushDevice extends JsonSerializableType
     public ?string $osVersion;
 
     /**
+     * @var ?value-of<PushDevicePermissionStatus> $permissionStatus iOS/Android notification permission the SDK or API caller last reported. Null when unknown (web subscriptions and SDK versions that do not report it).
+     */
+    #[JsonProperty('permissionStatus')]
+    public ?string $permissionStatus;
+
+    /**
+     * @var ?DateTime $permissionUpdatedAt
+     */
+    #[JsonProperty('permissionUpdatedAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $permissionUpdatedAt;
+
+    /**
      * @var ?value-of<PushDevicePlatform> $platform
      */
     #[JsonProperty('platform')]
     public ?string $platform;
 
     /**
-     * @var ?value-of<PushDeviceSource> $source web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
+     * @var ?value-of<PushDeviceSource> $source web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key, import for devices a push import wrote (an SDK registration of the same token takes the device over).
      */
     #[JsonProperty('source')]
     public ?string $source;
@@ -109,6 +121,8 @@ class PushDevice extends JsonSerializableType
      *   lastSeenAt?: ?DateTime,
      *   locale?: ?string,
      *   osVersion?: ?string,
+     *   permissionStatus?: ?value-of<PushDevicePermissionStatus>,
+     *   permissionUpdatedAt?: ?DateTime,
      *   platform?: ?value-of<PushDevicePlatform>,
      *   source?: ?value-of<PushDeviceSource>,
      *   status?: ?value-of<PushDeviceStatus>,
@@ -129,6 +143,8 @@ class PushDevice extends JsonSerializableType
         $this->lastSeenAt = $values['lastSeenAt'] ?? null;
         $this->locale = $values['locale'] ?? null;
         $this->osVersion = $values['osVersion'] ?? null;
+        $this->permissionStatus = $values['permissionStatus'] ?? null;
+        $this->permissionUpdatedAt = $values['permissionUpdatedAt'] ?? null;
         $this->platform = $values['platform'] ?? null;
         $this->source = $values['source'] ?? null;
         $this->status = $values['status'] ?? null;

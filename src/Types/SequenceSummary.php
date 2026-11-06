@@ -89,6 +89,12 @@ class SequenceSummary extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?string $key Your key for the sequence, set by a definition push. Null until one is pushed.
+     */
+    #[JsonProperty('key')]
+    public ?string $key;
+
+    /**
      * @var ?SequenceKeyDates $keyDates
      */
     #[JsonProperty('keyDates')]
@@ -105,6 +111,12 @@ class SequenceSummary extends JsonSerializableType
      */
     #[JsonProperty('labels'), ArrayType(['string'])]
     public ?array $labels;
+
+    /**
+     * @var ?value-of<SequenceSummaryManagedBy> $managedBy `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+     */
+    #[JsonProperty('managedBy')]
+    public ?string $managedBy;
 
     /**
      * @var ?string $name
@@ -229,9 +241,11 @@ class SequenceSummary extends JsonSerializableType
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   id?: ?string,
+     *   key?: ?string,
      *   keyDates?: ?SequenceKeyDates,
      *   labelIds?: ?array<string>,
      *   labels?: ?array<string>,
+     *   managedBy?: ?value-of<SequenceSummaryManagedBy>,
      *   name?: ?string,
      *   pausedAt?: ?DateTime,
      *   pausedByUser?: ?SequenceSummaryPausedByUser,
@@ -268,9 +282,11 @@ class SequenceSummary extends JsonSerializableType
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->key = $values['key'] ?? null;
         $this->keyDates = $values['keyDates'] ?? null;
         $this->labelIds = $values['labelIds'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->managedBy = $values['managedBy'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->pausedAt = $values['pausedAt'] ?? null;
         $this->pausedByUser = $values['pausedByUser'] ?? null;

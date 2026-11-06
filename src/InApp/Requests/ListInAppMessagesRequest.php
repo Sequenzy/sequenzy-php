@@ -9,6 +9,11 @@ use Sequenzy\InApp\Types\ListInAppMessagesRequestStatus;
 class ListInAppMessagesRequest extends JsonSerializableType
 {
     /**
+     * @var ?string $actions Open items only: comma-separated button actions your app handles beyond open_url and dismiss, such as request_push_permission. Items with an action you don't list stay in the inbox but are left out, so an app that can't handle them never shows them. The mobile SDKs send this themselves.
+     */
+    public ?string $actions;
+
+    /**
      * @var ?string $email Contact email (case-insensitive).
      */
     public ?string $email;
@@ -45,6 +50,7 @@ class ListInAppMessagesRequest extends JsonSerializableType
 
     /**
      * @param array{
+     *   actions?: ?string,
      *   email?: ?string,
      *   externalId?: ?string,
      *   formats?: ?string,
@@ -57,6 +63,7 @@ class ListInAppMessagesRequest extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->actions = $values['actions'] ?? null;
         $this->email = $values['email'] ?? null;
         $this->externalId = $values['externalId'] ?? null;
         $this->formats = $values['formats'] ?? null;

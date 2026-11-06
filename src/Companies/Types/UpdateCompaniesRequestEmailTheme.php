@@ -35,7 +35,7 @@ class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
     public ?string $presetId;
 
     /**
-     * @var ?UpdateCompaniesRequestEmailThemeTypography $typography Numeric type settings.
+     * @var ?UpdateCompaniesRequestEmailThemeTypography $typography Type settings. Every field is a number except the headingFontFamily and footerFontFamily stacks.
      */
     #[JsonProperty('typography')]
     public ?UpdateCompaniesRequestEmailThemeTypography $typography;

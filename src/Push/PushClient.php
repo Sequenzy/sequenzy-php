@@ -4,7 +4,8 @@ namespace Sequenzy\Push;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\Push\Types\CancelPushCampaignResponse;
+use Sequenzy\Push\Requests\AddPushImportRowsRequest;
+use Sequenzy\Push\Types\AddPushImportRowsResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
 use Sequenzy\Core\Json\JsonApiRequest;
@@ -12,10 +13,13 @@ use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Push\Types\CancelPushCampaignResponse;
+use Sequenzy\Types\PushImportResponse;
 use Sequenzy\Push\Types\ClearApnsCredentialsResponse;
 use Sequenzy\Push\Types\ClearFcmCredentialsResponse;
 use Sequenzy\Push\Requests\CreatePushCampaignRequest;
 use Sequenzy\Push\Types\CreatePushCampaignResponse;
+use Sequenzy\Push\Requests\CreatePushImportRequest;
 use Sequenzy\Push\Types\DeletePushDeviceResponse;
 use Sequenzy\Push\Requests\DuplicatePushCampaignRequest;
 use Sequenzy\Push\Types\DuplicatePushCampaignResponse;
@@ -25,6 +29,8 @@ use Sequenzy\Push\Requests\EstimatePushCampaignRecipientsRequest;
 use Sequenzy\Push\Types\EstimatePushCampaignRecipientsResponse;
 use Sequenzy\Push\Types\GetPushCampaignResponse;
 use Sequenzy\Push\Types\GetPushCampaignStatsResponse;
+use Sequenzy\Push\Requests\GetPushImportPreflightRequest;
+use Sequenzy\Push\Types\GetPushImportPreflightResponse;
 use Sequenzy\Push\Types\GetPushSettingsResponse;
 use Sequenzy\Push\Requests\ListLiveActivitiesRequest;
 use Sequenzy\Push\Types\ListLiveActivitiesResponse;
@@ -32,6 +38,8 @@ use Sequenzy\Push\Requests\ListPushCampaignsRequest;
 use Sequenzy\Push\Types\ListPushCampaignsResponse;
 use Sequenzy\Push\Requests\ListPushDevicesRequest;
 use Sequenzy\Push\Types\ListPushDevicesResponse;
+use Sequenzy\Push\Requests\ListPushImportsRequest;
+use Sequenzy\Push\Types\ListPushImportsResponse;
 use Sequenzy\Push\Requests\RegisterPushDeviceRequest;
 use Sequenzy\Push\Types\RegisterPushDeviceResponse;
 use Sequenzy\Push\Requests\SendPushCampaignRequest;
@@ -87,6 +95,66 @@ class PushClient
     }
 
     /**
+     * Stages another part of a CSV file (at most 5 MB, header row required) on a draft csv import. Requires the subscribers:write scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->addPushImportRows(
+     *     'importId',
+     *     new AddPushImportRowsRequest([
+     *         'csv' => 'csv',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $importId
+     * @param AddPushImportRowsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?AddPushImportRowsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function addPushImportRows(string $importId, AddPushImportRowsRequest $request, ?array $options = null): ?AddPushImportRowsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports/{$importId}/rows",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return AddPushImportRowsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Stops a scheduled or sending push campaign. Contacts who have not been sent the push yet are skipped; delivered notifications cannot be recalled. Requires the campaigns:send scope.
      *
      * Example:
@@ -128,6 +196,61 @@ class PushClient
                     return null;
                 }
                 return CancelPushCampaignResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Stops an import, or discards a draft or failed one. Devices already imported stay; staged rows and the stored source key are deleted. Canceling a canceled import returns it unchanged. Requires the subscribers:write scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->cancelPushImport(
+     *     'importId',
+     * );
+     * ```
+     *
+     * @param string $importId
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PushImportResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function cancelPushImport(string $importId, ?array $options = null): ?PushImportResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports/{$importId}/cancel",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PushImportResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -288,6 +411,64 @@ class PushClient
                     return null;
                 }
                 return CreatePushCampaignResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Creates a draft import of iOS (APNs) and Android (FCM) devices from OneSignal, Braze, Customer.io or a CSV, with its push settings warnings. Nothing is read from the source until the import is started. Web push subscriptions are never imported. Requires the subscribers:write scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->createPushImport(
+     *     new CreatePushImportRequest([
+     *         'source' => CreatePushImportRequestSource::Onesignal->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param CreatePushImportRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PushImportResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function createPushImport(CreatePushImportRequest $request, ?array $options = null): ?PushImportResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PushImportResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -646,6 +827,124 @@ class PushClient
     }
 
     /**
+     * Status, progress, counts, skip and invalid reasons, and warnings. Requires the subscribers:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->getPushImport(
+     *     'importId',
+     * );
+     * ```
+     *
+     * @param string $importId
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PushImportResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getPushImport(string $importId, ?array $options = null): ?PushImportResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports/{$importId}",
+                    method: HttpMethod::GET,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PushImportResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Warns when APNs or Firebase is not set up (imported tokens only work with the same bundle ID, Apple team and Firebase project the app used before) and notes that web push is not imported. Requires the subscribers:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->getPushImportPreflight(
+     *     new GetPushImportPreflightRequest([
+     *         'source' => GetPushImportPreflightRequestSource::Onesignal->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param GetPushImportPreflightRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetPushImportPreflightResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getPushImportPreflight(GetPushImportPreflightRequest $request, ?array $options = null): ?GetPushImportPreflightResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['source'] = $request->source;
+        if ($request->platforms != null) {
+            $query['platforms'] = $request->platforms;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports/preflight",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetPushImportPreflightResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Returns web push, APNs (iOS) and Firebase (Android) readiness, the last credential error for each platform, the default icon and active device counts. Secrets are never returned. Requires the account:read scope.
      *
      * Example:
@@ -906,6 +1205,66 @@ class PushClient
                     return null;
                 }
                 return ListPushDevicesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Recent push subscription imports, newest first, with progress and counts. Requires the subscribers:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->listPushImports(
+     *     new ListPushImportsRequest([]),
+     * );
+     * ```
+     *
+     * @param ListPushImportsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListPushImportsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listPushImports(ListPushImportsRequest $request = new ListPushImportsRequest(), ?array $options = null): ?ListPushImportsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListPushImportsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1262,6 +1621,61 @@ class PushClient
                     return null;
                 }
                 return LiveActivityDispatch::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Starts a draft, or resumes a failed or stalled import from its last checkpoint. The import runs in the background; poll GET /push/imports/{importId}. Starting a running import returns it unchanged. One import runs per workspace at a time. Requires the subscribers:write scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->startPushImport(
+     *     'importId',
+     * );
+     * ```
+     *
+     * @param string $importId
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?PushImportResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function startPushImport(string $importId, ?array $options = null): ?PushImportResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/imports/{$importId}/start",
+                    method: HttpMethod::POST,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return PushImportResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

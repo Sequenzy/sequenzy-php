@@ -115,7 +115,7 @@ class InAppClient
     }
 
     /**
-     * Created, displayed, clicked and dismissed counts for one in_app sequence step. Requires the sequences:read scope.
+     * Created, displayed, clicked and dismissed counts for one in_app sequence step, plus push primer permission results. Requires the sequences:read scope.
      *
      * Example:
      * ```php
@@ -175,7 +175,9 @@ class InAppClient
      * Example:
      * ```php
      * $client->inApp->listInAppMessages(
-     *     new ListInAppMessagesRequest([]),
+     *     new ListInAppMessagesRequest([
+     *         'actions' => 'request_push_permission',
+     *     ]),
      * );
      * ```
      *
@@ -196,6 +198,9 @@ class InAppClient
     {
         $options = array_merge($this->options, $options ?? []);
         $query = [];
+        if ($request->actions != null) {
+            $query['actions'] = $request->actions;
+        }
         if ($request->email != null) {
             $query['email'] = $request->email;
         }

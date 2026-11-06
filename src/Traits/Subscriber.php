@@ -42,7 +42,7 @@ trait Subscriber
     public ?array $customAttributes;
 
     /**
-     * @var ?string $email Null for phone-only (SMS) contacts, which are identified by their phone number instead.
+     * @var ?string $email Null for phone-only (SMS) contacts, which are identified by their phone number instead, and for push-only contacts created by a push import, which have only an external ID.
      */
     #[JsonProperty('email')]
     public ?string $email;

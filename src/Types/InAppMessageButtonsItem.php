@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class InAppMessageButtonsItem extends JsonSerializableType
 {
     /**
-     * @var ?value-of<InAppMessageButtonsItemAction> $action
+     * @var ?value-of<InAppMessageButtonsItemAction> $action request_push_permission: a push primer button. The app asks the OS for notification permission, or opens its notification settings when the contact turned them off, then records a clicked event with pushPermission. Open feeds include such items only when the caller lists the action in actions.
      */
     #[JsonProperty('action')]
     public ?string $action;
@@ -20,7 +20,7 @@ class InAppMessageButtonsItem extends JsonSerializableType
     public ?string $label;
 
     /**
-     * @var ?string $url https URL or app deep link for open_url buttons; null for dismiss.
+     * @var ?string $url https URL or app deep link for open_url buttons; null otherwise.
      */
     #[JsonProperty('url')]
     public ?string $url;

@@ -17,6 +17,8 @@ enum ConnectIntegrationsRequestProvider: string
     case Clerk = "clerk";
     case Posthog = "posthog";
     case Segment = "segment";
+    case Mixpanel = "mixpanel";
+    case Amplitude = "amplitude";
     case Affonso = "affonso";
     case Attio = "attio";
     case Sparkloop = "sparkloop";

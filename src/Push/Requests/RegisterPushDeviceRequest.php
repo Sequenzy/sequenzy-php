@@ -5,6 +5,7 @@ namespace Sequenzy\Push\Requests;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Push\Types\RegisterPushDeviceRequestKeys;
+use Sequenzy\Push\Types\RegisterPushDeviceRequestPermissionStatus;
 use Sequenzy\Push\Types\RegisterPushDeviceRequestPlatform;
 
 class RegisterPushDeviceRequest extends JsonSerializableType
@@ -46,6 +47,12 @@ class RegisterPushDeviceRequest extends JsonSerializableType
     public ?string $osVersion;
 
     /**
+     * @var ?value-of<RegisterPushDeviceRequestPermissionStatus> $permissionStatus iOS/Android only (ignored for web). The notification permission your app read. Feeds the push opt-in rate and the contact's pushPermission attribute (the best status across their app devices). Omit it to keep the stored one.
+     */
+    #[JsonProperty('permissionStatus')]
+    public ?string $permissionStatus;
+
+    /**
      * @var value-of<RegisterPushDeviceRequestPlatform> $platform
      */
     #[JsonProperty('platform')]
@@ -79,6 +86,7 @@ class RegisterPushDeviceRequest extends JsonSerializableType
      *   keys?: ?RegisterPushDeviceRequestKeys,
      *   locale?: ?string,
      *   osVersion?: ?string,
+     *   permissionStatus?: ?value-of<RegisterPushDeviceRequestPermissionStatus>,
      *   subscriberId?: ?string,
      *   timezone?: ?string,
      * } $values
@@ -92,6 +100,7 @@ class RegisterPushDeviceRequest extends JsonSerializableType
         $this->keys = $values['keys'] ?? null;
         $this->locale = $values['locale'] ?? null;
         $this->osVersion = $values['osVersion'] ?? null;
+        $this->permissionStatus = $values['permissionStatus'] ?? null;
         $this->platform = $values['platform'];
         $this->subscriberId = $values['subscriberId'] ?? null;
         $this->timezone = $values['timezone'] ?? null;

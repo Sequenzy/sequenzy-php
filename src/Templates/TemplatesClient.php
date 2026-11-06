@@ -881,7 +881,7 @@ class TemplatesClient
     }
 
     /**
-     * Updates template metadata, labels, or content. Transactional email IDs and slugs are also resolved for compatibility.
+     * Updates template metadata, labels, or content. Transactional email IDs and slugs are also resolved for compatibility. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
      *
      * Example:
      * ```php

@@ -156,6 +156,12 @@ class Company extends JsonSerializableType
     public ?string $footerStyle;
 
     /**
+     * @var ?CompanyFooterTheme $footerTheme The auto-added footer's resolved settings, defaults included. Change it with `footerTheme` on the company update.
+     */
+    #[JsonProperty('footerTheme')]
+    public ?CompanyFooterTheme $footerTheme;
+
+    /**
      * @var ?bool $forwardReplies Whether captured replies are forwarded to the configured mailbox.
      */
     #[JsonProperty('forwardReplies')]
@@ -319,6 +325,7 @@ class Company extends JsonSerializableType
      *   emailTheme?: ?array<string, mixed>,
      *   fontFamily?: ?string,
      *   footerStyle?: ?value-of<CompanyFooterStyle>,
+     *   footerTheme?: ?CompanyFooterTheme,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
      *   id?: ?string,
@@ -371,6 +378,7 @@ class Company extends JsonSerializableType
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
         $this->footerStyle = $values['footerStyle'] ?? null;
+        $this->footerTheme = $values['footerTheme'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
         $this->id = $values['id'] ?? null;

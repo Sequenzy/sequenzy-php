@@ -93,9 +93,11 @@ class SequenceDetails extends JsonSerializableType
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   id?: ?string,
+     *   key?: ?string,
      *   keyDates?: ?SequenceKeyDates,
      *   labelIds?: ?array<string>,
      *   labels?: ?array<string>,
+     *   managedBy?: ?value-of<SequenceSummaryManagedBy>,
      *   name?: ?string,
      *   pausedAt?: ?DateTime,
      *   pausedByUser?: ?SequenceSummaryPausedByUser,
@@ -143,9 +145,11 @@ class SequenceDetails extends JsonSerializableType
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->key = $values['key'] ?? null;
         $this->keyDates = $values['keyDates'] ?? null;
         $this->labelIds = $values['labelIds'] ?? null;
         $this->labels = $values['labels'] ?? null;
+        $this->managedBy = $values['managedBy'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->pausedAt = $values['pausedAt'] ?? null;
         $this->pausedByUser = $values['pausedByUser'] ?? null;
