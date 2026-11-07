@@ -75,7 +75,7 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
     public ?bool $transactionalOpenTrackingEnabled;
 
     /**
-     * @var ?bool $unsubscribeTrackingEnabled Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
+     * @var ?bool $unsubscribeTrackingEnabled Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
      */
     #[JsonProperty('unsubscribeTrackingEnabled')]
     public ?bool $unsubscribeTrackingEnabled;
