@@ -52,7 +52,7 @@ class SyncRulesClient
     }
 
     /**
-     * Returns the company's effective sync rules - the automatic tag changes applied when events fire. New companies start with an empty rule set; legacy companies may inherit the optional SaaS/ecommerce platform preset. isDefault reports whether that preset is active.
+     * Returns the company's effective sync rules - the automatic tag changes applied when events fire. New companies start with the platform preset's payment and ecommerce rules, saved as their own rule set; older companies may inherit the SaaS/ecommerce platform preset. isDefault reports whether that preset is active.
      *
      * Example:
      * ```php
