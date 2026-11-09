@@ -35,6 +35,12 @@ class SequenceInboundWebhook extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?SequenceInboundWebhookMappingCheck $mappingCheck Whether the field mapping finds an email in the last payload received, or in a sample saved through this endpoint. An example sample applied from the integration catalog on first setup is not checked. The endpoint answers 200 to every payload it can parse, but skips one without a valid email and creates no subscriber, so a mapping with status email_not_found means received webhooks are being skipped. Null when no mapping is saved.
+     */
+    #[JsonProperty('mappingCheck')]
+    public ?SequenceInboundWebhookMappingCheck $mappingCheck;
+
+    /**
      * @var ?DateTime $sampleCapturedAt
      */
     #[JsonProperty('sampleCapturedAt'), Date(Date::TYPE_DATETIME)]
@@ -70,6 +76,7 @@ class SequenceInboundWebhook extends JsonSerializableType
      *   eventName?: ?string,
      *   fieldMapping?: ?SequenceInboundWebhookFieldMapping,
      *   id?: ?string,
+     *   mappingCheck?: ?SequenceInboundWebhookMappingCheck,
      *   sampleCapturedAt?: ?DateTime,
      *   samplePayload?: ?array<string, mixed>,
      *   secret?: ?string,
@@ -84,6 +91,7 @@ class SequenceInboundWebhook extends JsonSerializableType
         $this->eventName = $values['eventName'] ?? null;
         $this->fieldMapping = $values['fieldMapping'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->mappingCheck = $values['mappingCheck'] ?? null;
         $this->sampleCapturedAt = $values['sampleCapturedAt'] ?? null;
         $this->samplePayload = $values['samplePayload'] ?? null;
         $this->secret = $values['secret'] ?? null;

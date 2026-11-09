@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 class SequenceInboundWebhookFieldMapping extends JsonSerializableType
 {
     /**
-     * @var string $email Dot path to the subscriber email in the webhook payload.
+     * @var string $email Dot path to the subscriber email in the webhook payload. A key that itself contains dots, such as `data.user_email`, is matched as one key, so `properties.data.user_email` reads `{"properties": {"data.user_email": "..."}}`.
      */
     #[JsonProperty('email')]
     public string $email;
