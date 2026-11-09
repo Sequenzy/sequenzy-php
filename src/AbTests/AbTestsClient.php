@@ -669,7 +669,7 @@ class AbTestsClient
     }
 
     /**
-     * Updates a draft or testing campaign test or the effective settings for a sequence test. Live campaign duration is measured from its original start; sample changes are asynchronous and preserve committed recipients. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
+     * Updates a draft or testing campaign test or the effective settings for a sequence test. Live campaign duration is measured from its original start, or from when the last test email is due when delivery is spread; sample changes are asynchronous and preserve committed recipients. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
      *
      * Example:
      * ```php

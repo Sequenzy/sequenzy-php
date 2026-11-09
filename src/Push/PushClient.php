@@ -51,6 +51,10 @@ use Sequenzy\Push\Types\SetApnsCredentialsResponse;
 use Sequenzy\Push\Requests\SetFcmCredentialsRequest;
 use Sequenzy\Push\Types\SetFcmCredentialsResponse;
 use Sequenzy\Push\Requests\StartLiveActivityRequest;
+use Sequenzy\Push\Requests\TranslatePushCampaignRequest;
+use Sequenzy\Push\Types\TranslatePushCampaignResponse;
+use Sequenzy\Push\Requests\TranslatePushContentRequest;
+use Sequenzy\Push\Types\TranslatePushContentResponse;
 use Sequenzy\Push\Types\UnschedulePushCampaignResponse;
 use Sequenzy\Push\Requests\UpdateLiveActivityRequest;
 use Sequenzy\Push\Requests\UpdatePushCampaignRequest;
@@ -596,7 +600,7 @@ class PushClient
     }
 
     /**
-     * Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+     * Ends the contact's activity on every device running it, iOS and Android, or with broadcast true on every signed-in device running the activityId. Tokens are marked ended as APNs or FCM accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen, and Android keeps the final notification, for up to four hours. Requires the transactional:send scope; broadcast also requires campaigns:send.
      *
      * Example:
      * ```php
@@ -997,7 +1001,7 @@ class PushClient
     }
 
     /**
-     * Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+     * Lists ActivityKit tokens the Sequenzy iOS SDK reported and Android Live Update tokens the Sequenzy Android SDK reported, with a summary per activity type (for the contact when email or subscriberId is given, and for the platform when platform is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
      *
      * Example:
      * ```php
@@ -1040,6 +1044,9 @@ class PushClient
         }
         if ($request->limit != null) {
             $query['limit'] = $request->limit;
+        }
+        if ($request->platform != null) {
+            $query['platform'] = $request->platform;
         }
         if ($request->status != null) {
             $query['status'] = $request->status;
@@ -1338,7 +1345,7 @@ class PushClient
     }
 
     /**
-     * Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Requires the campaigns:send scope.
+     * Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Optionally deliver in each contact's local time (sendInRecipientTimezone with scheduledAt and scheduledTimezone) or at each contact's optimal hour (sendTimeOptimization); omitted timing fields keep the values saved on the campaign. Push campaigns have no spreadOverHours. Requires the campaigns:send scope.
      *
      * Example:
      * ```php
@@ -1571,7 +1578,7 @@ class PushClient
     }
 
     /**
-     * Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+     * Starts a Live Activity remotely on every device that reported a push-to-start token for activityType, on iOS 17.2+ through APNs and as an Android Live Update through FCM on apps that observe the same type with the Sequenzy Android SDK (promoted on Android 16, an ongoing notification on earlier versions). Target one contact with email or subscriberId, or everyone in a segment, list or tag with exactly one of segmentId, listId or tag (up to 100,000 devices on platforms with push credentials; contacts the app signed in with Sequenzy.identify, whatever their email status). When email or subscriberId is present, segmentId, listId and tag are ignored. All copies share the activityId, so one update or end with broadcast true reaches every device running it. Only platforms with push credentials are sent to; the request fails with 400 when neither APNs nor FCM is set up. Sequenzy adds sequenzy.activityId to the attributes so the iOS SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope; a segment, list or tag also requires campaigns:send.
      *
      * Example:
      * ```php
@@ -1690,6 +1697,120 @@ class PushClient
     }
 
     /**
+     * Translates a draft or scheduled push campaign's title and message with AI into the workspace's languages (Settings > Localization) and saves the versions. By default it translates languages with no version and AI versions whose main copy changed since; versions a person wrote are kept unless overwrite is true. Merge tags are kept exactly and their fallback text is translated. Runs inline (a few seconds). The save is skipped with 409 if the campaign changed while translating. Requires the campaigns:write scope.
+     *
+     * Example:
+     * ```php
+     * $client->push->translatePushCampaign(
+     *     'campaignId',
+     *     new TranslatePushCampaignRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Push campaign ID.
+     * @param TranslatePushCampaignRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?TranslatePushCampaignResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function translatePushCampaign(string $campaignId, TranslatePushCampaignRequest $request = new TranslatePushCampaignRequest(), ?array $options = null): ?TranslatePushCampaignResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/campaigns/{$campaignId}/translate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return TranslatePushCampaignResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Translates a push title and message with AI into the workspace's languages and returns the versions without saving anything. Use the result as a sequence push step's localizations (nodeUpdates changes.localizations) or a push campaign's. Pass existing versions in localizations to keep them; the same rules as Translate a push campaign decide which languages are translated. Requires the templates:write scope, like the other content generation endpoints.
+     *
+     * Example:
+     * ```php
+     * $client->push->translatePushContent(
+     *     new TranslatePushContentRequest([]),
+     * );
+     * ```
+     *
+     * @param TranslatePushContentRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?TranslatePushContentResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function translatePushContent(TranslatePushContentRequest $request = new TranslatePushContentRequest(), ?array $options = null): ?TranslatePushContentResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "push/translate",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return TranslatePushContentResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Moves a scheduled push campaign back to draft. The queued send is discarded. Requires the campaigns:send scope.
      *
      * Example:
@@ -1745,7 +1866,7 @@ class PushClient
     }
 
     /**
-     * Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+     * Sends new content state to every running copy of the contact's activity (one per device that reported an update token, iOS and Android), or with broadcast true to every signed-in device running the activityId, such as an activity started for a segment, list or tag. Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content on either platform. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope; broadcast also requires campaigns:send.
      *
      * Example:
      * ```php
@@ -1807,7 +1928,7 @@ class PushClient
     }
 
     /**
-     * Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Requires the campaigns:write scope.
+     * Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Delivery timing (sendInRecipientTimezone, scheduledTimezone, sendTimeOptimization, sendTimeWindowHours) saves on drafts; changing it on a scheduled campaign returns 409, so reschedule with the send endpoint instead. Requires the campaigns:write scope.
      *
      * Example:
      * ```php

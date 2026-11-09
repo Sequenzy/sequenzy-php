@@ -41,16 +41,28 @@ class StartLiveActivityRequest extends JsonSerializableType
     public array $contentState;
 
     /**
-     * @var ?string $email Contact whose devices start the activity. Provide email or subscriberId.
+     * @var ?string $email Contact whose devices start the activity. Provide email or subscriberId, or one of segmentId, listId or tag.
      */
     #[JsonProperty('email')]
     public ?string $email;
+
+    /**
+     * @var ?string $listId Start it for every contact in this list.
+     */
+    #[JsonProperty('listId')]
+    public ?string $listId;
 
     /**
      * @var ?float $relevanceScore Orders a person's concurrent activities; higher shows first.
      */
     #[JsonProperty('relevanceScore')]
     public ?float $relevanceScore;
+
+    /**
+     * @var ?string $segmentId Start it for every contact in this segment.
+     */
+    #[JsonProperty('segmentId')]
+    public ?string $segmentId;
 
     /**
      * @var (
@@ -68,6 +80,12 @@ class StartLiveActivityRequest extends JsonSerializableType
     public ?string $subscriberId;
 
     /**
+     * @var ?string $tag Start it for every contact with this tag. One tag name without commas, matched like campaign tag filters, so Lakers Fan also matches lakers-fan.
+     */
+    #[JsonProperty('tag')]
+    public ?string $tag;
+
+    /**
      * @param array{
      *   activityId: string,
      *   activityType: string,
@@ -75,12 +93,15 @@ class StartLiveActivityRequest extends JsonSerializableType
      *   contentState: array<string, mixed>,
      *   attributes?: ?array<string, mixed>,
      *   email?: ?string,
+     *   listId?: ?string,
      *   relevanceScore?: ?float,
+     *   segmentId?: ?string,
      *   staleDate?: (
      *    int
      *   |string
      * )|null,
      *   subscriberId?: ?string,
+     *   tag?: ?string,
      * } $values
      */
     public function __construct(
@@ -92,8 +113,11 @@ class StartLiveActivityRequest extends JsonSerializableType
         $this->attributes = $values['attributes'] ?? null;
         $this->contentState = $values['contentState'];
         $this->email = $values['email'] ?? null;
+        $this->listId = $values['listId'] ?? null;
         $this->relevanceScore = $values['relevanceScore'] ?? null;
+        $this->segmentId = $values['segmentId'] ?? null;
         $this->staleDate = $values['staleDate'] ?? null;
         $this->subscriberId = $values['subscriberId'] ?? null;
+        $this->tag = $values['tag'] ?? null;
     }
 }

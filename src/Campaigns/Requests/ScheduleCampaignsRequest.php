@@ -60,7 +60,7 @@ class ScheduleCampaignsRequest extends JsonSerializableType
     public ?int $sendTimeWindowHours;
 
     /**
-     * @var ?float $spreadOverHours Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization.
+     * @var ?float $spreadOverHours Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization. With an A/B test, the spread sets one sending rate for the whole audience; the test sample and the winner are each spread over their share of the window, with the test duration in between. If the account has a minimum spread, a lower or missing value is raised to it and send-time optimization is turned off.
      */
     #[JsonProperty('spreadOverHours')]
     public ?float $spreadOverHours;

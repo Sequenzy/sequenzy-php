@@ -21,6 +21,12 @@ class GetLocalizationCoverageTemplatesResponse extends JsonSerializableType
     public ?string $primaryLocale;
 
     /**
+     * @var ?GetLocalizationCoverageTemplatesResponsePush $push Push steps in sequences that are not archived or defined in code. A failed push translation counts as missing again, so there is no failed count.
+     */
+    #[JsonProperty('push')]
+    public ?GetLocalizationCoverageTemplatesResponsePush $push;
+
+    /**
      * @var ?int $sequenceEmails Sequence email steps and sequence A/B variants counted.
      */
     #[JsonProperty('sequenceEmails')]
@@ -48,6 +54,7 @@ class GetLocalizationCoverageTemplatesResponse extends JsonSerializableType
      * @param array{
      *   locales?: ?array<GetLocalizationCoverageTemplatesResponseLocalesItem>,
      *   primaryLocale?: ?string,
+     *   push?: ?GetLocalizationCoverageTemplatesResponsePush,
      *   sequenceEmails?: ?int,
      *   success?: ?bool,
      *   totalEmails?: ?int,
@@ -59,6 +66,7 @@ class GetLocalizationCoverageTemplatesResponse extends JsonSerializableType
     ) {
         $this->locales = $values['locales'] ?? null;
         $this->primaryLocale = $values['primaryLocale'] ?? null;
+        $this->push = $values['push'] ?? null;
         $this->sequenceEmails = $values['sequenceEmails'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->totalEmails = $values['totalEmails'] ?? null;

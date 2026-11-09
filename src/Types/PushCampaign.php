@@ -53,6 +53,30 @@ class PushCampaign extends JsonSerializableType
     public ?DateTime $scheduledAt;
 
     /**
+     * @var ?string $scheduledTimezone IANA timezone the scheduled wall-clock time refers to.
+     */
+    #[JsonProperty('scheduledTimezone')]
+    public ?string $scheduledTimezone;
+
+    /**
+     * @var ?bool $sendInRecipientTimezone Delivers scheduledAt's wall-clock time in each contact's own timezone.
+     */
+    #[JsonProperty('sendInRecipientTimezone')]
+    public ?bool $sendInRecipientTimezone;
+
+    /**
+     * @var ?bool $sendTimeOptimization Sends each contact the push at their most engaged hour.
+     */
+    #[JsonProperty('sendTimeOptimization')]
+    public ?bool $sendTimeOptimization;
+
+    /**
+     * @var ?int $sendTimeWindowHours Hours after the start in which optimized sends may land.
+     */
+    #[JsonProperty('sendTimeWindowHours')]
+    public ?int $sendTimeWindowHours;
+
+    /**
      * @var ?DateTime $sentAt
      */
     #[JsonProperty('sentAt'), Date(Date::TYPE_DATETIME)]
@@ -91,6 +115,10 @@ class PushCampaign extends JsonSerializableType
      *   labelIds?: ?array<string>,
      *   name?: ?string,
      *   scheduledAt?: ?DateTime,
+     *   scheduledTimezone?: ?string,
+     *   sendInRecipientTimezone?: ?bool,
+     *   sendTimeOptimization?: ?bool,
+     *   sendTimeWindowHours?: ?int,
      *   sentAt?: ?DateTime,
      *   status?: ?value-of<PushCampaignStatus>,
      *   targetLists?: ?array<string, mixed>,
@@ -108,6 +136,10 @@ class PushCampaign extends JsonSerializableType
         $this->labelIds = $values['labelIds'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->scheduledAt = $values['scheduledAt'] ?? null;
+        $this->scheduledTimezone = $values['scheduledTimezone'] ?? null;
+        $this->sendInRecipientTimezone = $values['sendInRecipientTimezone'] ?? null;
+        $this->sendTimeOptimization = $values['sendTimeOptimization'] ?? null;
+        $this->sendTimeWindowHours = $values['sendTimeWindowHours'] ?? null;
         $this->sentAt = $values['sentAt'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->targetLists = $values['targetLists'] ?? null;

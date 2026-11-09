@@ -4,8 +4,9 @@ namespace Sequenzy\Push\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Push\Types\CreatePushCampaignRequestPlatformsItem;
+use Sequenzy\Types\PushLocalization;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Push\Types\CreatePushCampaignRequestPlatformsItem;
 
 class CreatePushCampaignRequest extends JsonSerializableType
 {
@@ -26,6 +27,12 @@ class CreatePushCampaignRequest extends JsonSerializableType
      */
     #[JsonProperty('imageUrl')]
     public ?string $imageUrl;
+
+    /**
+     * @var ?array<PushLocalization> $localizations
+     */
+    #[JsonProperty('localizations'), ArrayType([PushLocalization::class])]
+    public ?array $localizations;
 
     /**
      * @var ?string $name
@@ -62,6 +69,7 @@ class CreatePushCampaignRequest extends JsonSerializableType
      *   body?: ?string,
      *   iconUrl?: ?string,
      *   imageUrl?: ?string,
+     *   localizations?: ?array<PushLocalization>,
      *   name?: ?string,
      *   platforms?: ?array<value-of<CreatePushCampaignRequestPlatformsItem>>,
      *   targetLists?: ?array<string, mixed>,
@@ -75,6 +83,7 @@ class CreatePushCampaignRequest extends JsonSerializableType
         $this->body = $values['body'] ?? null;
         $this->iconUrl = $values['iconUrl'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
+        $this->localizations = $values['localizations'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->platforms = $values['platforms'] ?? null;
         $this->targetLists = $values['targetLists'] ?? null;

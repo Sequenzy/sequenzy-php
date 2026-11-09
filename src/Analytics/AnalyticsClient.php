@@ -41,6 +41,10 @@ use Sequenzy\Analytics\Requests\ListCampaignPollResponsesRequest;
 use Sequenzy\Analytics\Types\ListCampaignPollResponsesResponse;
 use Sequenzy\Analytics\Requests\ListCampaignPollResponsesLegacyRequest;
 use Sequenzy\Analytics\Types\ListCampaignPollResponsesLegacyResponse;
+use Sequenzy\Analytics\Requests\ListCampaignRepliesRequest;
+use Sequenzy\Analytics\Types\ListCampaignRepliesResponse;
+use Sequenzy\Analytics\Requests\ListCampaignRepliesLegacyRequest;
+use Sequenzy\Analytics\Types\ListCampaignRepliesLegacyResponse;
 use Sequenzy\Analytics\Requests\ListEmailMetricsRequest;
 use Sequenzy\Analytics\Types\ListEmailMetricsResponse;
 use Sequenzy\Analytics\Requests\ListSequenceEventsRequest;
@@ -1202,6 +1206,136 @@ class AnalyticsClient
                     return null;
                 }
                 return ListCampaignPollResponsesLegacyResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns one row per reply to a campaign, newest first, with the subscriber who replied, the send they replied to, attachment counts, the reply time and the inbox conversation holding the reply. `pagination.total` matches `stats.replies` from the campaign metrics endpoint called without `period`, `start` or `end`, which narrow that count, or `mailboxProvider`, which reports 0 replies. Reply text is not returned: read it with `GET /conversations/{conversationId}`. `conversationId` is null when the reply has no inbox conversation. Requires the `analytics:read` scope. Also available at `GET /campaigns/{campaignId}/replies`.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listCampaignReplies(
+     *     'campaignId',
+     *     new ListCampaignRepliesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param ListCampaignRepliesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListCampaignRepliesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listCampaignReplies(string $campaignId, ListCampaignRepliesRequest $request = new ListCampaignRepliesRequest(), ?array $options = null): ?ListCampaignRepliesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/campaigns/{$campaignId}/replies",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListCampaignRepliesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for `GET /metrics/campaigns/{campaignId}/replies`.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listCampaignRepliesLegacy(
+     *     'campaignId',
+     *     new ListCampaignRepliesLegacyRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param ListCampaignRepliesLegacyRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListCampaignRepliesLegacyResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listCampaignRepliesLegacy(string $campaignId, ListCampaignRepliesLegacyRequest $request = new ListCampaignRepliesLegacyRequest(), ?array $options = null): ?ListCampaignRepliesLegacyResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/replies",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListCampaignRepliesLegacyResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

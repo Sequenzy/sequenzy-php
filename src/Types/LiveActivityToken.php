@@ -16,7 +16,7 @@ class LiveActivityToken extends JsonSerializableType
     public ?string $activityId;
 
     /**
-     * @var ?string $activityType The Swift ActivityAttributes type name.
+     * @var ?string $activityType The Swift ActivityAttributes type name, which Android apps observe too.
      */
     #[JsonProperty('activityType')]
     public ?string $activityType;
@@ -28,7 +28,7 @@ class LiveActivityToken extends JsonSerializableType
     public ?DateTime $createdAt;
 
     /**
-     * @var ?string $deviceId The push device of the same installation, when the app registered one.
+     * @var ?string $deviceId The push device of the same installation, when the app registered one. Android tokens always have one; their pushes go to its FCM token.
      */
     #[JsonProperty('deviceId')]
     public ?string $deviceId;
@@ -46,7 +46,7 @@ class LiveActivityToken extends JsonSerializableType
     public ?string $id;
 
     /**
-     * @var ?string $invalidReason Why the token is invalid, such as `replaced`, `unregistered` or an APNs reason like `Unregistered`.
+     * @var ?string $invalidReason Why the token is invalid, such as `replaced`, `unregistered`, `device_inactive` (the Android push device is gone), an APNs reason like `Unregistered` or an FCM code like `UNREGISTERED`.
      */
     #[JsonProperty('invalidReason')]
     public ?string $invalidReason;
@@ -82,6 +82,12 @@ class LiveActivityToken extends JsonSerializableType
     public ?DateTime $lastSeenAt;
 
     /**
+     * @var ?value-of<LiveActivityTokenPlatform> $platform ios for ActivityKit tokens, android for Live Update tokens the Sequenzy Android SDK generated.
+     */
+    #[JsonProperty('platform')]
+    public ?string $platform;
+
+    /**
      * @var ?value-of<LiveActivityTokenStatus> $status
      */
     #[JsonProperty('status')]
@@ -113,6 +119,7 @@ class LiveActivityToken extends JsonSerializableType
      *   lastPushError?: ?string,
      *   lastPushOutcome?: ?string,
      *   lastSeenAt?: ?DateTime,
+     *   platform?: ?value-of<LiveActivityTokenPlatform>,
      *   status?: ?value-of<LiveActivityTokenStatus>,
      *   subscriberId?: ?string,
      *   tokenPreview?: ?string,
@@ -133,6 +140,7 @@ class LiveActivityToken extends JsonSerializableType
         $this->lastPushError = $values['lastPushError'] ?? null;
         $this->lastPushOutcome = $values['lastPushOutcome'] ?? null;
         $this->lastSeenAt = $values['lastSeenAt'] ?? null;
+        $this->platform = $values['platform'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->subscriberId = $values['subscriberId'] ?? null;
         $this->tokenPreview = $values['tokenPreview'] ?? null;

@@ -22,6 +22,12 @@ class MintIdentityWebTrackingKeysResponse extends JsonSerializableType
     public ?DateTime $expiresAt;
 
     /**
+     * @var ?string $externalId
+     */
+    #[JsonProperty('externalId')]
+    public ?string $externalId;
+
+    /**
      * @var ?string $identityToken
      */
     #[JsonProperty('identityToken')]
@@ -40,7 +46,7 @@ class MintIdentityWebTrackingKeysResponse extends JsonSerializableType
     public ?string $publicKey;
 
     /**
-     * @var ?string $subscriberId Contact the minted identity resolves to; created on first mint for a new email.
+     * @var ?string $subscriberId Contact the minted identity resolves to; created on first mint for a new user.
      */
     #[JsonProperty('subscriberId')]
     public ?string $subscriberId;
@@ -55,6 +61,7 @@ class MintIdentityWebTrackingKeysResponse extends JsonSerializableType
      * @param array{
      *   email?: ?string,
      *   expiresAt?: ?DateTime,
+     *   externalId?: ?string,
      *   identityToken?: ?string,
      *   keyId?: ?string,
      *   publicKey?: ?string,
@@ -67,6 +74,7 @@ class MintIdentityWebTrackingKeysResponse extends JsonSerializableType
     ) {
         $this->email = $values['email'] ?? null;
         $this->expiresAt = $values['expiresAt'] ?? null;
+        $this->externalId = $values['externalId'] ?? null;
         $this->identityToken = $values['identityToken'] ?? null;
         $this->keyId = $values['keyId'] ?? null;
         $this->publicKey = $values['publicKey'] ?? null;

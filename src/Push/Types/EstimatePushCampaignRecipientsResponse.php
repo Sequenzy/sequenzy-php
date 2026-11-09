@@ -26,10 +26,17 @@ class EstimatePushCampaignRecipientsResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
+     * @var ?EstimatePushCampaignRecipientsResponseTimingCoverage $timingCoverage Present when includeTimingCoverage is true.
+     */
+    #[JsonProperty('timingCoverage')]
+    public ?EstimatePushCampaignRecipientsResponseTimingCoverage $timingCoverage;
+
+    /**
      * @param array{
      *   audienceCount?: ?int,
      *   eligibleCount?: ?int,
      *   success?: ?bool,
+     *   timingCoverage?: ?EstimatePushCampaignRecipientsResponseTimingCoverage,
      * } $values
      */
     public function __construct(
@@ -38,6 +45,7 @@ class EstimatePushCampaignRecipientsResponse extends JsonSerializableType
         $this->audienceCount = $values['audienceCount'] ?? null;
         $this->eligibleCount = $values['eligibleCount'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->timingCoverage = $values['timingCoverage'] ?? null;
     }
 
     /**

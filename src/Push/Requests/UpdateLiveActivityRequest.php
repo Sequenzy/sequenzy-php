@@ -24,13 +24,19 @@ class UpdateLiveActivityRequest extends JsonSerializableType
     public ?LiveActivityAlert $alert;
 
     /**
+     * @var ?bool $broadcast true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+     */
+    #[JsonProperty('broadcast')]
+    public ?bool $broadcast;
+
+    /**
      * @var array<string, mixed> $contentState Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
      */
     #[JsonProperty('contentState'), ArrayType(['string' => 'mixed'])]
     public array $contentState;
 
     /**
-     * @var ?string $email Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+     * @var ?string $email Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
      */
     #[JsonProperty('email')]
     public ?string $email;
@@ -67,6 +73,7 @@ class UpdateLiveActivityRequest extends JsonSerializableType
      *   activityId: string,
      *   contentState: array<string, mixed>,
      *   alert?: ?LiveActivityAlert,
+     *   broadcast?: ?bool,
      *   email?: ?string,
      *   priority?: ?value-of<UpdateLiveActivityRequestPriority>,
      *   relevanceScore?: ?float,
@@ -82,6 +89,7 @@ class UpdateLiveActivityRequest extends JsonSerializableType
     ) {
         $this->activityId = $values['activityId'];
         $this->alert = $values['alert'] ?? null;
+        $this->broadcast = $values['broadcast'] ?? null;
         $this->contentState = $values['contentState'];
         $this->email = $values['email'] ?? null;
         $this->priority = $values['priority'] ?? null;

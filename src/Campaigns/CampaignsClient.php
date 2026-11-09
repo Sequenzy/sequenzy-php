@@ -511,7 +511,7 @@ class CampaignsClient
     }
 
     /**
-     * Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first.
+     * Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first, and a live in-app campaign must be stopped first. Deleting an in-app campaign also deletes the messages it delivered.
      *
      * Example:
      * ```php

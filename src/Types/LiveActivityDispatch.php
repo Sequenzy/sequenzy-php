@@ -15,6 +15,12 @@ class LiveActivityDispatch extends JsonSerializableType
     public ?string $activityId;
 
     /**
+     * @var ?int $contactCount Distinct contacts those devices belong to. 0 when nothing was sent, at most 1 for a per-contact request, and the contacts reached for a segment, list, tag or broadcast.
+     */
+    #[JsonProperty('contactCount')]
+    public ?int $contactCount;
+
+    /**
      * @var ?value-of<LiveActivityDispatchEvent> $event
      */
     #[JsonProperty('event')]
@@ -33,6 +39,12 @@ class LiveActivityDispatch extends JsonSerializableType
     public ?string $message;
 
     /**
+     * @var ?LiveActivityDispatchPlatforms $platforms tokenCount per platform. iOS tokens go through APNs and Android Live Update tokens through FCM; a platform without push credentials gets nothing.
+     */
+    #[JsonProperty('platforms')]
+    public ?LiveActivityDispatchPlatforms $platforms;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -47,9 +59,11 @@ class LiveActivityDispatch extends JsonSerializableType
     /**
      * @param array{
      *   activityId?: ?string,
+     *   contactCount?: ?int,
      *   event?: ?value-of<LiveActivityDispatchEvent>,
      *   jobIds?: ?array<string>,
      *   message?: ?string,
+     *   platforms?: ?LiveActivityDispatchPlatforms,
      *   success?: ?bool,
      *   tokenCount?: ?int,
      * } $values
@@ -58,9 +72,11 @@ class LiveActivityDispatch extends JsonSerializableType
         array $values = [],
     ) {
         $this->activityId = $values['activityId'] ?? null;
+        $this->contactCount = $values['contactCount'] ?? null;
         $this->event = $values['event'] ?? null;
         $this->jobIds = $values['jobIds'] ?? null;
         $this->message = $values['message'] ?? null;
+        $this->platforms = $values['platforms'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->tokenCount = $values['tokenCount'] ?? null;
     }

@@ -6,4 +6,5 @@ enum ListInAppMessagesRequestKind: string
 {
     case Message = "message";
     case Card = "card";
+    case Placement = "placement";
 }

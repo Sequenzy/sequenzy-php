@@ -26,6 +26,12 @@ class InAppMessage extends JsonSerializableType
     public ?array $buttons;
 
     /**
+     * @var ?string $campaignId The in-app campaign that created it; null for sequence steps.
+     */
+    #[JsonProperty('campaignId')]
+    public ?string $campaignId;
+
+    /**
      * @var ?int $clickCount
      */
     #[JsonProperty('clickCount')]
@@ -104,10 +110,16 @@ class InAppMessage extends JsonSerializableType
     public ?string $imageUrl;
 
     /**
-     * @var ?value-of<InAppMessageKind> $kind message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed.
+     * @var ?value-of<InAppMessageKind> $kind message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed. placement: shown inline in a placement slot until dismissed; returned by the placement feed, and by List In-App Messages only with status=all.
      */
     #[JsonProperty('kind')]
     public ?string $kind;
+
+    /**
+     * @var ?value-of<InAppMessageLayout> $layout Placement items only: card (image over the text, link buttons), banner (compact row with an image thumbnail and a filled button) or hero (text over the image, filled button). Null for other kinds.
+     */
+    #[JsonProperty('layout')]
+    public ?string $layout;
 
     /**
      * @var ?bool $pinned Cards only. Pinned cards sort first.
@@ -116,10 +128,22 @@ class InAppMessage extends JsonSerializableType
     public ?bool $pinned;
 
     /**
+     * @var ?string $placement Placement items only. The key of the placement the item fills.
+     */
+    #[JsonProperty('placement')]
+    public ?string $placement;
+
+    /**
      * @var ?value-of<InAppMessagePosition> $position Banners: top or bottom. Modals: bottom (a sheet rising from the bottom edge) or center. Null for full screens and cards.
      */
     #[JsonProperty('position')]
     public ?string $position;
+
+    /**
+     * @var ?value-of<InAppMessagePriority> $priority Which open item a placement shows first (high, then medium, then low; ties go to the newest). Medium for items that are not placement items.
+     */
+    #[JsonProperty('priority')]
+    public ?string $priority;
 
     /**
      * @var ?DateTime $readAt
@@ -161,6 +185,7 @@ class InAppMessage extends JsonSerializableType
      * @param array{
      *   body?: ?string,
      *   buttons?: ?array<InAppMessageButtonsItem>,
+     *   campaignId?: ?string,
      *   clickCount?: ?int,
      *   clickedAt?: ?DateTime,
      *   createdAt?: ?DateTime,
@@ -175,8 +200,11 @@ class InAppMessage extends JsonSerializableType
      *   imagePlacement?: ?value-of<InAppMessageImagePlacement>,
      *   imageUrl?: ?string,
      *   kind?: ?value-of<InAppMessageKind>,
+     *   layout?: ?value-of<InAppMessageLayout>,
      *   pinned?: ?bool,
+     *   placement?: ?string,
      *   position?: ?value-of<InAppMessagePosition>,
+     *   priority?: ?value-of<InAppMessagePriority>,
      *   readAt?: ?DateTime,
      *   sequenceId?: ?string,
      *   showCloseButton?: ?bool,
@@ -190,6 +218,7 @@ class InAppMessage extends JsonSerializableType
     ) {
         $this->body = $values['body'] ?? null;
         $this->buttons = $values['buttons'] ?? null;
+        $this->campaignId = $values['campaignId'] ?? null;
         $this->clickCount = $values['clickCount'] ?? null;
         $this->clickedAt = $values['clickedAt'] ?? null;
         $this->createdAt = $values['createdAt'] ?? null;
@@ -204,8 +233,11 @@ class InAppMessage extends JsonSerializableType
         $this->imagePlacement = $values['imagePlacement'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
         $this->kind = $values['kind'] ?? null;
+        $this->layout = $values['layout'] ?? null;
         $this->pinned = $values['pinned'] ?? null;
+        $this->placement = $values['placement'] ?? null;
         $this->position = $values['position'] ?? null;
+        $this->priority = $values['priority'] ?? null;
         $this->readAt = $values['readAt'] ?? null;
         $this->sequenceId = $values['sequenceId'] ?? null;
         $this->showCloseButton = $values['showCloseButton'] ?? null;

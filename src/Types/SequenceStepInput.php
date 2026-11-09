@@ -171,6 +171,12 @@ class SequenceStepInput extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?array<PushLocalization> $localizations Push steps only. Versions in the workspace's other languages; see PushLocalization. Use POST /push/translate to write them with AI. To edit an existing step's versions, send the whole list in nodeUpdates changes.localizations.
+     */
+    #[JsonProperty('localizations'), ArrayType([PushLocalization::class])]
+    public ?array $localizations;
+
+    /**
      * @var ?bool $lockToSubscriber Legacy top-level Stripe-only flag. Prefer discount.lockToSubscriber.
      */
     #[JsonProperty('lockToSubscriber')]
@@ -325,6 +331,7 @@ class SequenceStepInput extends JsonSerializableType
      *   ineligibleAction?: ?value-of<SequenceStepInputIneligibleAction>,
      *   isTransactional?: ?bool,
      *   label?: ?string,
+     *   localizations?: ?array<PushLocalization>,
      *   lockToSubscriber?: ?bool,
      *   maxRedemptions?: ?float,
      *   name?: ?string,
@@ -378,6 +385,7 @@ class SequenceStepInput extends JsonSerializableType
         $this->ineligibleAction = $values['ineligibleAction'] ?? null;
         $this->isTransactional = $values['isTransactional'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->localizations = $values['localizations'] ?? null;
         $this->lockToSubscriber = $values['lockToSubscriber'] ?? null;
         $this->maxRedemptions = $values['maxRedemptions'] ?? null;
         $this->name = $values['name'] ?? null;

@@ -48,7 +48,7 @@ class UpdateAbTestsRequest extends JsonSerializableType
     public ?string $name;
 
     /**
-     * @var ?int $testDurationMinutes Campaign-only total minutes from the original test start. An elapsed deadline queues selection immediately; paused campaigns stay paused.
+     * @var ?int $testDurationMinutes Campaign-only total minutes from the original test start, or from when the last test email is due when delivery is spread. An elapsed deadline queues selection immediately; paused campaigns stay paused.
      */
     #[JsonProperty('testDurationMinutes')]
     public ?int $testDurationMinutes;

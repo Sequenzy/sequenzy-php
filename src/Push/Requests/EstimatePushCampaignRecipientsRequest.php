@@ -3,12 +3,18 @@
 namespace Sequenzy\Push\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Push\Types\EstimatePushCampaignRecipientsRequestPlatformsItem;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Push\Types\EstimatePushCampaignRecipientsRequestPlatformsItem;
 use Sequenzy\Core\Types\ArrayType;
 
 class EstimatePushCampaignRecipientsRequest extends JsonSerializableType
 {
+    /**
+     * @var ?bool $includeTimingCoverage Also return timingCoverage, which counts the eligible contacts that local-time delivery and send-time optimization can personalize.
+     */
+    #[JsonProperty('includeTimingCoverage')]
+    public ?bool $includeTimingCoverage;
+
     /**
      * @var ?array<value-of<EstimatePushCampaignRecipientsRequestPlatformsItem>> $platforms
      */
@@ -24,12 +30,14 @@ class EstimatePushCampaignRecipientsRequest extends JsonSerializableType
     /**
      * @param array{
      *   targetLists: array<string, mixed>,
+     *   includeTimingCoverage?: ?bool,
      *   platforms?: ?array<value-of<EstimatePushCampaignRecipientsRequestPlatformsItem>>,
      * } $values
      */
     public function __construct(
         array $values,
     ) {
+        $this->includeTimingCoverage = $values['includeTimingCoverage'] ?? null;
         $this->platforms = $values['platforms'] ?? null;
         $this->targetLists = $values['targetLists'];
     }

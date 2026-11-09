@@ -27,6 +27,12 @@ class PushCampaignContent extends JsonSerializableType
     public ?string $imageUrl;
 
     /**
+     * @var ?array<PushLocalization> $localizations Versions in the workspace's other languages. Absent when there are none.
+     */
+    #[JsonProperty('localizations'), ArrayType([PushLocalization::class])]
+    public ?array $localizations;
+
+    /**
      * @var ?array<value-of<PushCampaignContentPlatformsItem>> $platforms Limit delivery to these platforms. Omit or pass an empty array for every platform.
      */
     #[JsonProperty('platforms'), ArrayType(['string'])]
@@ -49,6 +55,7 @@ class PushCampaignContent extends JsonSerializableType
      *   body?: ?string,
      *   iconUrl?: ?string,
      *   imageUrl?: ?string,
+     *   localizations?: ?array<PushLocalization>,
      *   platforms?: ?array<value-of<PushCampaignContentPlatformsItem>>,
      *   title?: ?string,
      *   url?: ?string,
@@ -60,6 +67,7 @@ class PushCampaignContent extends JsonSerializableType
         $this->body = $values['body'] ?? null;
         $this->iconUrl = $values['iconUrl'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
+        $this->localizations = $values['localizations'] ?? null;
         $this->platforms = $values['platforms'] ?? null;
         $this->title = $values['title'] ?? null;
         $this->url = $values['url'] ?? null;

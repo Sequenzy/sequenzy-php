@@ -21,6 +21,18 @@ class TranslateMissingLocalizationsTemplatesResponse extends JsonSerializableTyp
     public ?int $queuedEmails;
 
     /**
+     * @var ?int $queuedPushes Sequence push steps with at least one translation queued.
+     */
+    #[JsonProperty('queuedPushes')]
+    public ?int $queuedPushes;
+
+    /**
+     * @var ?int $queuedPushTranslations Push step and locale pairs queued.
+     */
+    #[JsonProperty('queuedPushTranslations')]
+    public ?int $queuedPushTranslations;
+
+    /**
      * @var ?int $queuedTranslations Email and locale pairs queued.
      */
     #[JsonProperty('queuedTranslations')]
@@ -36,6 +48,8 @@ class TranslateMissingLocalizationsTemplatesResponse extends JsonSerializableTyp
      * @param array{
      *   locales?: ?array<string>,
      *   queuedEmails?: ?int,
+     *   queuedPushes?: ?int,
+     *   queuedPushTranslations?: ?int,
      *   queuedTranslations?: ?int,
      *   success?: ?bool,
      * } $values
@@ -45,6 +59,8 @@ class TranslateMissingLocalizationsTemplatesResponse extends JsonSerializableTyp
     ) {
         $this->locales = $values['locales'] ?? null;
         $this->queuedEmails = $values['queuedEmails'] ?? null;
+        $this->queuedPushes = $values['queuedPushes'] ?? null;
+        $this->queuedPushTranslations = $values['queuedPushTranslations'] ?? null;
         $this->queuedTranslations = $values['queuedTranslations'] ?? null;
         $this->success = $values['success'] ?? null;
     }

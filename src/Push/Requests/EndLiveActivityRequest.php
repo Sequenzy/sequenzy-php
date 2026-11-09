@@ -24,6 +24,12 @@ class EndLiveActivityRequest extends JsonSerializableType
     public ?LiveActivityAlert $alert;
 
     /**
+     * @var ?bool $broadcast true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+     */
+    #[JsonProperty('broadcast')]
+    public ?bool $broadcast;
+
+    /**
      * @var array<string, mixed> $contentState Final content shown until the activity is removed. Required, as in Apple's end payloads.
      */
     #[JsonProperty('contentState'), ArrayType(['string' => 'mixed'])]
@@ -39,7 +45,7 @@ class EndLiveActivityRequest extends JsonSerializableType
     public int|string|null $dismissalDate;
 
     /**
-     * @var ?string $email Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+     * @var ?string $email Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
      */
     #[JsonProperty('email')]
     public ?string $email;
@@ -76,6 +82,7 @@ class EndLiveActivityRequest extends JsonSerializableType
      *   activityId: string,
      *   contentState: array<string, mixed>,
      *   alert?: ?LiveActivityAlert,
+     *   broadcast?: ?bool,
      *   dismissalDate?: (
      *    int
      *   |string
@@ -95,6 +102,7 @@ class EndLiveActivityRequest extends JsonSerializableType
     ) {
         $this->activityId = $values['activityId'];
         $this->alert = $values['alert'] ?? null;
+        $this->broadcast = $values['broadcast'] ?? null;
         $this->contentState = $values['contentState'];
         $this->dismissalDate = $values['dismissalDate'] ?? null;
         $this->email = $values['email'] ?? null;

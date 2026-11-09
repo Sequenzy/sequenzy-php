@@ -96,6 +96,12 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     public ?string $label;
 
     /**
+     * @var ?array<PushLocalization> $localizations Push steps only. Versions in the workspace's other languages; see PushLocalization. Use POST /push/translate to write them with AI. To edit an existing step's versions, send the whole list in nodeUpdates changes.localizations.
+     */
+    #[JsonProperty('localizations'), ArrayType([PushLocalization::class])]
+    public ?array $localizations;
+
+    /**
      * @var ?string $name Email template name for email steps.
      */
     #[JsonProperty('name')]
@@ -207,6 +213,7 @@ class SequenceBranchPathStepInput extends JsonSerializableType
      *   imageUrls?: ?array<string>,
      *   ineligibleAction?: ?value-of<SequenceBranchPathStepInputIneligibleAction>,
      *   label?: ?string,
+     *   localizations?: ?array<PushLocalization>,
      *   name?: ?string,
      *   nodeType?: ?value-of<SequenceBranchPathStepInputNodeType>,
      *   platforms?: ?array<value-of<SequenceBranchPathStepInputPlatformsItem>>,
@@ -242,6 +249,7 @@ class SequenceBranchPathStepInput extends JsonSerializableType
         $this->imageUrls = $values['imageUrls'] ?? null;
         $this->ineligibleAction = $values['ineligibleAction'] ?? null;
         $this->label = $values['label'] ?? null;
+        $this->localizations = $values['localizations'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->nodeType = $values['nodeType'] ?? null;
         $this->platforms = $values['platforms'] ?? null;

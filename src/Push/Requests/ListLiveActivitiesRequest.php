@@ -4,6 +4,7 @@ namespace Sequenzy\Push\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Push\Types\ListLiveActivitiesRequestKind;
+use Sequenzy\Push\Types\ListLiveActivitiesRequestPlatform;
 use Sequenzy\Push\Types\ListLiveActivitiesRequestStatus;
 
 class ListLiveActivitiesRequest extends JsonSerializableType
@@ -39,6 +40,11 @@ class ListLiveActivitiesRequest extends JsonSerializableType
     public ?int $limit;
 
     /**
+     * @var ?value-of<ListLiveActivitiesRequestPlatform> $platform Only iOS Live Activity tokens or Android Live Update tokens. The summary counts the same platform.
+     */
+    public ?string $platform;
+
+    /**
      * @var ?value-of<ListLiveActivitiesRequestStatus> $status
      */
     public ?string $status;
@@ -56,6 +62,7 @@ class ListLiveActivitiesRequest extends JsonSerializableType
      *   email?: ?string,
      *   kind?: ?value-of<ListLiveActivitiesRequestKind>,
      *   limit?: ?int,
+     *   platform?: ?value-of<ListLiveActivitiesRequestPlatform>,
      *   status?: ?value-of<ListLiveActivitiesRequestStatus>,
      *   subscriberId?: ?string,
      * } $values
@@ -69,6 +76,7 @@ class ListLiveActivitiesRequest extends JsonSerializableType
         $this->email = $values['email'] ?? null;
         $this->kind = $values['kind'] ?? null;
         $this->limit = $values['limit'] ?? null;
+        $this->platform = $values['platform'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->subscriberId = $values['subscriberId'] ?? null;
     }
