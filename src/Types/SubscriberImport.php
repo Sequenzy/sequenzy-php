@@ -89,6 +89,12 @@ class SubscriberImport extends JsonSerializableType
     public ?string $id;
 
     /**
+     * @var ?SubscriberImportListQuality $listQuality
+     */
+    #[JsonProperty('listQuality')]
+    public ?SubscriberImportListQuality $listQuality;
+
+    /**
      * @var ?int $processedCount
      */
     #[JsonProperty('processedCount')]
@@ -157,6 +163,7 @@ class SubscriberImport extends JsonSerializableType
      *   failedReasons?: ?array<string, int>,
      *   fileName?: ?string,
      *   id?: ?string,
+     *   listQuality?: ?SubscriberImportListQuality,
      *   processedCount?: ?int,
      *   skippedCount?: ?int,
      *   skippedReasons?: ?array<string, int>,
@@ -184,6 +191,7 @@ class SubscriberImport extends JsonSerializableType
         $this->failedReasons = $values['failedReasons'] ?? null;
         $this->fileName = $values['fileName'] ?? null;
         $this->id = $values['id'] ?? null;
+        $this->listQuality = $values['listQuality'] ?? null;
         $this->processedCount = $values['processedCount'] ?? null;
         $this->skippedCount = $values['skippedCount'] ?? null;
         $this->skippedReasons = $values['skippedReasons'] ?? null;

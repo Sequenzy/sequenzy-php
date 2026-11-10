@@ -10,6 +10,8 @@ enum FilterLeafOperator: string
     case IsNotEmpty = "is_not_empty";
     case Contains = "contains";
     case NotContains = "not_contains";
+    case StartsWith = "starts_with";
+    case NotStartsWith = "not_starts_with";
     case LessThan = "less_than";
     case MoreThan = "more_than";
     case IsTemporaryBounce = "is_temporary_bounce";

@@ -6,6 +6,7 @@ enum FilterLeafField: string
 {
     case Status = "status";
     case Phone = "phone";
+    case PhoneCountry = "phoneCountry";
     case SmsStatus = "smsStatus";
     case Tag = "tag";
     case Email = "email";
