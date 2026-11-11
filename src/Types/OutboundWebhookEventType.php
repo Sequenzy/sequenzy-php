@@ -30,4 +30,5 @@ enum OutboundWebhookEventType: string
     case SequenceFinished = "sequence.finished";
     case SequenceFailed = "sequence.failed";
     case PollAnswered = "poll.answered";
+    case PollCommented = "poll.commented";
 }

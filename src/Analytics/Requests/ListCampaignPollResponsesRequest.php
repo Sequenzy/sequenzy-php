@@ -12,6 +12,11 @@ class ListCampaignPollResponsesRequest extends JsonSerializableType
     public ?string $blockId;
 
     /**
+     * @var ?bool $hasComment Pass `true` to list only respondents who left a comment, newest comment first.
+     */
+    public ?bool $hasComment;
+
+    /**
      * @var ?int $limit Responses per page (max 500)
      */
     public ?int $limit;
@@ -24,6 +29,7 @@ class ListCampaignPollResponsesRequest extends JsonSerializableType
     /**
      * @param array{
      *   blockId?: ?string,
+     *   hasComment?: ?bool,
      *   limit?: ?int,
      *   page?: ?int,
      * } $values
@@ -32,6 +38,7 @@ class ListCampaignPollResponsesRequest extends JsonSerializableType
         array $values = [],
     ) {
         $this->blockId = $values['blockId'] ?? null;
+        $this->hasComment = $values['hasComment'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->page = $values['page'] ?? null;
     }

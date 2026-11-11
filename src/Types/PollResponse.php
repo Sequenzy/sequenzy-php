@@ -38,6 +38,24 @@ class PollResponse extends JsonSerializableType
     public ?string $blockId;
 
     /**
+     * @var ?string $comment Latest comment the respondent left on the poll's hosted confirmation page, or null when they did not comment. Requires the poll's comment box (`commentEnabled`).
+     */
+    #[JsonProperty('comment')]
+    public ?string $comment;
+
+    /**
+     * @var ?string $commentAnswer The answer the comment was written under. It can differ from `answers` when the respondent changed their answer after commenting. Null without a comment.
+     */
+    #[JsonProperty('commentAnswer')]
+    public ?string $commentAnswer;
+
+    /**
+     * @var ?DateTime $commentedAt When the comment was left. Null without a comment.
+     */
+    #[JsonProperty('commentedAt'), Date(Date::TYPE_DATETIME)]
+    public ?DateTime $commentedAt;
+
+    /**
      * @var ?string $email Null when the subscriber has since been deleted.
      */
     #[JsonProperty('email')]
@@ -97,6 +115,9 @@ class PollResponse extends JsonSerializableType
      *   answers?: ?array<string>,
      *   attributeKey?: ?string,
      *   blockId?: ?string,
+     *   comment?: ?string,
+     *   commentAnswer?: ?string,
+     *   commentedAt?: ?DateTime,
      *   email?: ?string,
      *   externalId?: ?string,
      *   firstName?: ?string,
@@ -115,6 +136,9 @@ class PollResponse extends JsonSerializableType
         $this->answers = $values['answers'] ?? null;
         $this->attributeKey = $values['attributeKey'] ?? null;
         $this->blockId = $values['blockId'] ?? null;
+        $this->comment = $values['comment'] ?? null;
+        $this->commentAnswer = $values['commentAnswer'] ?? null;
+        $this->commentedAt = $values['commentedAt'] ?? null;
         $this->email = $values['email'] ?? null;
         $this->externalId = $values['externalId'] ?? null;
         $this->firstName = $values['firstName'] ?? null;

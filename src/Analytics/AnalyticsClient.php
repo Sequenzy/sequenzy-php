@@ -1084,7 +1084,7 @@ class AnalyticsClient
     }
 
     /**
-     * Returns one row per respondent per Poll or NPS block in a campaign, newest answer first, with the answer, its stored value, the subscriber attribute the answer was saved to, and the response time. Only each subscriber's latest answer per block is returned, so counts match the `polls` summaries from the campaign metrics endpoint. Multi-select answers list every selected option in `answers` and `values`. For a sequence email step, pass the step's automation node ID as `campaignId`. Also available at `GET /campaigns/{campaignId}/poll-responses`.
+     * Returns one row per respondent per Poll or NPS block in a campaign, newest answer first, with the answer, its stored value, the subscriber attribute the answer was saved to, and the response time. Only each subscriber's latest answer per block is returned, so counts match the `polls` summaries from the campaign metrics endpoint. Multi-select answers list every selected option in `answers` and `values`. Each row also carries the respondent's latest comment from the poll's confirmation page; pass `hasComment=true` to list only respondents who commented, newest comment first. For a sequence email step, pass the step's automation node ID as `campaignId`. Also available at `GET /campaigns/{campaignId}/poll-responses`.
      *
      * Example:
      * ```php
@@ -1114,6 +1114,9 @@ class AnalyticsClient
         $query = [];
         if ($request->blockId != null) {
             $query['blockId'] = $request->blockId;
+        }
+        if ($request->hasComment != null) {
+            $query['hasComment'] = $request->hasComment;
         }
         if ($request->limit != null) {
             $query['limit'] = $request->limit;
@@ -1182,6 +1185,9 @@ class AnalyticsClient
         $query = [];
         if ($request->blockId != null) {
             $query['blockId'] = $request->blockId;
+        }
+        if ($request->hasComment != null) {
+            $query['hasComment'] = $request->hasComment;
         }
         if ($request->limit != null) {
             $query['limit'] = $request->limit;

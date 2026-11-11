@@ -4370,7 +4370,7 @@ $client->analytics->listCampaignEvents(
 <dl>
 <dd>
 
-Returns one row per respondent per Poll or NPS block in a campaign, newest answer first, with the answer, its stored value, the subscriber attribute the answer was saved to, and the response time. Only each subscriber's latest answer per block is returned, so counts match the `polls` summaries from the campaign metrics endpoint. Multi-select answers list every selected option in `answers` and `values`. For a sequence email step, pass the step's automation node ID as `campaignId`. Also available at `GET /campaigns/{campaignId}/poll-responses`.
+Returns one row per respondent per Poll or NPS block in a campaign, newest answer first, with the answer, its stored value, the subscriber attribute the answer was saved to, and the response time. Only each subscriber's latest answer per block is returned, so counts match the `polls` summaries from the campaign metrics endpoint. Multi-select answers list every selected option in `answers` and `values`. Each row also carries the respondent's latest comment from the poll's confirmation page; pass `hasComment=true` to list only respondents who commented, newest comment first. For a sequence email step, pass the step's automation node ID as `campaignId`. Also available at `GET /campaigns/{campaignId}/poll-responses`.
 </dd>
 </dl>
 </dd>
@@ -4412,6 +4412,14 @@ $client->analytics->listCampaignPollResponses(
 <dd>
 
 **$blockId:** `?string` — Restrict results to one poll block. Block IDs come from the `polls` array of the campaign metrics endpoint.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$hasComment:** `?bool` — Pass `true` to list only respondents who left a comment, newest comment first.
     
 </dd>
 </dl>
@@ -4493,6 +4501,14 @@ $client->analytics->listCampaignPollResponsesLegacy(
 <dd>
 
 **$blockId:** `?string` — Restrict results to one poll block.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$hasComment:** `?bool` — Pass `true` to list only respondents who left a comment, newest comment first.
     
 </dd>
 </dl>
