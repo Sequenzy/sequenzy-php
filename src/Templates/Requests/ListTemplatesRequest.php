@@ -27,11 +27,17 @@ class ListTemplatesRequest extends JsonSerializableType
     public ?int $offset;
 
     /**
+     * @var ?int $page Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
+     */
+    public ?int $page;
+
+    /**
      * @param array{
      *   isTemplate?: ?bool,
      *   label?: ?string,
      *   limit?: ?int,
      *   offset?: ?int,
+     *   page?: ?int,
      * } $values
      */
     public function __construct(
@@ -41,5 +47,6 @@ class ListTemplatesRequest extends JsonSerializableType
         $this->label = $values['label'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->offset = $values['offset'] ?? null;
+        $this->page = $values['page'] ?? null;
     }
 }

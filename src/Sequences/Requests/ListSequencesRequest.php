@@ -28,6 +28,11 @@ class ListSequencesRequest extends JsonSerializableType
     public ?int $offset;
 
     /**
+     * @var ?int $page Optional 1-based page number, used only with limit and without offset. page alone does not enable pagination, so every sequence is still returned. A malformed page is ignored.
+     */
+    public ?int $page;
+
+    /**
      * @var ?string $search Case-insensitive name or description search.
      */
     public ?string $search;
@@ -43,6 +48,7 @@ class ListSequencesRequest extends JsonSerializableType
      *   labels?: ?string,
      *   limit?: ?int,
      *   offset?: ?int,
+     *   page?: ?int,
      *   search?: ?string,
      *   status?: ?value-of<SequenceStatus>,
      * } $values
@@ -54,6 +60,7 @@ class ListSequencesRequest extends JsonSerializableType
         $this->labels = $values['labels'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->offset = $values['offset'] ?? null;
+        $this->page = $values['page'] ?? null;
         $this->search = $values['search'] ?? null;
         $this->status = $values['status'] ?? null;
     }

@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 class RemoveTagsResponseSubscriber extends JsonSerializableType
 {
     /**
-     * @var ?bool $created Whether the subscriber was newly created
+     * @var ?bool $created Always false. This endpoint never creates a subscriber.
      */
     #[JsonProperty('created')]
     public ?bool $created;

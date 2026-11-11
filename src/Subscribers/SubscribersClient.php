@@ -106,7 +106,7 @@ class SubscribersClient
     }
 
     /**
-     * Adds multiple tags to a subscriber. Creates the subscriber if they don't exist. Creates tag definitions if they don't exist. When the workspace has double opt-in enabled, a brand-new subscriber is created pending confirmation, the confirmation email is queued, and tag automations wait at their trigger until the subscriber confirms.
+     * One contact, several tags. Adds several tags to a single subscriber identified by email or externalId. Creates the subscriber if they don't exist. To add tags to many existing subscribers without creating contacts, use POST /subscribers/bulk/tags/add. Creates tag definitions if they don't exist. When the workspace has double opt-in enabled, a brand-new subscriber is created pending confirmation, the confirmation email is queued, and tag automations wait at their trigger until the subscriber confirms.
      *
      * Example:
      * ```php
@@ -168,7 +168,7 @@ class SubscribersClient
     }
 
     /**
-     * Adds one or more tags to up to 500 existing subscribers identified by email, externalId, or subscriberId. Built for reconciling historical or derived tags, so identifiers that do not match an existing subscriber are returned in notFound rather than creating contacts. Tag automations are skipped unless triggerAutomations is true, which requires the automations:trigger scope.
+     * Many contacts, one or more tags. Adds one or more tags to up to 500 existing subscribers identified by email, externalId, or subscriberId. Built for reconciling historical or derived tags, so identifiers that do not match an existing subscriber are returned in notFound rather than creating contacts. Tag automations are skipped unless triggerAutomations is true, which requires the automations:trigger scope.
      *
      * Example:
      * ```php
@@ -232,7 +232,7 @@ class SubscribersClient
     }
 
     /**
-     * Removes one or more tags from up to 500 existing subscribers identified by email, externalId, or subscriberId. Identifiers that do not match an existing subscriber are returned in notFound.
+     * Many contacts, one or more tags. Removes one or more tags from up to 500 existing subscribers identified by email, externalId, or subscriberId. Identifiers that do not match an existing subscriber are returned in notFound.
      *
      * Example:
      * ```php

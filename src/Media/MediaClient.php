@@ -15,6 +15,8 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Media\Requests\CreateEmailImageUploadUrlRequest;
 use Sequenzy\Media\Types\CreateEmailImageUploadUrlResponse;
+use Sequenzy\Media\Requests\CropEmailImageRequest;
+use Sequenzy\Media\Types\CropEmailImageResponse;
 use Sequenzy\Media\Requests\UploadEmailImageBytesRequest;
 use Sequenzy\Media\Types\UploadEmailImageBytesResponse;
 
@@ -163,6 +165,64 @@ class MediaClient
                     return null;
                 }
                 return CreateEmailImageUploadUrlResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Crops a media-library image, or a Pexels or Unsplash photo, into a new hosted image in the company's media library. The crop is baked into the file, so every email client shows exactly the selected area. Pass either crop or aspectRatio. The original is kept. Requests are idempotent: the same source and pixel area return the same asset. Requires emails:write.
+     *
+     * Example:
+     * ```php
+     * $client->media->cropEmailImage(
+     *     new CropEmailImageRequest([
+     *         'sourceUrl' => 'sourceUrl',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param CropEmailImageRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?CropEmailImageResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function cropEmailImage(CropEmailImageRequest $request, ?array $options = null): ?CropEmailImageResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "media/crop",
+                    method: HttpMethod::POST,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return CropEmailImageResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

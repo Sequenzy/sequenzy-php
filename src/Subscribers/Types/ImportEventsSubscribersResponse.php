@@ -5,6 +5,7 @@ namespace Sequenzy\Subscribers\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\SequenceTriggersSkippedReason;
 
 class ImportEventsSubscribersResponse extends JsonSerializableType
 {
@@ -39,6 +40,18 @@ class ImportEventsSubscribersResponse extends JsonSerializableType
     public ?int $recorded;
 
     /**
+     * @var ?bool $sequenceTriggersRan
+     */
+    #[JsonProperty('sequenceTriggersRan')]
+    public ?bool $sequenceTriggersRan;
+
+    /**
+     * @var ?value-of<SequenceTriggersSkippedReason> $sequenceTriggersSkippedReason
+     */
+    #[JsonProperty('sequenceTriggersSkippedReason')]
+    public ?string $sequenceTriggersSkippedReason;
+
+    /**
      * @var ?int $sideEffectFailed Receipt rows whose downstream side effects or historical automation shielding failed. This is orthogonal to receipt accounting and may accompany either recorded or duplicate rows during recovery.
      */
     #[JsonProperty('sideEffectFailed')]
@@ -69,17 +82,26 @@ class ImportEventsSubscribersResponse extends JsonSerializableType
     public ?int $total;
 
     /**
+     * @var ?array<string> $warnings
+     */
+    #[JsonProperty('warnings'), ArrayType(['string'])]
+    public ?array $warnings;
+
+    /**
      * @param array{
      *   duplicates?: ?int,
      *   error?: ?string,
      *   failed?: ?int,
      *   failures?: ?array<ImportEventsSubscribersResponseFailuresItem>,
      *   recorded?: ?int,
+     *   sequenceTriggersRan?: ?bool,
+     *   sequenceTriggersSkippedReason?: ?value-of<SequenceTriggersSkippedReason>,
      *   sideEffectFailed?: ?int,
      *   sideEffectFailures?: ?array<ImportEventsSubscribersResponseSideEffectFailuresItem>,
      *   subscribers?: ?int,
      *   success?: ?bool,
      *   total?: ?int,
+     *   warnings?: ?array<string>,
      * } $values
      */
     public function __construct(
@@ -90,11 +112,14 @@ class ImportEventsSubscribersResponse extends JsonSerializableType
         $this->failed = $values['failed'] ?? null;
         $this->failures = $values['failures'] ?? null;
         $this->recorded = $values['recorded'] ?? null;
+        $this->sequenceTriggersRan = $values['sequenceTriggersRan'] ?? null;
+        $this->sequenceTriggersSkippedReason = $values['sequenceTriggersSkippedReason'] ?? null;
         $this->sideEffectFailed = $values['sideEffectFailed'] ?? null;
         $this->sideEffectFailures = $values['sideEffectFailures'] ?? null;
         $this->subscribers = $values['subscribers'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->total = $values['total'] ?? null;
+        $this->warnings = $values['warnings'] ?? null;
     }
 
     /**

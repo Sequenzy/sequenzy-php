@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class RemoveTagsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $email Required when creating a new subscriber. Optional when externalId identifies an existing subscriber.
+     * @var ?string $email Subscriber email. Provide email, externalId, or both.
      */
     #[JsonProperty('email')]
     public ?string $email;
@@ -20,13 +20,13 @@ class RemoveTagsRequest extends JsonSerializableType
     public ?string $externalId;
 
     /**
-     * @var ?string $firstName First name (used if creating new subscriber)
+     * @var ?string $firstName Updates the matched subscriber's first name. Ignored when no subscriber matches.
      */
     #[JsonProperty('firstName')]
     public ?string $firstName;
 
     /**
-     * @var ?string $lastName Last name (used if creating new subscriber)
+     * @var ?string $lastName Updates the matched subscriber's last name. Ignored when no subscriber matches.
      */
     #[JsonProperty('lastName')]
     public ?string $lastName;

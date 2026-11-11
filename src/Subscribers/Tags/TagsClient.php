@@ -111,7 +111,7 @@ class TagsClient
     }
 
     /**
-     * Removes a tag from a subscriber. Creates the subscriber if they don't exist (without the tag).
+     * Removes one tag from one subscriber identified by email or externalId. Never creates a subscriber. When no subscriber matches, the request succeeds with subscriberFound false, tag.removed false, an empty subscriber.id and subscriber.created false. firstName and lastName update a matched subscriber and are ignored otherwise. To remove tags from many existing subscribers, use POST /subscribers/bulk/tags/remove.
      *
      * Example:
      * ```php

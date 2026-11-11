@@ -5,6 +5,7 @@ namespace Sequenzy\Subscribers\Events\Types;
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\SequenceTriggersSkippedReason;
 
 class TriggerEventsResponse extends JsonSerializableType
 {
@@ -63,6 +64,18 @@ class TriggerEventsResponse extends JsonSerializableType
     public ?TriggerEventsResponseOptIn $optIn;
 
     /**
+     * @var ?bool $sequenceTriggersRan
+     */
+    #[JsonProperty('sequenceTriggersRan')]
+    public ?bool $sequenceTriggersRan;
+
+    /**
+     * @var ?value-of<SequenceTriggersSkippedReason> $sequenceTriggersSkippedReason
+     */
+    #[JsonProperty('sequenceTriggersSkippedReason')]
+    public ?string $sequenceTriggersSkippedReason;
+
+    /**
      * @var ?array<string> $sideEffectFailures Present when the event was recorded but one or more side-effect stages (e.g. apply-sync-rules, trigger-event-automations) failed. Retry-sensitive callers should treat these as partial failures.
      */
     #[JsonProperty('sideEffectFailures'), ArrayType(['string'])]
@@ -81,6 +94,12 @@ class TriggerEventsResponse extends JsonSerializableType
     public ?bool $success;
 
     /**
+     * @var ?array<string> $warnings
+     */
+    #[JsonProperty('warnings'), ArrayType(['string'])]
+    public ?array $warnings;
+
+    /**
      * @param array{
      *   account?: ?TriggerEventsResponseAccount,
      *   accountIgnored?: ?TriggerEventsResponseAccountIgnored,
@@ -91,9 +110,12 @@ class TriggerEventsResponse extends JsonSerializableType
      *   historical?: ?bool,
      *   inserted?: ?int,
      *   optIn?: ?TriggerEventsResponseOptIn,
+     *   sequenceTriggersRan?: ?bool,
+     *   sequenceTriggersSkippedReason?: ?value-of<SequenceTriggersSkippedReason>,
      *   sideEffectFailures?: ?array<string>,
      *   subscriber?: ?TriggerEventsResponseSubscriber,
      *   success?: ?bool,
+     *   warnings?: ?array<string>,
      * } $values
      */
     public function __construct(
@@ -108,9 +130,12 @@ class TriggerEventsResponse extends JsonSerializableType
         $this->historical = $values['historical'] ?? null;
         $this->inserted = $values['inserted'] ?? null;
         $this->optIn = $values['optIn'] ?? null;
+        $this->sequenceTriggersRan = $values['sequenceTriggersRan'] ?? null;
+        $this->sequenceTriggersSkippedReason = $values['sequenceTriggersSkippedReason'] ?? null;
         $this->sideEffectFailures = $values['sideEffectFailures'] ?? null;
         $this->subscriber = $values['subscriber'] ?? null;
         $this->success = $values['success'] ?? null;
+        $this->warnings = $values['warnings'] ?? null;
     }
 
     /**

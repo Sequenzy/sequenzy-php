@@ -503,6 +503,9 @@ class TemplatesClient
         if ($request->offset != null) {
             $query['offset'] = $request->offset;
         }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
         try {
             $response = $this->client->sendRequest(
                 new JsonApiRequest(

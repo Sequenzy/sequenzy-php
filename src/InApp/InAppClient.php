@@ -367,7 +367,7 @@ class InAppClient
     }
 
     /**
-     * Counts the contacts who match an audience now. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
+     * Counts the contacts who match an audience now, and how many of them are known to have your app connected. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
      *
      * Example:
      * ```php

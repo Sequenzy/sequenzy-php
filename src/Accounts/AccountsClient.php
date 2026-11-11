@@ -253,7 +253,7 @@ class AccountsClient
     }
 
     /**
-     * Deletes the account and its memberships. Contacts are kept; their `account.*` attributes are cleared.
+     * Deletes one customer organization (a B2B account your contacts belong to, shown under Subscribers > Organizations) and its memberships. Contacts are kept; their `organization.*` attributes (and the older `account.*` alias) are cleared or replaced by another organization they belong to. Never deletes your Sequenzy account, workspace, login or API keys.
      *
      * Example:
      * ```php

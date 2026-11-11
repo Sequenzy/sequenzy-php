@@ -4,8 +4,9 @@ namespace Sequenzy\Push\Requests;
 
 use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
-use Sequenzy\Push\Types\SendTestPushRequestPlatformsItem;
+use Sequenzy\Types\PushLocalization;
 use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Push\Types\SendTestPushRequestPlatformsItem;
 
 class SendTestPushRequest extends JsonSerializableType
 {
@@ -40,6 +41,12 @@ class SendTestPushRequest extends JsonSerializableType
     public ?string $imageUrl;
 
     /**
+     * @var ?array<PushLocalization> $localizations Accepted so a campaign body can be sent as is, but not used. A test always sends the title and body given here.
+     */
+    #[JsonProperty('localizations'), ArrayType([PushLocalization::class])]
+    public ?array $localizations;
+
+    /**
      * @var ?array<value-of<SendTestPushRequestPlatformsItem>> $platforms Limit delivery to these platforms. Omit or pass an empty array for every platform.
      */
     #[JsonProperty('platforms'), ArrayType(['string'])]
@@ -70,6 +77,7 @@ class SendTestPushRequest extends JsonSerializableType
      *   email?: ?string,
      *   iconUrl?: ?string,
      *   imageUrl?: ?string,
+     *   localizations?: ?array<PushLocalization>,
      *   platforms?: ?array<value-of<SendTestPushRequestPlatformsItem>>,
      *   subscriberId?: ?string,
      *   title?: ?string,
@@ -84,6 +92,7 @@ class SendTestPushRequest extends JsonSerializableType
         $this->email = $values['email'] ?? null;
         $this->iconUrl = $values['iconUrl'] ?? null;
         $this->imageUrl = $values['imageUrl'] ?? null;
+        $this->localizations = $values['localizations'] ?? null;
         $this->platforms = $values['platforms'] ?? null;
         $this->subscriberId = $values['subscriberId'] ?? null;
         $this->title = $values['title'] ?? null;

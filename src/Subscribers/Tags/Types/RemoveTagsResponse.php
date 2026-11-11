@@ -14,6 +14,12 @@ class RemoveTagsResponse extends JsonSerializableType
     public ?RemoveTagsResponseSubscriber $subscriber;
 
     /**
+     * @var ?bool $subscriberFound False when no subscriber matched the email or externalId. Nothing was created or changed, subscriber.id is empty and subscriber.tags is empty.
+     */
+    #[JsonProperty('subscriberFound')]
+    public ?bool $subscriberFound;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -28,6 +34,7 @@ class RemoveTagsResponse extends JsonSerializableType
     /**
      * @param array{
      *   subscriber?: ?RemoveTagsResponseSubscriber,
+     *   subscriberFound?: ?bool,
      *   success?: ?bool,
      *   tag?: ?RemoveTagsResponseTag,
      * } $values
@@ -36,6 +43,7 @@ class RemoveTagsResponse extends JsonSerializableType
         array $values = [],
     ) {
         $this->subscriber = $values['subscriber'] ?? null;
+        $this->subscriberFound = $values['subscriberFound'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->tag = $values['tag'] ?? null;
     }

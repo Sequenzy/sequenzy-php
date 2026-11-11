@@ -27,9 +27,10 @@ use Sequenzy\Sequences\Requests\CreateFromTemplateSequencesRequest;
 use Sequenzy\Sequences\Types\CreateFromTemplateSequencesResponse;
 use Sequenzy\Sequences\Requests\CreateGoalSequencesRequest;
 use Sequenzy\Sequences\Types\CreateGoalSequencesResponse;
-use Sequenzy\Types\SequenceActionResponse;
+use Sequenzy\Sequences\Types\DeleteSequencesResponse;
 use Sequenzy\Sequences\Types\DeleteGoalSequencesResponse;
 use Sequenzy\Types\SequenceRecurringEnrollmentResponse;
+use Sequenzy\Types\SequenceActionResponse;
 use Sequenzy\Sequences\Types\DiscardEmailVariationSequencesResponse;
 use Sequenzy\Sequences\Requests\DuplicateSequencesRequest;
 use Sequenzy\Sequences\Types\DuplicateSequencesResponse;
@@ -658,7 +659,7 @@ class SequencesClient
     }
 
     /**
-     * Deletes a sequence and its automation nodes.
+     * Deletes a sequence and its steps. Contacts still in it are removed and get none of its remaining steps; `contactsInSequence` says how many.
      *
      * Example:
      * ```php
@@ -676,11 +677,11 @@ class SequencesClient
      *   queryParameters?: array<string, mixed>,
      *   bodyProperties?: array<string, mixed>,
      * } $options
-     * @return ?SequenceActionResponse
+     * @return ?DeleteSequencesResponse
      * @throws SequenzyException
      * @throws SequenzyApiException
      */
-    public function delete(string $sequenceId, ?array $options = null): ?SequenceActionResponse
+    public function delete(string $sequenceId, ?array $options = null): ?DeleteSequencesResponse
     {
         $options = array_merge($this->options, $options ?? []);
         try {
@@ -698,7 +699,7 @@ class SequencesClient
                 if (empty($json)) {
                     return null;
                 }
-                return SequenceActionResponse::fromJson($json);
+                return DeleteSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -2039,6 +2040,9 @@ class SequencesClient
         }
         if ($request->offset != null) {
             $query['offset'] = $request->offset;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
         }
         if ($request->search != null) {
             $query['search'] = $request->search;

@@ -32,10 +32,22 @@ class ListTemplatesResponsePagination extends JsonSerializableType
     public ?int $offset;
 
     /**
+     * @var ?int $page 1-based page that starts at offset.
+     */
+    #[JsonProperty('page')]
+    public ?int $page;
+
+    /**
      * @var ?int $total Every matching email body.
      */
     #[JsonProperty('total')]
     public ?int $total;
+
+    /**
+     * @var ?int $totalPages Pages at this limit.
+     */
+    #[JsonProperty('totalPages')]
+    public ?int $totalPages;
 
     /**
      * @param array{
@@ -43,7 +55,9 @@ class ListTemplatesResponsePagination extends JsonSerializableType
      *   hasMore?: ?bool,
      *   limit?: ?int,
      *   offset?: ?int,
+     *   page?: ?int,
      *   total?: ?int,
+     *   totalPages?: ?int,
      * } $values
      */
     public function __construct(
@@ -53,7 +67,9 @@ class ListTemplatesResponsePagination extends JsonSerializableType
         $this->hasMore = $values['hasMore'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->offset = $values['offset'] ?? null;
+        $this->page = $values['page'] ?? null;
         $this->total = $values['total'] ?? null;
+        $this->totalPages = $values['totalPages'] ?? null;
     }
 
     /**

@@ -23,6 +23,11 @@ class ListCampaignsRequest extends JsonSerializableType
     public ?int $offset;
 
     /**
+     * @var ?int $page Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
+     */
+    public ?int $page;
+
+    /**
      * @var ?value-of<ListCampaignsRequestStatus> $status Optional campaign status filter.
      */
     public ?string $status;
@@ -32,6 +37,7 @@ class ListCampaignsRequest extends JsonSerializableType
      *   label?: ?string,
      *   limit?: ?int,
      *   offset?: ?int,
+     *   page?: ?int,
      *   status?: ?value-of<ListCampaignsRequestStatus>,
      * } $values
      */
@@ -41,6 +47,7 @@ class ListCampaignsRequest extends JsonSerializableType
         $this->label = $values['label'] ?? null;
         $this->limit = $values['limit'] ?? null;
         $this->offset = $values['offset'] ?? null;
+        $this->page = $values['page'] ?? null;
         $this->status = $values['status'] ?? null;
     }
 }

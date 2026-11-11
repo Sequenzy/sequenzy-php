@@ -115,7 +115,7 @@ class SegmentsClient
     }
 
     /**
-     * Deletes a saved segment. Subscribers matched by the segment are not affected.
+     * Deletes a saved segment. Subscribers matched by the segment are not affected. Deleting is not blocked when the segment is in use; the response lists what read it, and those now treat every contact as not in the segment. Draft campaigns and conditions inside email content are not checked. If the usage check fails, the segment is still deleted and the four affected fields are omitted, which means usage is unknown.
      *
      * Example:
      * ```php

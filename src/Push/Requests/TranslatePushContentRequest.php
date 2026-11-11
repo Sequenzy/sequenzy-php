@@ -6,6 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\PushLocalization;
+use Sequenzy\Push\Types\TranslatePushContentRequestPlatformsItem;
 
 class TranslatePushContentRequest extends JsonSerializableType
 {
@@ -34,6 +35,12 @@ class TranslatePushContentRequest extends JsonSerializableType
     public ?bool $overwrite;
 
     /**
+     * @var ?array<value-of<TranslatePushContentRequestPlatformsItem>> $platforms Accepted so a campaign body can be sent as is, but not used. Translation does not depend on the platform.
+     */
+    #[JsonProperty('platforms'), ArrayType(['string'])]
+    public ?array $platforms;
+
+    /**
      * @var ?string $title Main-language title. A title or a body is required.
      */
     #[JsonProperty('title')]
@@ -45,6 +52,7 @@ class TranslatePushContentRequest extends JsonSerializableType
      *   locales?: ?array<string>,
      *   localizations?: ?array<PushLocalization>,
      *   overwrite?: ?bool,
+     *   platforms?: ?array<value-of<TranslatePushContentRequestPlatformsItem>>,
      *   title?: ?string,
      * } $values
      */
@@ -55,6 +63,7 @@ class TranslatePushContentRequest extends JsonSerializableType
         $this->locales = $values['locales'] ?? null;
         $this->localizations = $values['localizations'] ?? null;
         $this->overwrite = $values['overwrite'] ?? null;
+        $this->platforms = $values['platforms'] ?? null;
         $this->title = $values['title'] ?? null;
     }
 }
