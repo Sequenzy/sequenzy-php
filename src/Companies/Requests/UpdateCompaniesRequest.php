@@ -10,6 +10,7 @@ use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailLengthPreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailPreset;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailStylePreference;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestEmailTheme;
+use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterMode;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterStyle;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestFooterTheme;
 use Sequenzy\Companies\Types\UpdateCompaniesRequestReplyTrackingDomainMode;
@@ -97,6 +98,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?string $fontFamily;
 
     /**
+     * @var ?value-of<UpdateCompaniesRequestFooterMode> $footerMode Footer type for new AI-designed emails, in whichever `footerStyle`: `branded` (the default) or `personal`, which opens the footer with the founder's sign-off (photo, name and title, from `founderPhotoUrl` and `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers. Other values return 400, as does a `footerTheme.mode` that differs in the same request.
+     */
+    #[JsonProperty('footerMode')]
+    public ?string $footerMode;
+
+    /**
      * @var ?value-of<UpdateCompaniesRequestFooterStyle> $footerStyle Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
      */
     #[JsonProperty('footerStyle')]
@@ -119,6 +126,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('founderName')]
     public ?string $founderName;
+
+    /**
+     * @var ?string $founderPhotoUrl Square founder photo (public http(s) image URL) personal footers sign off with. New personal footers copy it; existing footers keep their own photo. Send null or `""` to remove it. Other URLs return 400.
+     */
+    #[JsonProperty('founderPhotoUrl')]
+    public ?string $founderPhotoUrl;
 
     /**
      * @var ?string $fromEmail Account-wide default From address. The domain must be configured and verified.
@@ -267,10 +280,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   emailStylePreference?: ?value-of<UpdateCompaniesRequestEmailStylePreference>,
      *   emailTheme?: ?UpdateCompaniesRequestEmailTheme,
      *   fontFamily?: ?string,
+     *   footerMode?: ?value-of<UpdateCompaniesRequestFooterMode>,
      *   footerStyle?: ?value-of<UpdateCompaniesRequestFooterStyle>,
      *   footerTheme?: ?UpdateCompaniesRequestFooterTheme,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
+     *   founderPhotoUrl?: ?string,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   language?: ?string,
@@ -311,10 +326,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
+        $this->footerMode = $values['footerMode'] ?? null;
         $this->footerStyle = $values['footerStyle'] ?? null;
         $this->footerTheme = $values['footerTheme'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
+        $this->founderPhotoUrl = $values['founderPhotoUrl'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->language = $values['language'] ?? null;

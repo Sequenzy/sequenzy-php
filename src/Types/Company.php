@@ -150,6 +150,12 @@ class Company extends JsonSerializableType
     public ?string $fontFamily;
 
     /**
+     * @var ?value-of<CompanyFooterMode> $footerMode Footer type for new AI-designed emails, combined with `footerStyle`. `branded` (the default) is signed by the company; `personal` opens the footer with the founder's sign-off: photo, name and title (`founderPhotoUrl`, `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers.
+     */
+    #[JsonProperty('footerMode')]
+    public ?string $footerMode;
+
+    /**
      * @var ?value-of<CompanyFooterStyle> $footerStyle Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
      */
     #[JsonProperty('footerStyle')]
@@ -172,6 +178,12 @@ class Company extends JsonSerializableType
      */
     #[JsonProperty('founderName')]
     public ?string $founderName;
+
+    /**
+     * @var ?string $founderPhotoUrl Square founder photo personal footers (`footerMode: personal`) sign off with. Found on your website during onboarding when it shows one, or set via PATCH. null when there is none.
+     */
+    #[JsonProperty('founderPhotoUrl')]
+    public ?string $founderPhotoUrl;
 
     /**
      * @var ?string $id
@@ -324,10 +336,12 @@ class Company extends JsonSerializableType
      *   emailStylePreference?: ?value-of<CompanyEmailStylePreference>,
      *   emailTheme?: ?array<string, mixed>,
      *   fontFamily?: ?string,
+     *   footerMode?: ?value-of<CompanyFooterMode>,
      *   footerStyle?: ?value-of<CompanyFooterStyle>,
      *   footerTheme?: ?CompanyFooterTheme,
      *   forwardReplies?: ?bool,
      *   founderName?: ?string,
+     *   founderPhotoUrl?: ?string,
      *   id?: ?string,
      *   language?: ?string,
      *   logoUrl?: ?string,
@@ -377,10 +391,12 @@ class Company extends JsonSerializableType
         $this->emailStylePreference = $values['emailStylePreference'] ?? null;
         $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
+        $this->footerMode = $values['footerMode'] ?? null;
         $this->footerStyle = $values['footerStyle'] ?? null;
         $this->footerTheme = $values['footerTheme'] ?? null;
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->founderName = $values['founderName'] ?? null;
+        $this->founderPhotoUrl = $values['founderPhotoUrl'] ?? null;
         $this->id = $values['id'] ?? null;
         $this->language = $values['language'] ?? null;
         $this->logoUrl = $values['logoUrl'] ?? null;

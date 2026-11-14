@@ -41,6 +41,12 @@ class UpdateCompaniesRequestFooterTheme extends JsonSerializableType
     public ?string $metaTextColor;
 
     /**
+     * @var ?value-of<UpdateCompaniesRequestFooterThemeMode> $mode Same setting as `footerMode`; `""` or `null` resets it to `branded`.
+     */
+    #[JsonProperty('mode')]
+    public ?string $mode;
+
+    /**
      * @var ?string $privacyPolicyText Privacy link label. Empty or null uses the localized default.
      */
     #[JsonProperty('privacyPolicyText')]
@@ -77,6 +83,7 @@ class UpdateCompaniesRequestFooterTheme extends JsonSerializableType
      *   companyTextColor?: ?string,
      *   linkColor?: ?string,
      *   metaTextColor?: ?string,
+     *   mode?: ?value-of<UpdateCompaniesRequestFooterThemeMode>,
      *   privacyPolicyText?: ?string,
      *   reasonText?: ?string,
      *   showCompanyLine?: ?bool,
@@ -92,6 +99,7 @@ class UpdateCompaniesRequestFooterTheme extends JsonSerializableType
         $this->companyTextColor = $values['companyTextColor'] ?? null;
         $this->linkColor = $values['linkColor'] ?? null;
         $this->metaTextColor = $values['metaTextColor'] ?? null;
+        $this->mode = $values['mode'] ?? null;
         $this->privacyPolicyText = $values['privacyPolicyText'] ?? null;
         $this->reasonText = $values['reasonText'] ?? null;
         $this->showCompanyLine = $values['showCompanyLine'] ?? null;

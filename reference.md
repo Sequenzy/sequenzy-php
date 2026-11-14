@@ -8529,6 +8529,14 @@ $client->companies->update(
 <dl>
 <dd>
 
+**$footerMode:** `?string` — Footer type for new AI-designed emails, in whichever `footerStyle`: `branded` (the default) or `personal`, which opens the footer with the founder's sign-off (photo, name and title, from `founderPhotoUrl` and `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers. Other values return 400, as does a `footerTheme.mode` that differs in the same request.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$footerStyle:** `?string` — Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
     
 </dd>
@@ -8554,6 +8562,14 @@ $client->companies->update(
 <dd>
 
 **$founderName:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$founderPhotoUrl:** `?string` — Square founder photo (public http(s) image URL) personal footers sign off with. New personal footers copy it; existing footers keep their own photo. Send null or `""` to remove it. Other URLs return 400.
     
 </dd>
 </dl>
@@ -8730,6 +8746,73 @@ $client->companies->update(
 <dd>
 
 **$websiteType:** `?string` — Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;companies-&gt;uploadFounderPhoto($companyId, $request) -> ?UploadFounderPhotoCompaniesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Uploads the founder photo personal footers sign off with. The image is cropped to a 192px square JPEG around its most interesting area (the face, on a portrait), hosted by Sequenzy and saved as the company's founderPhotoUrl, replacing any photo already set. New personal footers copy it; existing footers keep their own photo. To remove the photo, update the company with founderPhotoUrl null. Requires the company_profile:manage scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->companies->uploadFounderPhoto(
+    'companyId',
+    new UploadFounderPhotoCompaniesRequest([
+        'imageBase64' => 'imageBase64',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$companyId:** `string` — Company ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$imageBase64:** `string` — The photo as raw base64 bytes or a base64 data URL. PNG, JPEG, GIF or WebP, up to 10MB, at least 96px on each side.
     
 </dd>
 </dl>

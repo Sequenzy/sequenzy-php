@@ -17,6 +17,8 @@ use Sequenzy\Companies\Types\GetCompaniesResponse;
 use Sequenzy\Companies\Types\ListCompaniesResponse;
 use Sequenzy\Companies\Requests\UpdateCompaniesRequest;
 use Sequenzy\Companies\Types\UpdateCompaniesResponse;
+use Sequenzy\Companies\Requests\UploadFounderPhotoCompaniesRequest;
+use Sequenzy\Companies\Types\UploadFounderPhotoCompaniesResponse;
 
 class CompaniesClient
 {
@@ -262,6 +264,66 @@ class CompaniesClient
                     return null;
                 }
                 return UpdateCompaniesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Uploads the founder photo personal footers sign off with. The image is cropped to a 192px square JPEG around its most interesting area (the face, on a portrait), hosted by Sequenzy and saved as the company's founderPhotoUrl, replacing any photo already set. New personal footers copy it; existing footers keep their own photo. To remove the photo, update the company with founderPhotoUrl null. Requires the company_profile:manage scope.
+     *
+     * Example:
+     * ```php
+     * $client->companies->uploadFounderPhoto(
+     *     'companyId',
+     *     new UploadFounderPhotoCompaniesRequest([
+     *         'imageBase64' => 'imageBase64',
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $companyId Company ID
+     * @param UploadFounderPhotoCompaniesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?UploadFounderPhotoCompaniesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function uploadFounderPhoto(string $companyId, UploadFounderPhotoCompaniesRequest $request, ?array $options = null): ?UploadFounderPhotoCompaniesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "companies/{$companyId}/founder-photo",
+                    method: HttpMethod::PUT,
+                    body: $request,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return UploadFounderPhotoCompaniesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

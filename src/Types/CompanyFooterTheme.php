@@ -41,6 +41,12 @@ class CompanyFooterTheme extends JsonSerializableType
     public ?string $metaTextColor;
 
     /**
+     * @var ?value-of<CompanyFooterThemeMode> $mode
+     */
+    #[JsonProperty('mode')]
+    public ?string $mode;
+
+    /**
      * @var ?string $privacyPolicyText Empty when the localized default is used.
      */
     #[JsonProperty('privacyPolicyText')]
@@ -77,6 +83,7 @@ class CompanyFooterTheme extends JsonSerializableType
      *   companyTextColor?: ?string,
      *   linkColor?: ?string,
      *   metaTextColor?: ?string,
+     *   mode?: ?value-of<CompanyFooterThemeMode>,
      *   privacyPolicyText?: ?string,
      *   reasonText?: ?string,
      *   showCompanyLine?: ?bool,
@@ -92,6 +99,7 @@ class CompanyFooterTheme extends JsonSerializableType
         $this->companyTextColor = $values['companyTextColor'] ?? null;
         $this->linkColor = $values['linkColor'] ?? null;
         $this->metaTextColor = $values['metaTextColor'] ?? null;
+        $this->mode = $values['mode'] ?? null;
         $this->privacyPolicyText = $values['privacyPolicyText'] ?? null;
         $this->reasonText = $values['reasonText'] ?? null;
         $this->showCompanyLine = $values['showCompanyLine'] ?? null;
