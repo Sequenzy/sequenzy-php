@@ -14,7 +14,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     public ?bool $acceptsNewEnrollments;
 
     /**
-     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
      */
     #[JsonProperty('activeSubscribersOnly')]
     public ?bool $activeSubscribersOnly;
@@ -98,6 +98,12 @@ class SequenceCreateResponseSequence extends JsonSerializableType
     public ?SequenceSendingWindow $sendingWindow;
 
     /**
+     * @var ?bool $sendToNotSubscribed Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+     */
+    #[JsonProperty('sendToNotSubscribed')]
+    public ?bool $sendToNotSubscribed;
+
+    /**
      * @var ?value-of<SequenceStatus> $status
      */
     #[JsonProperty('status')]
@@ -138,6 +144,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
      *   nodeCount?: ?float,
      *   processesExistingEnrollments?: ?bool,
      *   sendingWindow?: ?SequenceSendingWindow,
+     *   sendToNotSubscribed?: ?bool,
      *   status?: ?value-of<SequenceStatus>,
      *   stopCondition?: ?SequenceStopCondition,
      *   subscriberUpdateCount?: ?float,
@@ -162,6 +169,7 @@ class SequenceCreateResponseSequence extends JsonSerializableType
         $this->nodeCount = $values['nodeCount'] ?? null;
         $this->processesExistingEnrollments = $values['processesExistingEnrollments'] ?? null;
         $this->sendingWindow = $values['sendingWindow'] ?? null;
+        $this->sendToNotSubscribed = $values['sendToNotSubscribed'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->stopCondition = $values['stopCondition'] ?? null;
         $this->subscriberUpdateCount = $values['subscriberUpdateCount'] ?? null;

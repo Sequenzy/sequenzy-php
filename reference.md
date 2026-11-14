@@ -23527,7 +23527,7 @@ $client->sequences->create(
 <dl>
 <dd>
 
-**$activeSubscribersOnly:** `?bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+**$activeSubscribersOnly:** `?bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed, bounced and not subscribed contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them. Marketing emails are skipped at send time for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is on. When `true`, none of them enter, including not subscribed contacts when `sendToNotSubscribed` is on. Pending double opt-in contacts still wait for confirmation.
     
 </dd>
 </dl>
@@ -23776,6 +23776,14 @@ $client->sequences->create(
 <dd>
 
 **$sendingWindow:** `?SequenceSendingWindow` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sendToNotSubscribed:** `?bool` — Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed` (never opted in, never opted out). Omit it or pass `null` to use the default for the trigger: `true` when the sequence starts on the `ecommerce.checkout_started` event, `false` otherwise. Unsubscribed and bounced contacts never receive marketing email. With `activeSubscribersOnly: true`, not subscribed contacts do not enter the sequence at all.
     
 </dd>
 </dl>
@@ -27414,7 +27422,7 @@ $client->sequences->update(
 <dl>
 <dd>
 
-**$activeSubscribersOnly:** `?bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+**$activeSubscribersOnly:** `?bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed, bounced and not subscribed contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them. Marketing emails are skipped at send time for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is on. When `true`, none of them enter, including not subscribed contacts when `sendToNotSubscribed` is on. Pending double opt-in contacts still wait for confirmation.
     
 </dd>
 </dl>
@@ -27703,6 +27711,14 @@ $client->sequences->update(
 <dd>
 
 **$sendingWindow:** `?SequenceSendingWindow` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$sendToNotSubscribed:** `?bool` — Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed` (never opted in, never opted out). Omit it to keep the current choice. Pass `null` to go back to the default for the trigger: `true` when the sequence starts on the `ecommerce.checkout_started` event, `false` otherwise. Unsubscribed and bounced contacts never receive marketing email. With `activeSubscribersOnly: true`, not subscribed contacts do not enter the sequence at all.
     
 </dd>
 </dl>
@@ -28835,7 +28851,7 @@ Consent handling for this request:
 <dl>
 <dd>
 
-**$status:** `?string` — Initial subscriber status.
+**$status:** `?string` — Initial subscriber status. Use `not_subscribed` for a contact who never opted in to marketing email and never opted out.
     
 </dd>
 </dl>
@@ -30363,7 +30379,7 @@ $client->subscribers->update(
 <dl>
 <dd>
 
-**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
@@ -30517,7 +30533,7 @@ $client->subscribers->updateByExternalId(
 <dl>
 <dd>
 
-**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
@@ -30670,7 +30686,7 @@ $client->subscribers->updateByExternalIdPath(
 <dl>
 <dd>
 
-**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+**$status:** `?string` — Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
@@ -36018,7 +36034,7 @@ $client->websites->list();
 <dl>
 <dd>
 
-Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles, sequences and tracking stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. The domain also gets a new 2048-bit DKIM key; you still publish the same four CNAMEs. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
+Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles and sequences stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. A workspace without a tracking domain gets links.<domain> (links2 to links5 when that name is in use), as when adding a new domain; publish its CNAME from website.dnsUpgrade.trackingRecord too, which also lists an existing tracking domain in this DNS zone while it is not verified (null otherwise). It is optional and never holds up the switch: until it is verified, links use the shared tracking domains. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. The domain also gets a new 2048-bit DKIM key; the key change adds no records of its own. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
 </dd>
 </dl>
 </dd>

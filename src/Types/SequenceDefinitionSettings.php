@@ -57,6 +57,12 @@ class SequenceDefinitionSettings extends JsonSerializableType
     public ?array $sendingWindow;
 
     /**
+     * @var ?bool $sendToNotSubscribed Whether marketing emails also go to contacts whose status is `not_subscribed`. `null` uses the default for the trigger (`true` for `ecommerce.checkout_started`, `false` otherwise). Omit it to keep the stored value.
+     */
+    #[JsonProperty('sendToNotSubscribed')]
+    public ?bool $sendToNotSubscribed;
+
+    /**
      * @var ?SequenceDefinitionSettingsStopCondition $stopCondition
      */
     #[JsonProperty('stopCondition')]
@@ -78,6 +84,7 @@ class SequenceDefinitionSettings extends JsonSerializableType
      *   replyProfileId?: ?string,
      *   senderProfileId?: ?string,
      *   sendingWindow?: ?array<string, mixed>,
+     *   sendToNotSubscribed?: ?bool,
      *   stopCondition?: ?SequenceDefinitionSettingsStopCondition,
      *   userCancellable?: ?bool,
      * } $values
@@ -93,6 +100,7 @@ class SequenceDefinitionSettings extends JsonSerializableType
         $this->replyProfileId = $values['replyProfileId'] ?? null;
         $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->sendingWindow = $values['sendingWindow'] ?? null;
+        $this->sendToNotSubscribed = $values['sendToNotSubscribed'] ?? null;
         $this->stopCondition = $values['stopCondition'] ?? null;
         $this->userCancellable = $values['userCancellable'] ?? null;
     }

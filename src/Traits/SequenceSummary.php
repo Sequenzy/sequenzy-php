@@ -47,6 +47,7 @@ use Sequenzy\Core\Types\Date;
  * @property ?string $replyToName
  * @property ?string $senderProfileId
  * @property ?SequenceSendingWindow $sendingWindow
+ * @property ?bool $sendToNotSubscribed
  * @property ?value-of<SequenceStatus> $status
  * @property ?string $trigger
  * @property ?array<string, mixed> $triggerConfig
@@ -62,7 +63,7 @@ trait SequenceSummary
     public ?bool $acceptsNewEnrollments;
 
     /**
-     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+     * @var ?bool $activeSubscribersOnly Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
      */
     #[JsonProperty('activeSubscribersOnly')]
     public ?bool $activeSubscribersOnly;
@@ -240,6 +241,12 @@ trait SequenceSummary
      */
     #[JsonProperty('sendingWindow')]
     public ?SequenceSendingWindow $sendingWindow;
+
+    /**
+     * @var ?bool $sendToNotSubscribed Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+     */
+    #[JsonProperty('sendToNotSubscribed')]
+    public ?bool $sendToNotSubscribed;
 
     /**
      * @var ?value-of<SequenceStatus> $status

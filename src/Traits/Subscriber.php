@@ -96,7 +96,7 @@ trait Subscriber
     public ?string $smsStatus;
 
     /**
-     * @var ?value-of<SubscriberStatus> $status
+     * @var ?value-of<SubscriberStatus> $status Email status. `not_subscribed` means the contact never opted in to marketing email and never opted out, for example a shopper who started a checkout. Campaigns skip them, transactional email still reaches them, and a sequence sends them marketing email only when its `sendToNotSubscribed` setting is on.
      */
     #[JsonProperty('status')]
     public ?string $status;

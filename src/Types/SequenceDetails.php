@@ -111,6 +111,7 @@ class SequenceDetails extends JsonSerializableType
      *   replyToName?: ?string,
      *   senderProfileId?: ?string,
      *   sendingWindow?: ?SequenceSendingWindow,
+     *   sendToNotSubscribed?: ?bool,
      *   status?: ?value-of<SequenceStatus>,
      *   trigger?: ?string,
      *   triggerConfig?: ?array<string, mixed>,
@@ -163,6 +164,7 @@ class SequenceDetails extends JsonSerializableType
         $this->replyToName = $values['replyToName'] ?? null;
         $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->sendingWindow = $values['sendingWindow'] ?? null;
+        $this->sendToNotSubscribed = $values['sendToNotSubscribed'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->trigger = $values['trigger'] ?? null;
         $this->triggerConfig = $values['triggerConfig'] ?? null;

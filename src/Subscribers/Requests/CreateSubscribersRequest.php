@@ -102,7 +102,7 @@ class CreateSubscribersRequest extends JsonSerializableType
     public ?bool $smsConsent;
 
     /**
-     * @var ?value-of<CreateSubscribersRequestStatus> $status Initial subscriber status.
+     * @var ?value-of<CreateSubscribersRequestStatus> $status Initial subscriber status. Use `not_subscribed` for a contact who never opted in to marketing email and never opted out.
      */
     #[JsonProperty('status')]
     public ?string $status;

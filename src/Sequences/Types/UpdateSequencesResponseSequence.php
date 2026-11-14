@@ -134,6 +134,12 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
     public ?SequenceSendingWindow $sendingWindow;
 
     /**
+     * @var ?bool $sendToNotSubscribed Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+     */
+    #[JsonProperty('sendToNotSubscribed')]
+    public ?bool $sendToNotSubscribed;
+
+    /**
      * @var ?value-of<SequenceStatus> $status
      */
     #[JsonProperty('status')]
@@ -185,6 +191,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
      *   name?: ?string,
      *   replacedEdgeCount?: ?float,
      *   sendingWindow?: ?SequenceSendingWindow,
+     *   sendToNotSubscribed?: ?bool,
      *   status?: ?value-of<SequenceStatus>,
      *   stopCondition?: ?SequenceStopCondition,
      *   updatedEmailCount?: ?float,
@@ -215,6 +222,7 @@ class UpdateSequencesResponseSequence extends JsonSerializableType
         $this->name = $values['name'] ?? null;
         $this->replacedEdgeCount = $values['replacedEdgeCount'] ?? null;
         $this->sendingWindow = $values['sendingWindow'] ?? null;
+        $this->sendToNotSubscribed = $values['sendToNotSubscribed'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->stopCondition = $values['stopCondition'] ?? null;
         $this->updatedEmailCount = $values['updatedEmailCount'] ?? null;

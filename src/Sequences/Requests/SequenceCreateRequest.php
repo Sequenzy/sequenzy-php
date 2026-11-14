@@ -19,7 +19,7 @@ use Sequenzy\Types\SequenceTriggerType;
 class SequenceCreateRequest extends JsonSerializableType
 {
     /**
-     * @var ?bool $activeSubscribersOnly Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+     * @var ?bool $activeSubscribersOnly Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed, bounced and not subscribed contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them. Marketing emails are skipped at send time for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is on. When `true`, none of them enter, including not subscribed contacts when `sendToNotSubscribed` is on. Pending double opt-in contacts still wait for confirmation.
      */
     #[JsonProperty('activeSubscribersOnly')]
     public ?bool $activeSubscribersOnly;
@@ -211,6 +211,12 @@ class SequenceCreateRequest extends JsonSerializableType
     public ?SequenceSendingWindow $sendingWindow;
 
     /**
+     * @var ?bool $sendToNotSubscribed Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed` (never opted in, never opted out). Omit it or pass `null` to use the default for the trigger: `true` when the sequence starts on the `ecommerce.checkout_started` event, `false` otherwise. Unsubscribed and bounced contacts never receive marketing email. With `activeSubscribersOnly: true`, not subscribed contacts do not enter the sequence at all.
+     */
+    #[JsonProperty('sendToNotSubscribed')]
+    public ?bool $sendToNotSubscribed;
+
+    /**
      * @var ?array<SequenceStepInput> $steps Explicit email and action steps. Provide either steps or goal, or omit both for a blank dashboard-compatible draft.
      */
     #[JsonProperty('steps'), ArrayType([SequenceStepInput::class])]
@@ -292,6 +298,7 @@ class SequenceCreateRequest extends JsonSerializableType
      *   segmentId?: ?string,
      *   senderProfileId?: ?string,
      *   sendingWindow?: ?SequenceSendingWindow,
+     *   sendToNotSubscribed?: ?bool,
      *   steps?: ?array<SequenceStepInput>,
      *   stopCondition?: ?SequenceStopCondition,
      *   stopOnSegmentExit?: ?bool,
@@ -337,6 +344,7 @@ class SequenceCreateRequest extends JsonSerializableType
         $this->segmentId = $values['segmentId'] ?? null;
         $this->senderProfileId = $values['senderProfileId'] ?? null;
         $this->sendingWindow = $values['sendingWindow'] ?? null;
+        $this->sendToNotSubscribed = $values['sendToNotSubscribed'] ?? null;
         $this->steps = $values['steps'] ?? null;
         $this->stopCondition = $values['stopCondition'] ?? null;
         $this->stopOnSegmentExit = $values['stopOnSegmentExit'] ?? null;

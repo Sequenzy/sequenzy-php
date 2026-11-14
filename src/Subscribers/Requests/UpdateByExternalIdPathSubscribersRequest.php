@@ -65,7 +65,7 @@ class UpdateByExternalIdPathSubscribersRequest extends JsonSerializableType
     public ?bool $smsConsent;
 
     /**
-     * @var ?value-of<UpdateByExternalIdPathSubscribersRequestStatus> $status Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+     * @var ?value-of<UpdateByExternalIdPathSubscribersRequestStatus> $status Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
      */
     #[JsonProperty('status')]
     public ?string $status;

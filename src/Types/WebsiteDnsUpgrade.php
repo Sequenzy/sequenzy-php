@@ -56,6 +56,12 @@ class WebsiteDnsUpgrade extends JsonSerializableType
     public string $status;
 
     /**
+     * @var ?WebsiteDnsUpgradeTrackingRecord $trackingRecord The company tracking CNAME to publish with records while in_progress. A workspace without a tracking domain gets links.<domain> when the upgrade starts; an existing one in this domain's DNS zone is listed while it is not verified, and kept (as verified) when it verified during the upgrade. Optional; it never holds up the switch, and until it is verified links use the shared tracking domains. Null otherwise.
+     */
+    #[JsonProperty('trackingRecord')]
+    public ?WebsiteDnsUpgradeTrackingRecord $trackingRecord;
+
+    /**
      * @param array{
      *   status: value-of<WebsiteDnsUpgradeStatus>,
      *   completedAt?: ?DateTime,
@@ -64,6 +70,7 @@ class WebsiteDnsUpgrade extends JsonSerializableType
      *   records?: ?array<WebsiteDnsUpgradeRecordsItem>,
      *   replacedRecords?: ?array<WebsiteDnsUpgradeReplacedRecordsItem>,
      *   startedAt?: ?DateTime,
+     *   trackingRecord?: ?WebsiteDnsUpgradeTrackingRecord,
      * } $values
      */
     public function __construct(
@@ -76,6 +83,7 @@ class WebsiteDnsUpgrade extends JsonSerializableType
         $this->replacedRecords = $values['replacedRecords'] ?? null;
         $this->startedAt = $values['startedAt'] ?? null;
         $this->status = $values['status'];
+        $this->trackingRecord = $values['trackingRecord'] ?? null;
     }
 
     /**
