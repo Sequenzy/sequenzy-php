@@ -108,7 +108,7 @@ class TeamClient
     }
 
     /**
-     * Adds an existing Sequenzy user to the team directly, or emails an invitation to a new user. Requires owner or admin access.
+     * Adds an existing Sequenzy user with a confirmed email to the team directly, or emails an invitation to anyone else. Requires owner or admin access.
      *
      * Example:
      * ```php
