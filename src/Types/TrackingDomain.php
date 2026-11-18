@@ -13,7 +13,7 @@ use Sequenzy\Core\Types\Date;
 class TrackingDomain extends JsonSerializableType
 {
     /**
-     * @var bool $active True while verified. New emails use this domain only while active.
+     * @var bool $active True when the custom domain is verified and used for new emails. A shared routing override leaves the verification status intact and sets active to false.
      */
     #[JsonProperty('active')]
     public bool $active;
