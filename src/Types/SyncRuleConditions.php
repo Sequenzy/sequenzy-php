@@ -12,7 +12,7 @@ use Sequenzy\Core\Types\ArrayType;
 class SyncRuleConditions extends JsonSerializableType
 {
     /**
-     * @var ?SyncRuleConditionsPurchasedProduct $purchasedProduct For commerce events with product context - rule only applies when a product on the event matches every specified selector (values within a selector are OR'd).
+     * @var ?SyncRuleConditionsPurchasedProduct $purchasedProduct Rule only applies when a product on the event matches every specified selector (values within a selector are OR'd). `names` and `productIds` match the product a payment or commerce event carries; the other selectors match commerce catalog products.
      */
     #[JsonProperty('purchasedProduct')]
     public ?SyncRuleConditionsPurchasedProduct $purchasedProduct;

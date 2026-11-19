@@ -429,7 +429,7 @@ class SequencesClient
     }
 
     /**
-     * Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
+     * Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Email steps written as blocks start on your brand, with the saved AI style's theme and font (or your company font), a logo when the format is branded, and your default footer when the blocks have none. Steps sent as HTML are stored as sent. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
      *
      * Example:
      * ```php

@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * For commerce events with product context - rule only applies when a product on the event matches every specified selector (values within a selector are OR'd).
+ * Rule only applies when a product on the event matches every specified selector (values within a selector are OR'd). `names` and `productIds` match the product a payment or commerce event carries; the other selectors match commerce catalog products.
  */
 class SyncRuleConditionsPurchasedProduct extends JsonSerializableType
 {
@@ -16,6 +16,18 @@ class SyncRuleConditionsPurchasedProduct extends JsonSerializableType
      */
     #[JsonProperty('collectionIds'), ArrayType(['string'])]
     public ?array $collectionIds;
+
+    /**
+     * @var ?array<string> $names Product names, compared without regard to case.
+     */
+    #[JsonProperty('names'), ArrayType(['string'])]
+    public ?array $names;
+
+    /**
+     * @var ?array<string> $productIds Product IDs as the provider issues them.
+     */
+    #[JsonProperty('productIds'), ArrayType(['string'])]
+    public ?array $productIds;
 
     /**
      * @var ?array<string> $productTypes
@@ -38,6 +50,8 @@ class SyncRuleConditionsPurchasedProduct extends JsonSerializableType
     /**
      * @param array{
      *   collectionIds?: ?array<string>,
+     *   names?: ?array<string>,
+     *   productIds?: ?array<string>,
      *   productTypes?: ?array<string>,
      *   tags?: ?array<string>,
      *   vendors?: ?array<string>,
@@ -47,6 +61,8 @@ class SyncRuleConditionsPurchasedProduct extends JsonSerializableType
         array $values = [],
     ) {
         $this->collectionIds = $values['collectionIds'] ?? null;
+        $this->names = $values['names'] ?? null;
+        $this->productIds = $values['productIds'] ?? null;
         $this->productTypes = $values['productTypes'] ?? null;
         $this->tags = $values['tags'] ?? null;
         $this->vendors = $values['vendors'] ?? null;

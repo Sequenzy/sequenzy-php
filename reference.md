@@ -5418,7 +5418,7 @@ $client->campaigns->check(
 <dl>
 <dd>
 
-Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
+Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. A draft built from your own blocks, or an empty one, starts on your brand like a prompt-generated email does - the saved AI style's theme and font (or your company font when no style is saved), plus a logo when the format is branded and your default footer when the blocks have none. Blocks you send are never removed or restyled, and an explicit `emailPreset` decides the logo and footer instead. HTML content and imported `sent` campaigns are stored as sent. To match one specific email, pass its `emailId` as `templateId`; it copies that email's blocks and theme. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -23493,7 +23493,7 @@ $client->sequences->configureInboundWebhook(
 <dl>
 <dd>
 
-Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
+Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Email steps written as blocks start on your brand, with the saved AI style's theme and font (or your company font), a logo when the format is branded, and your default footer when the blocks have none. Steps sent as HTML are stored as sent. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -31651,6 +31651,73 @@ $client->tags->list();
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;tags-&gt;merge($tagId, $request) -> ?MergeTagsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Merges the tag in the path into the target tag. Every subscriber carrying the merged tag gets the target tag instead, then the merged tag is deleted. Starts no sequences. Refused while a sequence, segment, campaign, email, sync rule, goal, integration, form, popup or landing page still uses the merged tag. System tags cannot be merged. The API key needs tags:write and tags:delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->tags->merge(
+    'tagId',
+    new MergeTagsRequest([
+        'targetTagId' => 'tag_def456',
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$tagId:** `string` — ID of the tag to merge away. It is deleted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$targetTagId:** `string` — ID of the tag to keep.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;tags-&gt;update($tagId, $request) -> ?UpdateTagsResponse</code></summary>
 <dl>
 <dd>
@@ -31663,7 +31730,7 @@ $client->tags->list();
 <dl>
 <dd>
 
-Updates a tag definition's color. System tags cannot be updated.
+Renames a tag definition, changes its color, or both. A rename changes the tag on every subscriber that carries it, starts no sequences, and is refused while a sequence, segment, campaign, email, sync rule, goal or integration still uses the tag. System tags cannot be updated.
 </dd>
 </dl>
 </dd>
@@ -31680,9 +31747,7 @@ Updates a tag definition's color. System tags cannot be updated.
 ```php
 $client->tags->update(
     'tagId',
-    new UpdateTagsRequest([
-        'color' => 'green',
-    ]),
+    new UpdateTagsRequest([]),
 );
 ```
 </dd>
@@ -31706,7 +31771,15 @@ $client->tags->update(
 <dl>
 <dd>
 
-**$color:** `string` — Tag color. One of: gray, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose.
+**$color:** `?string` — Tag color. One of: gray, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose. Required unless name is sent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$name:** `?string` — New tag name. Normalized to lowercase with spaces turned into hyphens. Up to 255 characters. Required unless color is sent.
     
 </dd>
 </dl>
@@ -31969,7 +32042,7 @@ $client->templates->check(
 <dl>
 <dd>
 
-Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
+Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. A template built from your own blocks starts on your brand: the saved AI style's theme and font (or your company font when no style is saved), plus a logo when the format is branded. It gets no footer, since templates may be sent as transactional email; blocks you send are never removed or restyled. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
 </dd>
 </dl>
 </dd>

@@ -43,6 +43,12 @@ class TemplateDetail extends JsonSerializableType
     public ?array $emailLocalizationConfig;
 
     /**
+     * @var ?array<string, mixed> $emailTheme The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+     */
+    #[JsonProperty('emailTheme'), ArrayType(['string' => 'mixed'])]
+    public ?array $emailTheme;
+
+    /**
      * @var ?string $fontFamily
      */
     #[JsonProperty('fontFamily')]
@@ -73,6 +79,7 @@ class TemplateDetail extends JsonSerializableType
      *   blocks?: ?array<EmailBlock>,
      *   companyId?: ?string,
      *   emailLocalizationConfig?: ?array<string, mixed>,
+     *   emailTheme?: ?array<string, mixed>,
      *   fontFamily?: ?string,
      *   shareUrl?: ?string,
      * } $values
@@ -94,6 +101,7 @@ class TemplateDetail extends JsonSerializableType
         $this->blocks = $values['blocks'] ?? null;
         $this->companyId = $values['companyId'] ?? null;
         $this->emailLocalizationConfig = $values['emailLocalizationConfig'] ?? null;
+        $this->emailTheme = $values['emailTheme'] ?? null;
         $this->fontFamily = $values['fontFamily'] ?? null;
         $this->shareUrl = $values['shareUrl'] ?? null;
     }

@@ -134,7 +134,7 @@ class TemplatesClient
     }
 
     /**
-     * Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
+     * Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. A template built from your own blocks starts on your brand: the saved AI style's theme and font (or your company font when no style is saved), plus a logo when the format is branded. It gets no footer, since templates may be sent as transactional email; blocks you send are never removed or restyled. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
      *
      * Example:
      * ```php

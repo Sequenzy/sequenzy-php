@@ -70,6 +70,18 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
     public ?string $emailPreset;
 
     /**
+     * @var ?array<string, mixed> $emailTheme The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+     */
+    #[JsonProperty('emailTheme'), ArrayType(['string' => 'mixed'])]
+    public ?array $emailTheme;
+
+    /**
+     * @var ?string $fontFamily The email's body font stack. Null uses your company font.
+     */
+    #[JsonProperty('fontFamily')]
+    public ?string $fontFamily;
+
+    /**
      * @var ?string $fromEmail
      */
     #[JsonProperty('fromEmail')]
@@ -242,6 +254,8 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
      *   createdAt?: ?DateTime,
      *   emailId?: ?string,
      *   emailPreset?: ?value-of<EmailPreset>,
+     *   emailTheme?: ?array<string, mixed>,
+     *   fontFamily?: ?string,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
      *   hasAudience?: ?bool,
@@ -283,6 +297,8 @@ class ResendToNonOpenersCampaignsResponseCampaign extends JsonSerializableType
         $this->createdAt = $values['createdAt'] ?? null;
         $this->emailId = $values['emailId'] ?? null;
         $this->emailPreset = $values['emailPreset'] ?? null;
+        $this->emailTheme = $values['emailTheme'] ?? null;
+        $this->fontFamily = $values['fontFamily'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
         $this->hasAudience = $values['hasAudience'] ?? null;

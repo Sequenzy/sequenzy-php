@@ -9,6 +9,18 @@ use Sequenzy\Types\TagDefinition;
 class UpdateTagsResponse extends JsonSerializableType
 {
     /**
+     * @var ?int $contactsUpdated Subscribers whose tag was renamed. Present only when name was sent.
+     */
+    #[JsonProperty('contactsUpdated')]
+    public ?int $contactsUpdated;
+
+    /**
+     * @var ?value-of<UpdateTagsResponseStatus> $status Present only when name was sent.
+     */
+    #[JsonProperty('status')]
+    public ?string $status;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -22,6 +34,8 @@ class UpdateTagsResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   contactsUpdated?: ?int,
+     *   status?: ?value-of<UpdateTagsResponseStatus>,
      *   success?: ?bool,
      *   tag?: ?TagDefinition,
      * } $values
@@ -29,6 +43,8 @@ class UpdateTagsResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->contactsUpdated = $values['contactsUpdated'] ?? null;
+        $this->status = $values['status'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->tag = $values['tag'] ?? null;
     }

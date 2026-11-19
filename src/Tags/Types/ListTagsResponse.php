@@ -10,6 +10,12 @@ use Sequenzy\Core\Types\ArrayType;
 class ListTagsResponse extends JsonSerializableType
 {
     /**
+     * @var ?ListTagsResponseChangeInProgress $changeInProgress Present only while a rename or merge of a tag on more than 20,000 subscribers is still moving them. Renames, merges and deletes are refused until it is gone.
+     */
+    #[JsonProperty('changeInProgress')]
+    public ?ListTagsResponseChangeInProgress $changeInProgress;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -23,6 +29,7 @@ class ListTagsResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   changeInProgress?: ?ListTagsResponseChangeInProgress,
      *   success?: ?bool,
      *   tags?: ?array<TagDefinition>,
      * } $values
@@ -30,6 +37,7 @@ class ListTagsResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->changeInProgress = $values['changeInProgress'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->tags = $values['tags'] ?? null;
     }
