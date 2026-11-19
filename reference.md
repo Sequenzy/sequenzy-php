@@ -33428,7 +33428,7 @@ $client->trackingSettings->update(
 <dl>
 <dd>
 
-**$doubleOptInRedirectUrl:** `?string` — Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
+**$doubleOptInRedirectUrl:** `?string` — Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. The query string may contain the merge tags `{{EMAIL}}`, `{{FIRST_NAME}}`, `{{LAST_NAME}}`, `{{SUBSCRIBER_ID}}`, `{{LISTS}}` and `{{TAGS}}` (`{{LISTS}}` is the names of the public lists the signup joins and `{{TAGS}}` the tags it applied, both comma-separated). They are replaced with the confirming subscriber's URL-encoded values at redirect time and are empty when a value is unknown, for example `https://example.com/welcome?name={{FIRST_NAME}}&email={{EMAIL}}`. Merge tags outside the query string and any other placeholders are left as written. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
     
 </dd>
 </dl>

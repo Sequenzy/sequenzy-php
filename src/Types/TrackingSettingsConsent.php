@@ -23,7 +23,7 @@ class TrackingSettingsConsent extends JsonSerializableType
     public ?bool $doubleOptInEnabled;
 
     /**
-     * @var ?string $doubleOptInRedirectUrl Where the hosted confirmation page sends subscribers after they confirm. Null keeps them on the branded confirmation page.
+     * @var ?string $doubleOptInRedirectUrl Where the hosted confirmation page sends subscribers after they confirm, as stored. Merge tags in its query string (such as `{{EMAIL}}`) are returned unfilled and are replaced with the confirming subscriber's values at redirect time. Null keeps them on the branded confirmation page.
      */
     #[JsonProperty('doubleOptInRedirectUrl')]
     public ?string $doubleOptInRedirectUrl;
