@@ -26,7 +26,7 @@ class EmailCheckIssue extends JsonSerializableType
     public string $message;
 
     /**
-     * @var ?string $rule Stable rule ID. The prefix groups it: links, images, content, subject, preview, accessibility, or compatibility. Examples: links.broken, links.unreachable, links.missing-scheme, links.local, links.staging, links.example-domain, links.insecure, links.shortener, links.text-mismatch, links.missing-website, images.broken, images.large, images.missing-alt, content.placeholder-text, content.merge-tag-fallback, subject.fake-reply, compatibility.gmail-clip.
+     * @var ?string $rule Stable rule ID. The prefix groups it: links, images, content, subject, preview, accessibility, or compatibility. Examples: links.broken, links.unreachable, links.missing-scheme, links.local, links.staging, links.example-domain, links.insecure, links.shortener, links.text-mismatch, links.missing-website, images.broken, images.large, images.missing-alt, content.placeholder-text, content.merge-tag-fallback, subject.fake-reply, compatibility.gmail-clip, compatibility.layout-css, compatibility.transform, compatibility.image-object-fit, compatibility.image-padding, compatibility.outlook-padding, compatibility.outlook-table-spacing, compatibility.outlook-centering, compatibility.negative-margin. New rules are added over time, so treat an ID you do not know as a finding of its severity.
      */
     #[JsonProperty('rule')]
     public ?string $rule;

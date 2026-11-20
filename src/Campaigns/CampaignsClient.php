@@ -1859,7 +1859,7 @@ class CampaignsClient
     }
 
     /**
-     * Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
+     * Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). A paused campaign accepts only the content fields (subject, previewText or preheaderText, html, blocks, emailPreset), so a mistake found mid-send can be fixed without cancelling; any other field returns 400 and nothing is saved. On resume, recipients not yet sent the campaign get the updated email; emails already sent do not change. Translations are sent as saved, and the response warns when the email has any. A paused campaign with an A/B test cannot be edited, and an update that loses a race with a resume returns 409 without saving. Campaigns in any other status return 400. Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
      *
      * Example:
      * ```php
