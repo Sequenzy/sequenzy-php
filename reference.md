@@ -31502,7 +31502,7 @@ $client->syncRules->update(
 <dl>
 <dd>
 
-Creates a tag definition. Tag names are normalized to lowercase with spaces replaced by hyphens.
+Creates a tag definition. Tag names are normalized to lowercase with spaces replaced by hyphens. Creating a tag named after a Polar product whose product tag was deleted turns tagging for that product back on.
 </dd>
 </dl>
 </dd>
@@ -31568,7 +31568,7 @@ $client->tags->create(
 <dl>
 <dd>
 
-Deletes a tag definition and removes the tag from all subscribers. Fails when the tag is referenced by sequences or is a system tag.
+Deletes a tag definition and removes the tag from all subscribers. Deleting a Polar product tag also stops tagging that product until a tag named after the product exists again. Fails when the tag is referenced by sequences or is a system tag.
 </dd>
 </dl>
 </dd>
