@@ -18,6 +18,12 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
     public ?GetAccountResponseApiKeyPermissionsActiveKey $activeKey;
 
     /**
+     * @var ?array<string> $allowedCompanyIds Explicit workspace IDs a restricted personal key is allowed to access, or null when unrestricted or when authenticating with a workspace key.
+     */
+    #[JsonProperty('allowedCompanyIds'), ArrayType(['string'])]
+    public ?array $allowedCompanyIds;
+
+    /**
      * @var ?bool $canDiscoverMarketingWork Whether the key can read campaigns, sequences, and landing pages.
      */
     #[JsonProperty('canDiscoverMarketingWork')]
@@ -96,8 +102,15 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
     public ?int $selectedScopeCount;
 
     /**
+     * @var ?bool $workspaceRestricted True when a personal account API key is restricted to an explicit list of workspaces instead of every workspace the user can access.
+     */
+    #[JsonProperty('workspaceRestricted')]
+    public ?bool $workspaceRestricted;
+
+    /**
      * @param array{
      *   activeKey?: ?GetAccountResponseApiKeyPermissionsActiveKey,
+     *   allowedCompanyIds?: ?array<string>,
      *   canDiscoverMarketingWork?: ?bool,
      *   canSendLive?: ?bool,
      *   currentScopeCount?: ?int,
@@ -111,12 +124,14 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
      *   roleRestrictedScopes?: ?array<string>,
      *   scopes?: ?array<string>,
      *   selectedScopeCount?: ?int,
+     *   workspaceRestricted?: ?bool,
      * } $values
      */
     public function __construct(
         array $values = [],
     ) {
         $this->activeKey = $values['activeKey'] ?? null;
+        $this->allowedCompanyIds = $values['allowedCompanyIds'] ?? null;
         $this->canDiscoverMarketingWork = $values['canDiscoverMarketingWork'] ?? null;
         $this->canSendLive = $values['canSendLive'] ?? null;
         $this->currentScopeCount = $values['currentScopeCount'] ?? null;
@@ -130,6 +145,7 @@ class GetAccountResponseApiKeyPermissions extends JsonSerializableType
         $this->roleRestrictedScopes = $values['roleRestrictedScopes'] ?? null;
         $this->scopes = $values['scopes'] ?? null;
         $this->selectedScopeCount = $values['selectedScopeCount'] ?? null;
+        $this->workspaceRestricted = $values['workspaceRestricted'] ?? null;
     }
 
     /**

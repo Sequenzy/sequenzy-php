@@ -238,7 +238,7 @@ $client->abTests->create(
 <dl>
 <dd>
 
-**$winnerCriteria:** `?string` — Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, revenue and campaign goals also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
+**$winnerCriteria:** `?string` — Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, goals of that campaign also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
     
 </dd>
 </dl>
