@@ -159,7 +159,7 @@ trait SequenceSummary
     public ?array $labels;
 
     /**
-     * @var ?value-of<SequenceSummaryManagedBy> $managedBy `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+     * @var ?value-of<SequenceSummaryManagedBy> $managedBy `code` when steps, emails and settings are owned through opt-in sequences-as-code / GitOps definition pushes and read-only in the dashboard. `dashboard` for normal dashboard-editable sequences.
      */
     #[JsonProperty('managedBy')]
     public ?string $managedBy;

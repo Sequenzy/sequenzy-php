@@ -7,7 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * A whole sequence as one document, addressed by keys you choose. In the readable format (no `connections`), `trigger` starts the sequence and `steps` run in order, with branch and split paths nesting their own steps and an implicit end. In the explicit format, every step has a `type` and `config` and `connections` wire them. On PUT, omitted settings keep their stored values while the steps replace the stored graph.
+ * Opt-in sequences-as-code / GitOps document representing a whole sequence addressed by keys you choose (for sequences owned in git or CI). For normal dashboard-editable sequences, use POST /api/v1/sequences and PUT /api/v1/sequences/{sequenceId} instead. In the readable format (no `connections`), `trigger` starts the sequence and `steps` run in order, with branch and split paths nesting their own steps and an implicit end. In the explicit format, every step has a `type` and `config` and `connections` wire them. On PUT, omitted settings keep their stored values while the steps replace the stored graph.
  */
 class SequenceDefinition extends JsonSerializableType
 {
@@ -36,7 +36,7 @@ class SequenceDefinition extends JsonSerializableType
     public ?string $key;
 
     /**
-     * @var ?value-of<SequenceDefinitionManagedBy> $managedBy `code` makes steps and settings read-only in the dashboard while on/off, pause and test sends stay available. New sequences default to `code`; existing ones keep their value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never changes it.
+     * @var ?value-of<SequenceDefinitionManagedBy> $managedBy Ownership mode for the sequence. `code` locks steps, emails and settings as read-only in the dashboard for sequences-as-code / GitOps workflows while on/off, pause and test sends stay available. New sequences created via PUT /sequences/definitions/{key} default to `code`; pass `dashboard` if a pushed sequence should stay editable in the dashboard. Existing sequences keep their current value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never re-locks a sequence.
      */
     #[JsonProperty('managedBy')]
     public ?string $managedBy;

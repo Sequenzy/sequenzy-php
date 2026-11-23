@@ -1527,7 +1527,7 @@ class SequencesClient
     }
 
     /**
-     * Returns the sequence with this key as one definition document, in the readable format unless format=raw. Pushing the document back unchanged changes nothing.
+     * Opt-in sequences-as-code / GitOps endpoint: returns the sequence with this key as one definition document, in the readable format unless format=raw. For normal inspection and editing, use GET /api/v1/sequences/{sequenceId} instead. Pushing the document back unchanged changes nothing.
      *
      * Example:
      * ```php
@@ -1589,7 +1589,7 @@ class SequencesClient
     }
 
     /**
-     * Returns any sequence as a definition document, including one with no key yet (its key is empty). Set a key and push it to adopt the sequence.
+     * Opt-in sequences-as-code / GitOps endpoint: returns any sequence as a definition document, including one with no key yet (its key is empty). Set a key and push it to adopt the sequence into sequences-as-code. For normal inspection and editing, use GET /api/v1/sequences/{sequenceId} instead.
      *
      * Example:
      * ```php
@@ -2638,7 +2638,7 @@ class SequencesClient
     }
 
     /**
-     * Creates the sequence with this key, or updates it to match the document. Steps are matched by key: new keys are added, changed steps are updated in place, and missing steps are removed, with waiting contacts moved to the following step (or completed when nothing follows). A push never turns a sequence on or off or pauses it; new sequences start as drafts.
+     * Opt-in sequences-as-code / GitOps endpoint for syncing sequences owned as files in a git repository or CI pipeline. Do not use this endpoint for normal sequence creation or editing: use POST /api/v1/sequences and PUT /api/v1/sequences/{sequenceId} to create and edit dashboard-editable sequences. Creating a new sequence here defaults `managedBy` to `code`, which locks its steps, emails and settings as read-only in the dashboard while on/off, pause and test sends stay available; pass `managedBy: "dashboard"` if a pushed sequence should stay editable in the dashboard. Steps are matched by key: new keys are added, changed steps are updated in place, and missing steps are removed, with waiting contacts moved to the following step (or completed when nothing follows). A push never turns a sequence on or off or pauses it; new sequences start as drafts.
      *
      * Example:
      * ```php
