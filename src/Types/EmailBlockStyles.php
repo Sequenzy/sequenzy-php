@@ -47,7 +47,7 @@ class EmailBlockStyles extends JsonSerializableType
     public ?float $borderWidth;
 
     /**
-     * @var ?bool $keepAlign Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left). Without it a left email moves these blocks left; right always stays.
+     * @var ?bool $keepAlign Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left) or full width (layout.contentWidthMode fluid). Without it a left email moves these blocks left; right always stays.
      */
     #[JsonProperty('keepAlign')]
     public ?bool $keepAlign;

@@ -68,6 +68,12 @@ class EmailThemePatchLayout extends JsonSerializableType
     public ?float $contentWidth;
 
     /**
+     * @var ?value-of<EmailThemePatchLayoutContentWidthMode> $contentWidthMode fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+     */
+    #[JsonProperty('contentWidthMode')]
+    public ?string $contentWidthMode;
+
+    /**
      * @var ?float $sectionPadding
      */
     #[JsonProperty('sectionPadding')]
@@ -85,6 +91,7 @@ class EmailThemePatchLayout extends JsonSerializableType
      *   containerPaddingY?: ?float,
      *   contentAlign?: ?value-of<EmailThemePatchLayoutContentAlign>,
      *   contentWidth?: ?float,
+     *   contentWidthMode?: ?value-of<EmailThemePatchLayoutContentWidthMode>,
      *   sectionPadding?: ?float,
      * } $values
      */
@@ -101,6 +108,7 @@ class EmailThemePatchLayout extends JsonSerializableType
         $this->containerPaddingY = $values['containerPaddingY'] ?? null;
         $this->contentAlign = $values['contentAlign'] ?? null;
         $this->contentWidth = $values['contentWidth'] ?? null;
+        $this->contentWidthMode = $values['contentWidthMode'] ?? null;
         $this->sectionPadding = $values['sectionPadding'] ?? null;
     }
 

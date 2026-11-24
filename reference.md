@@ -3029,6 +3029,111 @@ $client->accounts->upsert(
 </details>
 
 ## Analytics
+<details><summary><code>$client-&gt;analytics-&gt;getCampaignConditionalBlockStats($campaignId, $request) -> ?GetCampaignConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide branch splits, engagement rates, and goal conversions for conditional blocks inside a campaign email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getCampaignConditionalBlockStats(
+    'campaignId',
+    new GetCampaignConditionalBlockStatsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` — Optional A/B test variant ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — ISO 8601 window end (pair with start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Optional goal ID or default-revenue
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` — Include machine-classified opens and clicks
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Send window (defaults to all for campaigns)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — ISO 8601 window start (pair with end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;analytics-&gt;getCampaignEmailClientMetrics($campaignId, $request) -> ?GetCampaignEmailClientMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -3872,6 +3977,87 @@ $client->analytics->getRecipients(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;analytics-&gt;getSequenceConditionalBlockOverview($sequenceId, $request) -> ?GetSequenceConditionalBlockOverviewResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a sequence-wide summary of all email steps that use conditional blocks, including collapsed rule group counts and automatic dead-rule or fallback-spike alerts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getSequenceConditionalBlockOverview(
+    'sequenceId',
+    new GetSequenceConditionalBlockOverviewRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — ISO 8601 end of custom send window (requires start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Optional send time window. Defaults to all.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — ISO 8601 start of custom send window (requires end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;analytics-&gt;getSequenceMetrics($sequenceId, $request) -> ?GetSequenceMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -3950,6 +4136,233 @@ $client->analytics->getSequenceMetrics(
 <dd>
 
 **$start:** `?DateTime` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;getSequenceOutcomes($sequenceId, $request) -> ?GetSequenceOutcomesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-path split counts and post-step cohort conversion rates for branch, condition, and action steps in a sequence, plus a baseline across all enrollments and optional per-goal email attribution. Rule-based branches are observational (causal false); random splits report mature-cohort significance (causal true). For goal outcomes, attributed conversions are scoped to the selected goalId and can differ from all-goals canvas email badges.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getSequenceOutcomes(
+    'sequenceId',
+    new GetSequenceOutcomesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$conversionWindowDays:** `?int` — Conversion window in whole days after reaching the step. Truncated early if the contact re-enrolls at the same step.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — Custom ISO 8601 end time (requires start).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$eventName:** `?string` — Custom event name to measure post-step conversion against. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `?string` — Optional comma-separated node IDs to scope the response to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Rolling arrival window. Omit for all-time cohorts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — Custom ISO 8601 start time (requires end, max 90 days).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;getSequenceStepConditionalBlockStats($sequenceId, $nodeId, $request) -> ?GetSequenceStepConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide performance for conditional blocks inside a sequence email or A/B test step.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getSequenceStepConditionalBlockStats(
+    'sequenceId',
+    'nodeId',
+    new GetSequenceStepConditionalBlockStatsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -4046,6 +4459,103 @@ $client->analytics->getStatsLegacy(
 <dd>
 
 **$start:** `?DateTime` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;getTransactionalConditionalBlockStats($idOrSlug, $request) -> ?GetTransactionalConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide performance for conditional blocks inside a transactional email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->getTransactionalConditionalBlockStats(
+    'idOrSlug',
+    new GetTransactionalConditionalBlockStatsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -4208,6 +4718,146 @@ $client->analytics->getTransactionalMetricsLegacy(
 <dd>
 
 **$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;listCampaignConditionalBlockSubscribers($campaignId, $blockId, $request) -> ?ListCampaignConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a campaign email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->listCampaignConditionalBlockSubscribers(
+    'campaignId',
+    'blockId',
+    new ListCampaignConditionalBlockSubscribersRequest([
+        'branch' => ListCampaignConditionalBlockSubscribersRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` — Conditional block ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` — Branch key
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
     
 </dd>
 </dl>
@@ -4949,6 +5599,433 @@ $client->analytics->listSequenceEvents(
 <dd>
 
 **$start:** `?DateTime` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;listSequencePathSubscribers($sequenceId, $nodeId, $request) -> ?ListSequencePathSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated enrollments that took a specific branch path (or reached a step), including redacted evaluation reasons and optional cohort conversion status within the conversion window.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->listSequencePathSubscribers(
+    'sequenceId',
+    'nodeId',
+    new ListSequencePathSubscribersRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` — Branch, condition, or step node ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$bucket:** `?string` — Optional synthetic bucket filter (unmapped for earlier graph versions, unrecorded for legacy rows). Mutually exclusive with pathId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$conversionWindowDays:** `?int` — Conversion window in whole days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$eventName:** `?string` — Optional event name. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Optional goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$pathId:** `?string` — Optional configured path ID for branch or condition nodes (branch id, else, continued, or exited). Mutually exclusive with bucket.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;listSequenceStepConditionalBlockSubscribers($sequenceId, $nodeId, $blockId, $request) -> ?ListSequenceStepConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a sequence email step.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->listSequenceStepConditionalBlockSubscribers(
+    'sequenceId',
+    'nodeId',
+    'blockId',
+    new ListSequenceStepConditionalBlockSubscribersRequest([
+        'branch' => ListSequenceStepConditionalBlockSubscribersRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;analytics-&gt;listTransactionalConditionalBlockSubscribers($idOrSlug, $blockId, $request) -> ?ListTransactionalConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a transactional email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->analytics->listTransactionalConditionalBlockSubscribers(
+    'idOrSlug',
+    'blockId',
+    new ListTransactionalConditionalBlockSubscribersRequest([
+        'branch' => ListTransactionalConditionalBlockSubscribersRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -6647,6 +7724,111 @@ $client->campaigns->getAudience(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;campaigns-&gt;getConditionalBlockStatsAlias($campaignId, $request) -> ?GetConditionalBlockStatsAliasCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/campaigns/{campaignId}/conditional-blocks. Your key needs the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->campaigns->getConditionalBlockStatsAlias(
+    'campaignId',
+    new GetConditionalBlockStatsAliasCampaignsRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` — Optional A/B test variant ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — ISO 8601 window end (pair with start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Optional goal ID or default-revenue
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` — Include machine-classified opens and clicks
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Send window (defaults to all for campaigns)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — ISO 8601 window start (pair with end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;campaigns-&gt;getVariation($campaignId, $variationId) -> ?EmailVariationResponse</code></summary>
 <dl>
 <dd>
@@ -6789,6 +7971,146 @@ $client->campaigns->list(
 <dd>
 
 **$status:** `?string` — Optional campaign status filter.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;campaigns-&gt;listConditionalBlockSubscribersAlias($campaignId, $blockId, $request) -> ?ListConditionalBlockSubscribersAliasCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->campaigns->listConditionalBlockSubscribersAlias(
+    'campaignId',
+    'blockId',
+    new ListConditionalBlockSubscribersAliasCampaignsRequest([
+        'branch' => ListConditionalBlockSubscribersAliasCampaignsRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$campaignId:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` — Conditional block ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` — Branch key
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -14661,7 +15983,7 @@ $client->integrations->activatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -14695,7 +16017,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
+**$apiKey:** `?string` — Provider API key. Required for polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. AgentaOS accepts test (sk_test_...) or live (sk_live_...) keys and derives the mode from the prefix. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
     
 </dd>
 </dl>
@@ -14719,7 +16041,7 @@ $client->integrations->connect(
 <dl>
 <dd>
 
-**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+**$providerAccountId:** `?string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar and AgentaOS resolve it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
     
 </dd>
 </dl>
@@ -16825,6 +18147,14 @@ $client->lists->create(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**$unsubscribeListOnly:** `?bool` — Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -17079,6 +18409,14 @@ $client->lists->update(
 <dd>
 
 **$name:** `?string` — New list name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$unsubscribeListOnly:** `?bool` — Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
     
 </dd>
 </dl>
@@ -22142,7 +23480,7 @@ $client->references->listEmailReferences(
 <dl>
 <dd>
 
-**$limit:** `?int` — For `scope=similar` without `q`, most emails (and sequences) to return. Also caps sequences elsewhere.
+**$limit:** `?int` — Most emails (and sequences) to return per page. For `scope=similar` without `q` there is one page.
     
 </dd>
 </dl>
@@ -25151,6 +26489,87 @@ $client->sequences->getAudienceEnrollment(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;sequences-&gt;getConditionalBlockOverviewAlias($sequenceId, $request) -> ?GetConditionalBlockOverviewAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/conditional-blocks.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->getConditionalBlockOverviewAlias(
+    'sequenceId',
+    new GetConditionalBlockOverviewAliasSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — ISO 8601 end of custom send window (requires start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Optional send time window. Defaults to all.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — ISO 8601 start of custom send window (requires end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;sequences-&gt;getDefinition($key, $request) -> ?GetDefinitionSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -25467,6 +26886,119 @@ $client->sequences->getInboundWebhook(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;sequences-&gt;getOutcomesAlias($sequenceId, $request) -> ?GetOutcomesAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/outcomes. Your key needs the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->getOutcomesAlias(
+    'sequenceId',
+    new GetOutcomesAliasSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$conversionWindowDays:** `?int` — Conversion window in whole days after reaching the step. Truncated early if the contact re-enrolls at the same step.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` — Custom ISO 8601 end time (requires start).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$eventName:** `?string` — Custom event name to measure post-step conversion against. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `?string` — Optional comma-separated node IDs to scope the response to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` — Rolling arrival window. Omit for all-time cohorts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` — Custom ISO 8601 start time (requires end, max 90 days).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;sequences-&gt;getRecurringEnrollment($sequenceId) -> ?SequenceRecurringEnrollmentResponse</code></summary>
 <dl>
 <dd>
@@ -25601,6 +27133,120 @@ $client->sequences->getStats(
 <dd>
 
 **$start:** `?DateTime` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;getStepConditionalBlockStatsAlias($sequenceId, $nodeId, $request) -> ?GetStepConditionalBlockStatsAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks. Your key needs the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->getStepConditionalBlockStatsAlias(
+    'sequenceId',
+    'nodeId',
+    new GetStepConditionalBlockStatsAliasSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -26082,6 +27728,301 @@ $client->sequences->listGoals(
 <dd>
 
 **$sequenceId:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;listPathSubscribersAlias($sequenceId, $nodeId, $request) -> ?ListPathSubscribersAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/paths/{nodeId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->listPathSubscribersAlias(
+    'sequenceId',
+    'nodeId',
+    new ListPathSubscribersAliasSequencesRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` — Branch, condition, or step node ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$bucket:** `?string` — Optional synthetic bucket filter (unmapped for earlier graph versions, unrecorded for legacy rows). Mutually exclusive with pathId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$conversionWindowDays:** `?int` — Conversion window in whole days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$eventName:** `?string` — Optional event name. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` — Optional goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$pathId:** `?string` — Optional configured path ID for branch or condition nodes (branch id, else, continued, or exited). Mutually exclusive with bucket.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;sequences-&gt;listStepConditionalBlockSubscribersAlias($sequenceId, $nodeId, $blockId, $request) -> ?ListStepConditionalBlockSubscribersAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->sequences->listStepConditionalBlockSubscribersAlias(
+    'sequenceId',
+    'nodeId',
+    'blockId',
+    new ListStepConditionalBlockSubscribersAliasSequencesRequest([
+        'branch' => ListStepConditionalBlockSubscribersAliasSequencesRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$sequenceId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$nodeId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$abTestVariantId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>
@@ -33729,6 +35670,103 @@ $client->transactional->get(
 </dl>
 </details>
 
+<details><summary><code>$client-&gt;transactional-&gt;getTransactionalConditionalBlockStatsAlias($idOrSlug, $request) -> ?GetTransactionalConditionalBlockStatsAliasResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/transactional/{idOrSlug}/conditional-blocks. Your key needs the transactional:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->transactional->getTransactionalConditionalBlockStatsAlias(
+    'idOrSlug',
+    new GetTransactionalConditionalBlockStatsAliasRequest([]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>$client-&gt;transactional-&gt;list($request) -> ?ListTransactionalResponse</code></summary>
 <dl>
 <dd>
@@ -33814,6 +35852,138 @@ $client->transactional->list(
 <dd>
 
 **$status:** `?string` — Filter by template active state.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>$client-&gt;transactional-&gt;listTransactionalConditionalBlockSubscribersAlias($idOrSlug, $blockId, $request) -> ?ListTransactionalConditionalBlockSubscribersAliasResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```php
+$client->transactional->listTransactionalConditionalBlockSubscribersAlias(
+    'idOrSlug',
+    'blockId',
+    new ListTransactionalConditionalBlockSubscribersAliasRequest([
+        'branch' => ListTransactionalConditionalBlockSubscribersAliasRequestBranch::If_->value,
+    ]),
+);
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**$idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$blockId:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$branch:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$end:** `?DateTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$goalId:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$includeMachineEngagement:** `?bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$limit:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$page:** `?int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$period:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$start:** `?DateTime` 
     
 </dd>
 </dl>

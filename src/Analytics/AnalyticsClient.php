@@ -4,18 +4,20 @@ namespace Sequenzy\Analytics;
 
 use Psr\Http\Client\ClientInterface;
 use Sequenzy\Core\Client\RawClient;
-use Sequenzy\Analytics\Requests\GetCampaignEmailClientMetricsRequest;
-use Sequenzy\Analytics\Types\GetCampaignEmailClientMetricsResponse;
+use Sequenzy\Analytics\Requests\GetCampaignConditionalBlockStatsRequest;
+use Sequenzy\Analytics\Types\GetCampaignConditionalBlockStatsResponse;
 use Sequenzy\Exceptions\SequenzyException;
 use Sequenzy\Exceptions\SequenzyApiException;
+use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Core\Json\JsonApiRequest;
 use Sequenzy\Environments;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Sequenzy\Analytics\Requests\GetCampaignEmailClientMetricsRequest;
+use Sequenzy\Analytics\Types\GetCampaignEmailClientMetricsResponse;
 use Sequenzy\Analytics\Requests\GetCampaignMetricsRequest;
 use Sequenzy\Analytics\Types\GetCampaignMetricsResponse;
-use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Analytics\Requests\GetCampaignStatsLegacyRequest;
 use Sequenzy\Analytics\Types\GetCampaignStatsLegacyResponse;
 use Sequenzy\Analytics\Requests\GetEmailClientMetricsRequest;
@@ -28,13 +30,23 @@ use Sequenzy\Analytics\Requests\GetMetricsBreakdownRequest;
 use Sequenzy\Analytics\Types\GetMetricsBreakdownResponse;
 use Sequenzy\Analytics\Requests\GetRecipientsRequest;
 use Sequenzy\Analytics\Types\GetRecipientsResponse;
+use Sequenzy\Analytics\Requests\GetSequenceConditionalBlockOverviewRequest;
+use Sequenzy\Analytics\Types\GetSequenceConditionalBlockOverviewResponse;
 use Sequenzy\Analytics\Requests\GetSequenceMetricsRequest;
 use Sequenzy\Analytics\Types\GetSequenceMetricsResponse;
+use Sequenzy\Analytics\Requests\GetSequenceOutcomesRequest;
+use Sequenzy\Analytics\Types\GetSequenceOutcomesResponse;
+use Sequenzy\Analytics\Requests\GetSequenceStepConditionalBlockStatsRequest;
+use Sequenzy\Analytics\Types\GetSequenceStepConditionalBlockStatsResponse;
 use Sequenzy\Analytics\Requests\GetStatsLegacyRequest;
 use Sequenzy\Analytics\Types\GetStatsLegacyResponse;
+use Sequenzy\Analytics\Requests\GetTransactionalConditionalBlockStatsRequest;
+use Sequenzy\Analytics\Types\GetTransactionalConditionalBlockStatsResponse;
 use Sequenzy\Analytics\Requests\GetTransactionalMetricsRequest;
 use Sequenzy\Types\TransactionalMetricsResponse;
 use Sequenzy\Analytics\Requests\GetTransactionalMetricsLegacyRequest;
+use Sequenzy\Analytics\Requests\ListCampaignConditionalBlockSubscribersRequest;
+use Sequenzy\Analytics\Types\ListCampaignConditionalBlockSubscribersResponse;
 use Sequenzy\Analytics\Requests\ListCampaignEventsRequest;
 use Sequenzy\Analytics\Types\ListCampaignEventsResponse;
 use Sequenzy\Analytics\Requests\ListCampaignPollResponsesRequest;
@@ -49,6 +61,12 @@ use Sequenzy\Analytics\Requests\ListEmailMetricsRequest;
 use Sequenzy\Analytics\Types\ListEmailMetricsResponse;
 use Sequenzy\Analytics\Requests\ListSequenceEventsRequest;
 use Sequenzy\Analytics\Types\ListSequenceEventsResponse;
+use Sequenzy\Analytics\Requests\ListSequencePathSubscribersRequest;
+use Sequenzy\Analytics\Types\ListSequencePathSubscribersResponse;
+use Sequenzy\Analytics\Requests\ListSequenceStepConditionalBlockSubscribersRequest;
+use Sequenzy\Analytics\Types\ListSequenceStepConditionalBlockSubscribersResponse;
+use Sequenzy\Analytics\Requests\ListTransactionalConditionalBlockSubscribersRequest;
+use Sequenzy\Analytics\Types\ListTransactionalConditionalBlockSubscribersResponse;
 
 class AnalyticsClient
 {
@@ -84,6 +102,83 @@ class AnalyticsClient
     ) {
         $this->client = $client;
         $this->options = $options ?? [];
+    }
+
+    /**
+     * Returns per-block if/else and show/hide branch splits, engagement rates, and goal conversions for conditional blocks inside a campaign email.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getCampaignConditionalBlockStats(
+     *     'campaignId',
+     *     new GetCampaignConditionalBlockStatsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param GetCampaignConditionalBlockStatsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetCampaignConditionalBlockStatsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getCampaignConditionalBlockStats(string $campaignId, GetCampaignConditionalBlockStatsRequest $request = new GetCampaignConditionalBlockStatsRequest(), ?array $options = null): ?GetCampaignConditionalBlockStatsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/campaigns/{$campaignId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetCampaignConditionalBlockStatsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
     }
 
     /**
@@ -711,6 +806,74 @@ class AnalyticsClient
     }
 
     /**
+     * Returns a sequence-wide summary of all email steps that use conditional blocks, including collapsed rule group counts and automatic dead-rule or fallback-spike alerts.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getSequenceConditionalBlockOverview(
+     *     'sequenceId',
+     *     new GetSequenceConditionalBlockOverviewRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param GetSequenceConditionalBlockOverviewRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetSequenceConditionalBlockOverviewResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getSequenceConditionalBlockOverview(string $sequenceId, GetSequenceConditionalBlockOverviewRequest $request = new GetSequenceConditionalBlockOverviewRequest(), ?array $options = null): ?GetSequenceConditionalBlockOverviewResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/sequences/{$sequenceId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetSequenceConditionalBlockOverviewResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Returns aggregated engagement metrics plus a live active/waiting enrollment breakdown by current node for a specific sequence (automation).
      *
      * Example:
@@ -768,6 +931,165 @@ class AnalyticsClient
                     return null;
                 }
                 return GetSequenceMetricsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns per-path split counts and post-step cohort conversion rates for branch, condition, and action steps in a sequence, plus a baseline across all enrollments and optional per-goal email attribution. Rule-based branches are observational (causal false); random splits report mature-cohort significance (causal true). For goal outcomes, attributed conversions are scoped to the selected goalId and can differ from all-goals canvas email badges.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getSequenceOutcomes(
+     *     'sequenceId',
+     *     new GetSequenceOutcomesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param GetSequenceOutcomesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetSequenceOutcomesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getSequenceOutcomes(string $sequenceId, GetSequenceOutcomesRequest $request = new GetSequenceOutcomesRequest(), ?array $options = null): ?GetSequenceOutcomesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->conversionWindowDays != null) {
+            $query['conversionWindowDays'] = $request->conversionWindowDays;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->eventName != null) {
+            $query['eventName'] = $request->eventName;
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->nodeId != null) {
+            $query['nodeId'] = $request->nodeId;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/sequences/{$sequenceId}/outcomes",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetSequenceOutcomesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns per-block if/else and show/hide performance for conditional blocks inside a sequence email or A/B test step.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getSequenceStepConditionalBlockStats(
+     *     'sequenceId',
+     *     'nodeId',
+     *     new GetSequenceStepConditionalBlockStatsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param string $nodeId
+     * @param GetSequenceStepConditionalBlockStatsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetSequenceStepConditionalBlockStatsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getSequenceStepConditionalBlockStats(string $sequenceId, string $nodeId, GetSequenceStepConditionalBlockStatsRequest $request = new GetSequenceStepConditionalBlockStatsRequest(), ?array $options = null): ?GetSequenceStepConditionalBlockStatsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/sequences/{$sequenceId}/steps/{$nodeId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetSequenceStepConditionalBlockStatsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -843,6 +1165,80 @@ class AnalyticsClient
                     return null;
                 }
                 return GetStatsLegacyResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns per-block if/else and show/hide performance for conditional blocks inside a transactional email.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->getTransactionalConditionalBlockStats(
+     *     'idOrSlug',
+     *     new GetTransactionalConditionalBlockStatsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $idOrSlug
+     * @param GetTransactionalConditionalBlockStatsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetTransactionalConditionalBlockStatsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getTransactionalConditionalBlockStats(string $idOrSlug, GetTransactionalConditionalBlockStatsRequest $request = new GetTransactionalConditionalBlockStatsRequest(), ?array $options = null): ?GetTransactionalConditionalBlockStatsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/transactional/{$idOrSlug}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetTransactionalConditionalBlockStatsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -985,6 +1381,94 @@ class AnalyticsClient
                     return null;
                 }
                 return TransactionalMetricsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns paginated recipients who received a specific branch of a conditional block inside a campaign email.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listCampaignConditionalBlockSubscribers(
+     *     'campaignId',
+     *     'blockId',
+     *     new ListCampaignConditionalBlockSubscribersRequest([
+     *         'branch' => ListCampaignConditionalBlockSubscribersRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $blockId Conditional block ID
+     * @param ListCampaignConditionalBlockSubscribersRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListCampaignConditionalBlockSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listCampaignConditionalBlockSubscribers(string $campaignId, string $blockId, ListCampaignConditionalBlockSubscribersRequest $request, ?array $options = null): ?ListCampaignConditionalBlockSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/campaigns/{$campaignId}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListCampaignConditionalBlockSubscribersResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -1526,6 +2010,272 @@ class AnalyticsClient
                     return null;
                 }
                 return ListSequenceEventsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns paginated enrollments that took a specific branch path (or reached a step), including redacted evaluation reasons and optional cohort conversion status within the conversion window.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listSequencePathSubscribers(
+     *     'sequenceId',
+     *     'nodeId',
+     *     new ListSequencePathSubscribersRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $nodeId Branch, condition, or step node ID
+     * @param ListSequencePathSubscribersRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListSequencePathSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listSequencePathSubscribers(string $sequenceId, string $nodeId, ListSequencePathSubscribersRequest $request = new ListSequencePathSubscribersRequest(), ?array $options = null): ?ListSequencePathSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->bucket != null) {
+            $query['bucket'] = $request->bucket;
+        }
+        if ($request->conversionWindowDays != null) {
+            $query['conversionWindowDays'] = $request->conversionWindowDays;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->eventName != null) {
+            $query['eventName'] = $request->eventName;
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->pathId != null) {
+            $query['pathId'] = $request->pathId;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/sequences/{$sequenceId}/paths/{$nodeId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListSequencePathSubscribersResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns paginated recipients who received a specific branch of a conditional block inside a sequence email step.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listSequenceStepConditionalBlockSubscribers(
+     *     'sequenceId',
+     *     'nodeId',
+     *     'blockId',
+     *     new ListSequenceStepConditionalBlockSubscribersRequest([
+     *         'branch' => ListSequenceStepConditionalBlockSubscribersRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param string $nodeId
+     * @param string $blockId
+     * @param ListSequenceStepConditionalBlockSubscribersRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListSequenceStepConditionalBlockSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listSequenceStepConditionalBlockSubscribers(string $sequenceId, string $nodeId, string $blockId, ListSequenceStepConditionalBlockSubscribersRequest $request, ?array $options = null): ?ListSequenceStepConditionalBlockSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/sequences/{$sequenceId}/steps/{$nodeId}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListSequenceStepConditionalBlockSubscribersResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Returns paginated recipients who received a specific branch of a conditional block inside a transactional email.
+     *
+     * Example:
+     * ```php
+     * $client->analytics->listTransactionalConditionalBlockSubscribers(
+     *     'idOrSlug',
+     *     'blockId',
+     *     new ListTransactionalConditionalBlockSubscribersRequest([
+     *         'branch' => ListTransactionalConditionalBlockSubscribersRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $idOrSlug
+     * @param string $blockId
+     * @param ListTransactionalConditionalBlockSubscribersRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListTransactionalConditionalBlockSubscribersResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listTransactionalConditionalBlockSubscribers(string $idOrSlug, string $blockId, ListTransactionalConditionalBlockSubscribersRequest $request, ?array $options = null): ?ListTransactionalConditionalBlockSubscribersResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "metrics/transactional/{$idOrSlug}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListTransactionalConditionalBlockSubscribersResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

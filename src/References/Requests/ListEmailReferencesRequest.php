@@ -14,7 +14,7 @@ class ListEmailReferencesRequest extends JsonSerializableType
     public string $kind;
 
     /**
-     * @var ?int $limit For `scope=similar` without `q`, most emails (and sequences) to return. Also caps sequences elsewhere.
+     * @var ?int $limit Most emails (and sequences) to return per page. For `scope=similar` without `q` there is one page.
      */
     public ?int $limit;
 

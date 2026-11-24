@@ -32,11 +32,18 @@ class CreateListsRequest extends JsonSerializableType
     public string $name;
 
     /**
+     * @var ?bool $unsubscribeListOnly Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
+     */
+    #[JsonProperty('unsubscribeListOnly')]
+    public ?bool $unsubscribeListOnly;
+
+    /**
      * @param array{
      *   name: string,
      *   allowMemberUnsubscribe?: ?bool,
      *   description?: ?string,
      *   isPrivate?: ?bool,
+     *   unsubscribeListOnly?: ?bool,
      * } $values
      */
     public function __construct(
@@ -46,5 +53,6 @@ class CreateListsRequest extends JsonSerializableType
         $this->description = $values['description'] ?? null;
         $this->isPrivate = $values['isPrivate'] ?? null;
         $this->name = $values['name'];
+        $this->unsubscribeListOnly = $values['unsubscribeListOnly'] ?? null;
     }
 }

@@ -36,7 +36,7 @@ class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
     public ?bool $headingFontFromBrand;
 
     /**
-     * @var ?UpdateCompaniesRequestEmailThemeLayout $layout Layout settings. Every field is a number except contentAlign.
+     * @var ?UpdateCompaniesRequestEmailThemeLayout $layout Layout settings. Every field is a number except contentAlign and contentWidthMode.
      */
     #[JsonProperty('layout')]
     public ?UpdateCompaniesRequestEmailThemeLayout $layout;

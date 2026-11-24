@@ -11,7 +11,7 @@ use Sequenzy\Integrations\Types\ConnectIntegrationsRequestSettings;
 class ConnectIntegrationsRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
+     * @var ?string $apiKey Provider API key. Required for polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. AgentaOS accepts test (sk_test_...) or live (sk_live_...) keys and derives the mode from the prefix. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
      */
     #[JsonProperty('apiKey')]
     public ?string $apiKey;
@@ -29,7 +29,7 @@ class ConnectIntegrationsRequest extends JsonSerializableType
     public string $provider;
 
     /**
-     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+     * @var ?string $providerAccountId Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar and AgentaOS resolve it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
      */
     #[JsonProperty('providerAccountId')]
     public ?string $providerAccountId;

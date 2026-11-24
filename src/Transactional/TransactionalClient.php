@@ -15,8 +15,13 @@ use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Sequenzy\Transactional\Types\DeleteTransactionalResponse;
 use Sequenzy\Transactional\Types\GetTransactionalResponse;
+use Sequenzy\Transactional\Requests\GetTransactionalConditionalBlockStatsAliasRequest;
+use Sequenzy\Transactional\Types\GetTransactionalConditionalBlockStatsAliasResponse;
+use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Transactional\Requests\ListTransactionalRequest;
 use Sequenzy\Transactional\Types\ListTransactionalResponse;
+use Sequenzy\Transactional\Requests\ListTransactionalConditionalBlockSubscribersAliasRequest;
+use Sequenzy\Transactional\Types\ListTransactionalConditionalBlockSubscribersAliasResponse;
 use Sequenzy\Transactional\Requests\SendTransactionalRequest;
 use Sequenzy\Transactional\Types\SendTransactionalResponseZero;
 use Sequenzy\Transactional\Types\SendTransactionalResponseOne;
@@ -236,6 +241,80 @@ class TransactionalClient
     }
 
     /**
+     * Alias for /metrics/transactional/{idOrSlug}/conditional-blocks. Your key needs the transactional:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->transactional->getTransactionalConditionalBlockStatsAlias(
+     *     'idOrSlug',
+     *     new GetTransactionalConditionalBlockStatsAliasRequest([]),
+     * );
+     * ```
+     *
+     * @param string $idOrSlug
+     * @param GetTransactionalConditionalBlockStatsAliasRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetTransactionalConditionalBlockStatsAliasResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getTransactionalConditionalBlockStatsAlias(string $idOrSlug, GetTransactionalConditionalBlockStatsAliasRequest $request = new GetTransactionalConditionalBlockStatsAliasRequest(), ?array $options = null): ?GetTransactionalConditionalBlockStatsAliasResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "transactional/{$idOrSlug}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetTransactionalConditionalBlockStatsAliasResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Lists transactional email templates with their linked subjects and all-time delivery metrics. Search name, slug, or subject; filter active state; and sort by engagement. Human engagement is used by default.
      *
      * Example:
@@ -297,6 +376,91 @@ class TransactionalClient
                     return null;
                 }
                 return ListTransactionalResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for /metrics/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->transactional->listTransactionalConditionalBlockSubscribersAlias(
+     *     'idOrSlug',
+     *     'blockId',
+     *     new ListTransactionalConditionalBlockSubscribersAliasRequest([
+     *         'branch' => ListTransactionalConditionalBlockSubscribersAliasRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $idOrSlug
+     * @param string $blockId
+     * @param ListTransactionalConditionalBlockSubscribersAliasRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListTransactionalConditionalBlockSubscribersAliasResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listTransactionalConditionalBlockSubscribersAlias(string $idOrSlug, string $blockId, ListTransactionalConditionalBlockSubscribersAliasRequest $request, ?array $options = null): ?ListTransactionalConditionalBlockSubscribersAliasResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "transactional/{$idOrSlug}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListTransactionalConditionalBlockSubscribersAliasResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

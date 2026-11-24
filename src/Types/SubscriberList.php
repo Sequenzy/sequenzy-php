@@ -58,6 +58,12 @@ class SubscriberList extends JsonSerializableType
     public ?int $subscriberCount;
 
     /**
+     * @var ?bool $unsubscribeListOnly When true, unsubscribing from campaigns targeting this list or sequences triggered by joining this list removes only the targeted list(s) instead of unsubscribing the contact globally. Subscribers keep an option to unsubscribe from all emails on the preferences page.
+     */
+    #[JsonProperty('unsubscribeListOnly')]
+    public ?bool $unsubscribeListOnly;
+
+    /**
      * @param array{
      *   activeSubscriberCount?: ?int,
      *   allowMemberUnsubscribe?: ?bool,
@@ -67,6 +73,7 @@ class SubscriberList extends JsonSerializableType
      *   isPrivate?: ?bool,
      *   name?: ?string,
      *   subscriberCount?: ?int,
+     *   unsubscribeListOnly?: ?bool,
      * } $values
      */
     public function __construct(
@@ -80,6 +87,7 @@ class SubscriberList extends JsonSerializableType
         $this->isPrivate = $values['isPrivate'] ?? null;
         $this->name = $values['name'] ?? null;
         $this->subscriberCount = $values['subscriberCount'] ?? null;
+        $this->unsubscribeListOnly = $values['unsubscribeListOnly'] ?? null;
     }
 
     /**

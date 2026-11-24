@@ -36,8 +36,13 @@ use Sequenzy\Campaigns\Requests\GenerateVariationSectionOptionsCampaignsRequest;
 use Sequenzy\Campaigns\Types\GenerateVariationSectionOptionsCampaignsResponse;
 use Sequenzy\Campaigns\Types\GetCampaignsResponse;
 use Sequenzy\Campaigns\Types\GetAudienceCampaignsResponse;
+use Sequenzy\Campaigns\Requests\GetConditionalBlockStatsAliasCampaignsRequest;
+use Sequenzy\Campaigns\Types\GetConditionalBlockStatsAliasCampaignsResponse;
+use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Campaigns\Requests\ListCampaignsRequest;
 use Sequenzy\Campaigns\Types\ListCampaignsResponse;
+use Sequenzy\Campaigns\Requests\ListConditionalBlockSubscribersAliasCampaignsRequest;
+use Sequenzy\Campaigns\Types\ListConditionalBlockSubscribersAliasCampaignsResponse;
 use Sequenzy\Campaigns\Types\ListGoalsCampaignsResponse;
 use Sequenzy\Campaigns\Types\ListVariationsCampaignsResponse;
 use Sequenzy\Campaigns\Types\PauseCampaignsResponse;
@@ -1033,6 +1038,83 @@ class CampaignsClient
     }
 
     /**
+     * Alias for /metrics/campaigns/{campaignId}/conditional-blocks. Your key needs the campaigns:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->getConditionalBlockStatsAlias(
+     *     'campaignId',
+     *     new GetConditionalBlockStatsAliasCampaignsRequest([]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param GetConditionalBlockStatsAliasCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetConditionalBlockStatsAliasCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getConditionalBlockStatsAlias(string $campaignId, GetConditionalBlockStatsAliasCampaignsRequest $request = new GetConditionalBlockStatsAliasCampaignsRequest(), ?array $options = null): ?GetConditionalBlockStatsAliasCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetConditionalBlockStatsAliasCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Returns one variation, including its status while it generates. Discarded variations are not found.
      *
      * Example:
@@ -1148,6 +1230,94 @@ class CampaignsClient
                     return null;
                 }
                 return ListCampaignsResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for /metrics/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->campaigns->listConditionalBlockSubscribersAlias(
+     *     'campaignId',
+     *     'blockId',
+     *     new ListConditionalBlockSubscribersAliasCampaignsRequest([
+     *         'branch' => ListConditionalBlockSubscribersAliasCampaignsRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $campaignId Campaign ID
+     * @param string $blockId Conditional block ID
+     * @param ListConditionalBlockSubscribersAliasCampaignsRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListConditionalBlockSubscribersAliasCampaignsResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listConditionalBlockSubscribersAlias(string $campaignId, string $blockId, ListConditionalBlockSubscribersAliasCampaignsRequest $request, ?array $options = null): ?ListConditionalBlockSubscribersAliasCampaignsResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "campaigns/{$campaignId}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListConditionalBlockSubscribersAliasCampaignsResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);

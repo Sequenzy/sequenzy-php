@@ -3,15 +3,21 @@
 namespace Sequenzy\Analytics\Types;
 
 use Sequenzy\Core\Json\JsonSerializableType;
-use Sequenzy\Types\SequenceEnrollmentCounts;
 use Sequenzy\Core\Json\JsonProperty;
+use Sequenzy\Core\Types\ArrayType;
+use Sequenzy\Types\SequenceEnrollmentCounts;
 use Sequenzy\Types\SequencePausedEnrollmentCounts;
 use Sequenzy\Types\RecommendationMetrics;
 use Sequenzy\Types\EngagementStats;
-use Sequenzy\Core\Types\ArrayType;
 
 class GetSequenceMetricsResponse extends JsonSerializableType
 {
+    /**
+     * @var ?array<GetSequenceMetricsResponseBranchesItem> $branches Per-branch and per-condition decision breakdown in graph order, including per-path counts, shares, neverMatched flags, and lopsidedElse warnings. Returns null if branch analytics are temporarily unavailable so the rest of the stats response still succeeds.
+     */
+    #[JsonProperty('branches'), ArrayType([GetSequenceMetricsResponseBranchesItem::class])]
+    public ?array $branches;
+
     /**
      * @var ?SequenceEnrollmentCounts $enrollmentCounts
      */
@@ -68,6 +74,7 @@ class GetSequenceMetricsResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   branches?: ?array<GetSequenceMetricsResponseBranchesItem>,
      *   enrollmentCounts?: ?SequenceEnrollmentCounts,
      *   enrollmentSkipped?: ?GetSequenceMetricsResponseEnrollmentSkipped,
      *   pausedEnrollments?: ?SequencePausedEnrollmentCounts,
@@ -82,6 +89,7 @@ class GetSequenceMetricsResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->branches = $values['branches'] ?? null;
         $this->enrollmentCounts = $values['enrollmentCounts'] ?? null;
         $this->enrollmentSkipped = $values['enrollmentSkipped'] ?? null;
         $this->pausedEnrollments = $values['pausedEnrollments'] ?? null;

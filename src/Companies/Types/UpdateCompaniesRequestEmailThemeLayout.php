@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Layout settings. Every field is a number except contentAlign.
+ * Layout settings. Every field is a number except contentAlign and contentWidthMode.
  */
 class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
 {
@@ -71,6 +71,12 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
     public ?float $contentWidth;
 
     /**
+     * @var ?value-of<UpdateCompaniesRequestEmailThemeLayoutContentWidthMode> $contentWidthMode fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+     */
+    #[JsonProperty('contentWidthMode')]
+    public ?string $contentWidthMode;
+
+    /**
      * @var ?float $sectionPadding
      */
     #[JsonProperty('sectionPadding')]
@@ -88,6 +94,7 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
      *   containerPaddingY?: ?float,
      *   contentAlign?: ?value-of<UpdateCompaniesRequestEmailThemeLayoutContentAlign>,
      *   contentWidth?: ?float,
+     *   contentWidthMode?: ?value-of<UpdateCompaniesRequestEmailThemeLayoutContentWidthMode>,
      *   sectionPadding?: ?float,
      * } $values
      */
@@ -104,6 +111,7 @@ class UpdateCompaniesRequestEmailThemeLayout extends JsonSerializableType
         $this->containerPaddingY = $values['containerPaddingY'] ?? null;
         $this->contentAlign = $values['contentAlign'] ?? null;
         $this->contentWidth = $values['contentWidth'] ?? null;
+        $this->contentWidthMode = $values['contentWidthMode'] ?? null;
         $this->sectionPadding = $values['sectionPadding'] ?? null;
     }
 

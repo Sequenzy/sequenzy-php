@@ -14,14 +14,22 @@ class EmailAiStyleCanvasThemeLayout extends JsonSerializableType
     public ?string $contentAlign;
 
     /**
+     * @var ?value-of<EmailAiStyleCanvasThemeLayoutContentWidthMode> $contentWidthMode
+     */
+    #[JsonProperty('contentWidthMode')]
+    public ?string $contentWidthMode;
+
+    /**
      * @param array{
      *   contentAlign?: ?value-of<EmailAiStyleCanvasThemeLayoutContentAlign>,
+     *   contentWidthMode?: ?value-of<EmailAiStyleCanvasThemeLayoutContentWidthMode>,
      * } $values
      */
     public function __construct(
         array $values = [],
     ) {
         $this->contentAlign = $values['contentAlign'] ?? null;
+        $this->contentWidthMode = $values['contentWidthMode'] ?? null;
     }
 
     /**

@@ -9,6 +9,7 @@ enum AccountHealthInsightDetector: string
     case CampaignGap = "campaign_gap";
     case StaleCampaignDrafts = "stale_campaign_drafts";
     case UnderperformingSequenceEmail = "underperforming_sequence_email";
+    case DeadConditionalEmailRule = "dead_conditional_email_rule";
     case DeliverabilitySpike = "deliverability_spike";
     case SendingDomainFailing = "sending_domain_failing";
     case MissingSequence = "missing_sequence";

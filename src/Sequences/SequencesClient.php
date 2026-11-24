@@ -48,6 +48,9 @@ use Sequenzy\Sequences\Requests\GenerateEmailVariationsSequencesRequest;
 use Sequenzy\Sequences\Types\GenerateEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Types\GetSequencesResponse;
 use Sequenzy\Sequences\Types\GetAudienceEnrollmentSequencesResponse;
+use Sequenzy\Sequences\Requests\GetConditionalBlockOverviewAliasSequencesRequest;
+use Sequenzy\Sequences\Types\GetConditionalBlockOverviewAliasSequencesResponse;
+use Sequenzy\Core\Json\JsonSerializer;
 use Sequenzy\Sequences\Requests\GetDefinitionSequencesRequest;
 use Sequenzy\Sequences\Types\GetDefinitionSequencesResponse;
 use Sequenzy\Sequences\Requests\GetDefinitionByIdSequencesRequest;
@@ -55,9 +58,12 @@ use Sequenzy\Sequences\Types\GetDefinitionByIdSequencesResponse;
 use Sequenzy\Types\SequenceEnrollmentGetResponse;
 use Sequenzy\Types\SequenceEnrollmentRealignJobResponse;
 use Sequenzy\Sequences\Types\GetInboundWebhookSequencesResponse;
+use Sequenzy\Sequences\Requests\GetOutcomesAliasSequencesRequest;
+use Sequenzy\Sequences\Types\GetOutcomesAliasSequencesResponse;
 use Sequenzy\Sequences\Requests\GetStatsSequencesRequest;
 use Sequenzy\Sequences\Types\GetStatsSequencesResponse;
-use Sequenzy\Core\Json\JsonSerializer;
+use Sequenzy\Sequences\Requests\GetStepConditionalBlockStatsAliasSequencesRequest;
+use Sequenzy\Sequences\Types\GetStepConditionalBlockStatsAliasSequencesResponse;
 use Sequenzy\Types\SequenceTestRunResponse;
 use Sequenzy\Sequences\Requests\ListSequencesRequest;
 use Sequenzy\Sequences\Types\ListSequencesResponse;
@@ -67,6 +73,10 @@ use Sequenzy\Sequences\Types\ListEmailVariationsSequencesResponse;
 use Sequenzy\Sequences\Requests\ListEnrollmentsSequencesRequest;
 use Sequenzy\Types\SequenceEnrollmentListResponse;
 use Sequenzy\Sequences\Types\ListGoalsSequencesResponse;
+use Sequenzy\Sequences\Requests\ListPathSubscribersAliasSequencesRequest;
+use Sequenzy\Sequences\Types\ListPathSubscribersAliasSequencesResponse;
+use Sequenzy\Sequences\Requests\ListStepConditionalBlockSubscribersAliasSequencesRequest;
+use Sequenzy\Sequences\Types\ListStepConditionalBlockSubscribersAliasSequencesResponse;
 use Sequenzy\Sequences\Requests\ListTemplatesSequencesRequest;
 use Sequenzy\Sequences\Types\ListTemplatesSequencesResponse;
 use Sequenzy\Sequences\Requests\SequenceEnrollmentMoveRequest;
@@ -1527,6 +1537,74 @@ class SequencesClient
     }
 
     /**
+     * Alias for /metrics/sequences/{sequenceId}/conditional-blocks.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getConditionalBlockOverviewAlias(
+     *     'sequenceId',
+     *     new GetConditionalBlockOverviewAliasSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param GetConditionalBlockOverviewAliasSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetConditionalBlockOverviewAliasSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getConditionalBlockOverviewAlias(string $sequenceId, GetConditionalBlockOverviewAliasSequencesRequest $request = new GetConditionalBlockOverviewAliasSequencesRequest(), ?array $options = null): ?GetConditionalBlockOverviewAliasSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetConditionalBlockOverviewAliasSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * Opt-in sequences-as-code / GitOps endpoint: returns the sequence with this key as one definition document, in the readable format unless format=raw. For normal inspection and editing, use GET /api/v1/sequences/{sequenceId} instead. Pushing the document back unchanged changes nothing.
      *
      * Example:
@@ -1820,6 +1898,86 @@ class SequencesClient
     }
 
     /**
+     * Alias for /metrics/sequences/{sequenceId}/outcomes. Your key needs the sequences:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getOutcomesAlias(
+     *     'sequenceId',
+     *     new GetOutcomesAliasSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param GetOutcomesAliasSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetOutcomesAliasSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getOutcomesAlias(string $sequenceId, GetOutcomesAliasSequencesRequest $request = new GetOutcomesAliasSequencesRequest(), ?array $options = null): ?GetOutcomesAliasSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->conversionWindowDays != null) {
+            $query['conversionWindowDays'] = $request->conversionWindowDays;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->eventName != null) {
+            $query['eventName'] = $request->eventName;
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->nodeId != null) {
+            $query['nodeId'] = $request->nodeId;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/outcomes",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetOutcomesAliasSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
      * The schedule that re-enrolls an audience into a manual-trigger sequence, with a readable summary and the next run times. `recurringEnrollment` is null when the sequence has no schedule. Requires `sequences:read`.
      *
      * Example:
@@ -1932,6 +2090,85 @@ class SequencesClient
                     return null;
                 }
                 return GetStatsSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks. Your key needs the sequences:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->getStepConditionalBlockStatsAlias(
+     *     'sequenceId',
+     *     'nodeId',
+     *     new GetStepConditionalBlockStatsAliasSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param string $nodeId
+     * @param GetStepConditionalBlockStatsAliasSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?GetStepConditionalBlockStatsAliasSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function getStepConditionalBlockStatsAlias(string $sequenceId, string $nodeId, GetStepConditionalBlockStatsAliasSequencesRequest $request = new GetStepConditionalBlockStatsAliasSequencesRequest(), ?array $options = null): ?GetStepConditionalBlockStatsAliasSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/steps/{$nodeId}/conditional-blocks",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return GetStepConditionalBlockStatsAliasSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
@@ -2329,6 +2566,187 @@ class SequencesClient
                     return null;
                 }
                 return ListGoalsSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for /metrics/sequences/{sequenceId}/paths/{nodeId}/subscribers. Your key needs the analytics:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->listPathSubscribersAlias(
+     *     'sequenceId',
+     *     'nodeId',
+     *     new ListPathSubscribersAliasSequencesRequest([]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId Sequence ID
+     * @param string $nodeId Branch, condition, or step node ID
+     * @param ListPathSubscribersAliasSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListPathSubscribersAliasSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listPathSubscribersAlias(string $sequenceId, string $nodeId, ListPathSubscribersAliasSequencesRequest $request = new ListPathSubscribersAliasSequencesRequest(), ?array $options = null): ?ListPathSubscribersAliasSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        if ($request->bucket != null) {
+            $query['bucket'] = $request->bucket;
+        }
+        if ($request->conversionWindowDays != null) {
+            $query['conversionWindowDays'] = $request->conversionWindowDays;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->eventName != null) {
+            $query['eventName'] = $request->eventName;
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->pathId != null) {
+            $query['pathId'] = $request->pathId;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/paths/{$nodeId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListPathSubscribersAliasSequencesResponse::fromJson($json);
+            }
+        } catch (JsonException $e) {
+            throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
+        } catch (ClientExceptionInterface $e) {
+            throw new SequenzyException(message: $e->getMessage(), previous: $e);
+        }
+        throw new SequenzyApiException(
+            message: 'API request failed',
+            statusCode: $statusCode,
+            body: $response->getBody()->getContents(),
+        );
+    }
+
+    /**
+     * Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+     *
+     * Example:
+     * ```php
+     * $client->sequences->listStepConditionalBlockSubscribersAlias(
+     *     'sequenceId',
+     *     'nodeId',
+     *     'blockId',
+     *     new ListStepConditionalBlockSubscribersAliasSequencesRequest([
+     *         'branch' => ListStepConditionalBlockSubscribersAliasSequencesRequestBranch::If_->value,
+     *     ]),
+     * );
+     * ```
+     *
+     * @param string $sequenceId
+     * @param string $nodeId
+     * @param string $blockId
+     * @param ListStepConditionalBlockSubscribersAliasSequencesRequest $request
+     * @param ?array{
+     *   baseUrl?: string,
+     *   maxRetries?: int,
+     *   timeout?: float,
+     *   headers?: array<string, string>,
+     *   queryParameters?: array<string, mixed>,
+     *   bodyProperties?: array<string, mixed>,
+     * } $options
+     * @return ?ListStepConditionalBlockSubscribersAliasSequencesResponse
+     * @throws SequenzyException
+     * @throws SequenzyApiException
+     */
+    public function listStepConditionalBlockSubscribersAlias(string $sequenceId, string $nodeId, string $blockId, ListStepConditionalBlockSubscribersAliasSequencesRequest $request, ?array $options = null): ?ListStepConditionalBlockSubscribersAliasSequencesResponse
+    {
+        $options = array_merge($this->options, $options ?? []);
+        $query = [];
+        $query['branch'] = $request->branch;
+        if ($request->abTestVariantId != null) {
+            $query['abTestVariantId'] = $request->abTestVariantId;
+        }
+        if ($request->end != null) {
+            $query['end'] = JsonSerializer::serializeDateTime($request->end);
+        }
+        if ($request->goalId != null) {
+            $query['goalId'] = $request->goalId;
+        }
+        if ($request->includeMachineEngagement != null) {
+            $query['includeMachineEngagement'] = $request->includeMachineEngagement;
+        }
+        if ($request->limit != null) {
+            $query['limit'] = $request->limit;
+        }
+        if ($request->page != null) {
+            $query['page'] = $request->page;
+        }
+        if ($request->period != null) {
+            $query['period'] = $request->period;
+        }
+        if ($request->start != null) {
+            $query['start'] = JsonSerializer::serializeDateTime($request->start);
+        }
+        try {
+            $response = $this->client->sendRequest(
+                new JsonApiRequest(
+                    baseUrl: $options['baseUrl'] ?? $this->client->options['baseUrl'] ?? Environments::Default_->value,
+                    path: "sequences/{$sequenceId}/steps/{$nodeId}/conditional-blocks/{$blockId}/subscribers",
+                    method: HttpMethod::GET,
+                    query: $query,
+                ),
+                $options,
+            );
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 200 && $statusCode < 400) {
+                $json = $response->getBody()->getContents();
+                if (empty($json)) {
+                    return null;
+                }
+                return ListStepConditionalBlockSubscribersAliasSequencesResponse::fromJson($json);
             }
         } catch (JsonException $e) {
             throw new SequenzyException(message: "Failed to deserialize response: {$e->getMessage()}", previous: $e);
