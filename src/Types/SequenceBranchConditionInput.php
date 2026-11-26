@@ -15,6 +15,18 @@ class SequenceBranchConditionInput extends JsonSerializableType
     public ?string $activityScope;
 
     /**
+     * @var ?string $automationId Target sequence ID (must be another sequence in the same company) for in_sequence, not_in_sequence, completed_sequence, and not_completed_sequence conditions.
+     */
+    #[JsonProperty('automationId')]
+    public ?string $automationId;
+
+    /**
+     * @var ?string $automationName Optional display name for sequence-membership conditions.
+     */
+    #[JsonProperty('automationName')]
+    public ?string $automationName;
+
+    /**
      * @var ?value-of<SequenceBranchConditionInputConditionType> $conditionType Condition for this path. Required on a condition split; must be omitted when the branch sets splitMode to random, where paths are chosen by percentage.
      */
     #[JsonProperty('conditionType')]
@@ -101,6 +113,8 @@ class SequenceBranchConditionInput extends JsonSerializableType
     /**
      * @param array{
      *   activityScope?: ?value-of<SequenceBranchConditionInputActivityScope>,
+     *   automationId?: ?string,
+     *   automationName?: ?string,
      *   conditionType?: ?value-of<SequenceBranchConditionInputConditionType>,
      *   eventName?: ?string,
      *   fieldName?: ?string,
@@ -121,6 +135,8 @@ class SequenceBranchConditionInput extends JsonSerializableType
         array $values = [],
     ) {
         $this->activityScope = $values['activityScope'] ?? null;
+        $this->automationId = $values['automationId'] ?? null;
+        $this->automationName = $values['automationName'] ?? null;
         $this->conditionType = $values['conditionType'] ?? null;
         $this->eventName = $values['eventName'] ?? null;
         $this->fieldName = $values['fieldName'] ?? null;

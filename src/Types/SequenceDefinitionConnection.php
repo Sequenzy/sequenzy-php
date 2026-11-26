@@ -9,7 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 class SequenceDefinitionConnection extends JsonSerializableType
 {
     /**
-     * @var ?array<string, mixed> $condition Branch lane, for example {"branchId":"else"} on a logic_branch step.
+     * @var ?array<string, mixed> $condition Branch lane, for example {"branchId":"else"} on a logic_branch step, or {"branchId":"matched"} and {"branchId":"timed_out"} on a logic_wait_until step whose timeout continues.
      */
     #[JsonProperty('condition'), ArrayType(['string' => 'mixed'])]
     public ?array $condition;

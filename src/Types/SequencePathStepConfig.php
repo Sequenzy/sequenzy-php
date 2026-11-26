@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 
 /**
- * Config for advanced nodeType steps. Required fields depend on nodeType: action_add_tag and action_remove_tag need tagId or tagName; action_add_to_list and action_remove_from_list need listId; action_update_attributes uses the Update Subscriber fields and may reference the trigger event payload; logic_wait_for_event needs eventName plus optional timeoutDays and timeoutAction; logic_condition needs conditionType plus that condition's resource field; action_webhook needs an HTTPS url plus optional method, headers, body, resultKey, and onError; action_ai needs prompt, resultKey, and outputFields plus optional includeTags, includeEventProperties, includeRecentEvents, recentEventLimit, includeAttributes, and onError; logic_delay uses delayDays, delayHours, and delayMinutes. Fields that do not apply to the node type are dropped.
+ * Config for advanced nodeType steps. Required fields depend on nodeType: action_add_tag and action_remove_tag need tagId or tagName; action_add_to_list and action_remove_from_list need listId; action_update_attributes uses the Update Subscriber fields and may reference the trigger event payload; logic_wait_for_event needs eventName plus optional timeoutDays and timeoutAction; logic_wait_until needs conditions plus optional conditionLogic, timeout and timeoutAction; a logic_wait_until whose timeout continues gets a matched path and a "Timed out" path (edge branchId matched and timed_out) that both lead to the next step; logic_condition needs conditionType plus that condition's resource field; action_webhook needs an HTTPS url plus optional method, headers, body, resultKey, and onError; action_ai needs prompt, resultKey, and outputFields plus optional includeTags, includeEventProperties, includeRecentEvents, recentEventLimit, includeAttributes, and onError; logic_delay uses delayDays, delayHours, and delayMinutes. Fields that do not apply to the node type are dropped.
  */
 class SequencePathStepConfig extends JsonSerializableType
 {
@@ -21,13 +21,37 @@ class SequencePathStepConfig extends JsonSerializableType
     public ?string $activityScope;
 
     /**
+     * @var ?string $automationId logic_condition. Target sequence ID (another sequence in the same company) for in_sequence, not_in_sequence, completed_sequence, and not_completed_sequence.
+     */
+    #[JsonProperty('automationId')]
+    public ?string $automationId;
+
+    /**
+     * @var ?string $automationName Optional cached target sequence display name.
+     */
+    #[JsonProperty('automationName')]
+    public ?string $automationName;
+
+    /**
      * @var ?string $body action_webhook. Optional JSON body template for POST/PUT/PATCH requests. Must be valid JSON as written, with merge tags inside quoted string values; a tag in a bare value position is rejected. Tags are resolved at execution time. When omitted, a default payload with the subscriber and sequence context is sent.
      */
     #[JsonProperty('body')]
     public ?string $body;
 
     /**
-     * @var ?value-of<SequencePathStepConfigConditionType> $conditionType logic_condition. Condition evaluated before continuing. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
+     * @var ?value-of<SequencePathStepConfigConditionLogic> $conditionLogic logic_wait_until. Continue when all rules match, or when any one does. Defaults to all.
+     */
+    #[JsonProperty('conditionLogic')]
+    public ?string $conditionLogic;
+
+    /**
+     * @var ?array<SequencePathStepConfigConditionsItem> $conditions logic_wait_until. Rules the contact must match before continuing, each with the same fields as a logic_condition step (conditionType plus tagId or tagName, listId, segmentId, eventName, linkUrl, activityScope, fieldName and fieldValue as that type needs). A contact that already matches continues at once. Others are re-checked when their tags, lists, attributes or events change, and at least once an hour. Lists and segments must exist in this company; listName and segmentName are filled in for you.
+     */
+    #[JsonProperty('conditions'), ArrayType([SequencePathStepConfigConditionsItem::class])]
+    public ?array $conditions;
+
+    /**
+     * @var ?value-of<SequencePathStepConfigConditionType> $conditionType logic_condition. Condition evaluated before continuing. in_sequence, not_in_sequence, completed_sequence and not_completed_sequence require automationId pointing to another sequence in the same company. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
      */
     #[JsonProperty('conditionType')]
     public ?string $conditionType;
@@ -177,7 +201,13 @@ class SequencePathStepConfig extends JsonSerializableType
     public ?string $tagName;
 
     /**
-     * @var ?value-of<SequencePathStepConfigTimeoutAction> $timeoutAction logic_wait_for_event. Continue to the next node or exit the sequence on timeout. Defaults to continue.
+     * @var ?SequencePathStepConfigTimeout $timeout logic_wait_until. Longest wait. Omit or send null to wait until the contact matches.
+     */
+    #[JsonProperty('timeout')]
+    public ?SequencePathStepConfigTimeout $timeout;
+
+    /**
+     * @var ?value-of<SequencePathStepConfigTimeoutAction> $timeoutAction logic_wait_for_event and logic_wait_until. Continue to the next node (the "Timed out" path for logic_wait_until) or exit the sequence on timeout. Defaults to continue.
      */
     #[JsonProperty('timeoutAction')]
     public ?string $timeoutAction;
@@ -202,7 +232,11 @@ class SequencePathStepConfig extends JsonSerializableType
      *   lastName?: ?string,
      *   status?: ?value-of<SubscriberUpdateConfigStatus>,
      *   activityScope?: ?value-of<SequencePathStepConfigActivityScope>,
+     *   automationId?: ?string,
+     *   automationName?: ?string,
      *   body?: ?string,
+     *   conditionLogic?: ?value-of<SequencePathStepConfigConditionLogic>,
+     *   conditions?: ?array<SequencePathStepConfigConditionsItem>,
      *   conditionType?: ?value-of<SequencePathStepConfigConditionType>,
      *   delayDays?: ?float,
      *   delayHours?: ?float,
@@ -228,6 +262,7 @@ class SequencePathStepConfig extends JsonSerializableType
      *   segmentName?: ?string,
      *   tagId?: ?string,
      *   tagName?: ?string,
+     *   timeout?: ?SequencePathStepConfigTimeout,
      *   timeoutAction?: ?value-of<SequencePathStepConfigTimeoutAction>,
      *   timeoutDays?: ?float,
      *   url?: ?string,
@@ -242,7 +277,11 @@ class SequencePathStepConfig extends JsonSerializableType
         $this->lastName = $values['lastName'] ?? null;
         $this->status = $values['status'] ?? null;
         $this->activityScope = $values['activityScope'] ?? null;
+        $this->automationId = $values['automationId'] ?? null;
+        $this->automationName = $values['automationName'] ?? null;
         $this->body = $values['body'] ?? null;
+        $this->conditionLogic = $values['conditionLogic'] ?? null;
+        $this->conditions = $values['conditions'] ?? null;
         $this->conditionType = $values['conditionType'] ?? null;
         $this->delayDays = $values['delayDays'] ?? null;
         $this->delayHours = $values['delayHours'] ?? null;
@@ -268,6 +307,7 @@ class SequencePathStepConfig extends JsonSerializableType
         $this->segmentName = $values['segmentName'] ?? null;
         $this->tagId = $values['tagId'] ?? null;
         $this->tagName = $values['tagName'] ?? null;
+        $this->timeout = $values['timeout'] ?? null;
         $this->timeoutAction = $values['timeoutAction'] ?? null;
         $this->timeoutDays = $values['timeoutDays'] ?? null;
         $this->url = $values['url'] ?? null;

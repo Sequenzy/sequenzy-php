@@ -15,6 +15,7 @@ enum SequenceBranchPathStepInputNodeType: string
     case ActionRemoveFromList = "action_remove_from_list";
     case ActionUpdateAttributes = "action_update_attributes";
     case LogicWaitForEvent = "logic_wait_for_event";
+    case LogicWaitUntil = "logic_wait_until";
     case LogicCondition = "logic_condition";
     case ActionWebhook = "action_webhook";
     case ActionAi = "action_ai";

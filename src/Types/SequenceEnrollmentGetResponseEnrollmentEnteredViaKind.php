@@ -7,6 +7,7 @@ enum SequenceEnrollmentGetResponseEnrollmentEnteredViaKind: string
     case List_ = "list";
     case Tag = "tag";
     case Segment = "segment";
+    case Field = "field";
     case Event = "event";
     case Inactivity = "inactivity";
     case Frequency = "frequency";

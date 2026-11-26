@@ -24945,6 +24945,46 @@ $client->sequences->create(
 <dl>
 <dd>
 
+**$fieldFromValue:** `?string` — Optional previous value required before a field_changed trigger fires.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldName:** `?string` — Contact custom attribute name for field_changed triggers. Supports attribute names with spaces and nested dot paths.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldOperator:** `?string` — Matching operator for field_changed triggers. Defaults to any_change.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldValue:** `?string` — Target value for scalar field_changed operators (equals, not_equals, contains, not_contains, greater_than, less_than).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldValues:** `?array` — Target values for field_changed triggers with fieldOperator one_of. Changing to any of these values enrolls the contact.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$frequencyCapEnabled:** `?bool` — Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
     
 </dd>
@@ -29460,6 +29500,46 @@ $client->sequences->update(
 <dd>
 
 **$eventName:** `?string` — Event name for event_received, inbound_webhook, inactivity, or frequency triggers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldFromValue:** `?string` — Optional prior value required before a replacement field_changed trigger fires.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldName:** `?string` — Contact custom attribute name for a replacement field_changed trigger.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldOperator:** `?string` — Matching operator for a replacement field_changed trigger. Defaults to any_change.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldValue:** `?string` — Target value for scalar field_changed operators on a trigger replacement.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$fieldValues:** `?array` — Target values for a replacement field_changed trigger with fieldOperator one_of.
     
 </dd>
 </dl>

@@ -168,7 +168,7 @@ class SequenceBranchPathStepInput extends JsonSerializableType
     public ?string $title;
 
     /**
-     * @var ?value-of<SequenceBranchPathStepInputType> $type Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
+     * @var ?value-of<SequenceBranchPathStepInputType> $type Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, delay for a standalone wait, or wait_until to hold contacts until they match conditions.
      */
     #[JsonProperty('type')]
     public ?string $type;

@@ -7,6 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Sequences\Types\SequenceCreateRequestEmailStyle;
 use Sequenzy\Types\SequenceEnrollmentMode;
+use Sequenzy\Sequences\Types\SequenceCreateRequestFieldOperator;
 use Sequenzy\Sequences\Types\SequenceCreateRequestInactivityBaseline;
 use Sequenzy\Types\SequenceKeyDates;
 use Sequenzy\Sequences\Types\SequenceCreateRequestListScope;
@@ -77,6 +78,36 @@ class SequenceCreateRequest extends JsonSerializableType
      */
     #[JsonProperty('eventName')]
     public ?string $eventName;
+
+    /**
+     * @var ?string $fieldFromValue Optional previous value required before a field_changed trigger fires.
+     */
+    #[JsonProperty('fieldFromValue')]
+    public ?string $fieldFromValue;
+
+    /**
+     * @var ?string $fieldName Contact custom attribute name for field_changed triggers. Supports attribute names with spaces and nested dot paths.
+     */
+    #[JsonProperty('fieldName')]
+    public ?string $fieldName;
+
+    /**
+     * @var ?value-of<SequenceCreateRequestFieldOperator> $fieldOperator Matching operator for field_changed triggers. Defaults to any_change.
+     */
+    #[JsonProperty('fieldOperator')]
+    public ?string $fieldOperator;
+
+    /**
+     * @var ?string $fieldValue Target value for scalar field_changed operators (equals, not_equals, contains, not_contains, greater_than, less_than).
+     */
+    #[JsonProperty('fieldValue')]
+    public ?string $fieldValue;
+
+    /**
+     * @var ?array<string> $fieldValues Target values for field_changed triggers with fieldOperator one_of. Changing to any of these values enrolls the contact.
+     */
+    #[JsonProperty('fieldValues'), ArrayType(['string'])]
+    public ?array $fieldValues;
 
     /**
      * @var ?bool $frequencyCapEnabled Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
@@ -277,6 +308,11 @@ class SequenceCreateRequest extends JsonSerializableType
      *   enrollmentFieldPath?: ?string,
      *   enrollmentMode?: ?value-of<SequenceEnrollmentMode>,
      *   eventName?: ?string,
+     *   fieldFromValue?: ?string,
+     *   fieldName?: ?string,
+     *   fieldOperator?: ?value-of<SequenceCreateRequestFieldOperator>,
+     *   fieldValue?: ?string,
+     *   fieldValues?: ?array<string>,
      *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
@@ -322,6 +358,11 @@ class SequenceCreateRequest extends JsonSerializableType
         $this->enrollmentFieldPath = $values['enrollmentFieldPath'] ?? null;
         $this->enrollmentMode = $values['enrollmentMode'] ?? null;
         $this->eventName = $values['eventName'] ?? null;
+        $this->fieldFromValue = $values['fieldFromValue'] ?? null;
+        $this->fieldName = $values['fieldName'] ?? null;
+        $this->fieldOperator = $values['fieldOperator'] ?? null;
+        $this->fieldValue = $values['fieldValue'] ?? null;
+        $this->fieldValues = $values['fieldValues'] ?? null;
         $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;

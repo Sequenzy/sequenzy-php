@@ -12,6 +12,7 @@ enum SequenceBranchPathStepInputType: string
     case Discount = "discount";
     case UpdateSubscriber = "update_subscriber";
     case Condition = "condition";
+    case WaitUntil = "wait_until";
     case Webhook = "webhook";
     case Ai = "ai";
 }

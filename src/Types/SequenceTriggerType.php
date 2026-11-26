@@ -8,6 +8,7 @@ enum SequenceTriggerType: string
     case TagAdded = "tag_added";
     case SegmentEntered = "segment_entered";
     case SegmentExited = "segment_exited";
+    case FieldChanged = "field_changed";
     case EventReceived = "event_received";
     case InboundWebhook = "inbound_webhook";
     case Inactivity = "inactivity";

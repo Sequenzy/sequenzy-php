@@ -9,6 +9,7 @@ use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Types\SequenceBranchInput;
 use Sequenzy\Types\SequenceEmailUpdateInput;
 use Sequenzy\Types\SequenceEnrollmentMode;
+use Sequenzy\Sequences\Types\SequenceUpdateRequestFieldOperator;
 use Sequenzy\Types\SequenceGraphEditInput;
 use Sequenzy\Sequences\Types\SequenceUpdateRequestInactivityBaseline;
 use Sequenzy\Types\SequenceLinearStepInsertionInput;
@@ -101,6 +102,36 @@ class SequenceUpdateRequest extends JsonSerializableType
      */
     #[JsonProperty('eventName')]
     public ?string $eventName;
+
+    /**
+     * @var ?string $fieldFromValue Optional prior value required before a replacement field_changed trigger fires.
+     */
+    #[JsonProperty('fieldFromValue')]
+    public ?string $fieldFromValue;
+
+    /**
+     * @var ?string $fieldName Contact custom attribute name for a replacement field_changed trigger.
+     */
+    #[JsonProperty('fieldName')]
+    public ?string $fieldName;
+
+    /**
+     * @var ?value-of<SequenceUpdateRequestFieldOperator> $fieldOperator Matching operator for a replacement field_changed trigger. Defaults to any_change.
+     */
+    #[JsonProperty('fieldOperator')]
+    public ?string $fieldOperator;
+
+    /**
+     * @var ?string $fieldValue Target value for scalar field_changed operators on a trigger replacement.
+     */
+    #[JsonProperty('fieldValue')]
+    public ?string $fieldValue;
+
+    /**
+     * @var ?array<string> $fieldValues Target values for a replacement field_changed trigger with fieldOperator one_of.
+     */
+    #[JsonProperty('fieldValues'), ArrayType(['string'])]
+    public ?array $fieldValues;
 
     /**
      * @var ?bool $frequencyCapEnabled Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact already at the cap, and the contact continues to the next step. Transactional steps are never skipped. Omit to leave it unchanged.
@@ -327,6 +358,11 @@ class SequenceUpdateRequest extends JsonSerializableType
      *   enrollmentMode?: ?value-of<SequenceEnrollmentMode>,
      *   enrollmentPaused?: ?bool,
      *   eventName?: ?string,
+     *   fieldFromValue?: ?string,
+     *   fieldName?: ?string,
+     *   fieldOperator?: ?value-of<SequenceUpdateRequestFieldOperator>,
+     *   fieldValue?: ?string,
+     *   fieldValues?: ?array<string>,
      *   frequencyCapEnabled?: ?bool,
      *   fromEmail?: ?string,
      *   fromName?: ?string,
@@ -380,6 +416,11 @@ class SequenceUpdateRequest extends JsonSerializableType
         $this->enrollmentMode = $values['enrollmentMode'] ?? null;
         $this->enrollmentPaused = $values['enrollmentPaused'] ?? null;
         $this->eventName = $values['eventName'] ?? null;
+        $this->fieldFromValue = $values['fieldFromValue'] ?? null;
+        $this->fieldName = $values['fieldName'] ?? null;
+        $this->fieldOperator = $values['fieldOperator'] ?? null;
+        $this->fieldValue = $values['fieldValue'] ?? null;
+        $this->fieldValues = $values['fieldValues'] ?? null;
         $this->frequencyCapEnabled = $values['frequencyCapEnabled'] ?? null;
         $this->fromEmail = $values['fromEmail'] ?? null;
         $this->fromName = $values['fromName'] ?? null;
