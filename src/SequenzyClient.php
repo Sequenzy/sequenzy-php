@@ -65,6 +65,7 @@ use Sequenzy\Core\Json\JsonApiRequest;
 use Sequenzy\Core\Client\HttpMethod;
 use JsonException;
 use Psr\Http\Client\ClientExceptionInterface;
+use Exception;
 
 class SequenzyClient
 {
@@ -368,13 +369,12 @@ class SequenzyClient
         ?string $apiKey = null,
         ?array $options = null,
     ) {
+        $apiKey ??= $this->getFromEnvOrThrow('SEQUENZY_API_KEY', 'Please pass in apiKey or set the environment variable SEQUENZY_API_KEY.');
         $defaultHeaders = [
+            'Authorization' => "Bearer $apiKey",
             'X-Fern-Language' => 'PHP',
             'X-Fern-SDK-Name' => 'Sequenzy',
         ];
-        if ($apiKey != null) {
-            $defaultHeaders['Authorization'] = "Bearer $apiKey";
-        }
 
         $this->options = $options ?? [];
 
@@ -493,5 +493,16 @@ class SequenzyClient
             statusCode: $statusCode,
             body: $response->getBody()->getContents(),
         );
+    }
+
+    /**
+     * @param string $env
+     * @param string $message
+     * @return string
+     */
+    private function getFromEnvOrThrow(string $env, string $message): string
+    {
+        $value = getenv($env);
+        return $value ? (string) $value : throw new Exception($message);
     }
 }

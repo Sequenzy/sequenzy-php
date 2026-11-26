@@ -7,6 +7,7 @@ enum CompanyEmailBrandingReason: string
     case FreePlan = "free_plan";
     case PaidPlan = "paid_plan";
     case EmailPartner = "email_partner";
+    case CreditGrant = "credit_grant";
     case InactiveSubscription = "inactive_subscription";
     case CompanyNotFound = "company_not_found";
 }

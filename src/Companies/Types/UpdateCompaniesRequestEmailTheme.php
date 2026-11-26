@@ -12,6 +12,12 @@ use Sequenzy\Core\Types\ArrayType;
 class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
 {
     /**
+     * @var ?UpdateCompaniesRequestEmailThemeBackgroundImage $backgroundImage Optional email-level background image painted over the solid fallback color (classic Windows Outlook falls back to the solid color). Pass null to remove it.
+     */
+    #[JsonProperty('backgroundImage')]
+    public ?UpdateCompaniesRequestEmailThemeBackgroundImage $backgroundImage;
+
+    /**
      * @var ?value-of<UpdateCompaniesRequestEmailThemeButtonStyle> $buttonStyle How primary buttons are filled. "outline" renders them as a transparent box with a brand-color border; "solid" (default) is the classic filled button.
      */
     #[JsonProperty('buttonStyle')]
@@ -67,6 +73,7 @@ class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
 
     /**
      * @param array{
+     *   backgroundImage?: ?UpdateCompaniesRequestEmailThemeBackgroundImage,
      *   buttonStyle?: ?value-of<UpdateCompaniesRequestEmailThemeButtonStyle>,
      *   chromePack?: ?value-of<UpdateCompaniesRequestEmailThemeChromePack>,
      *   colors?: ?UpdateCompaniesRequestEmailThemeColors,
@@ -81,6 +88,7 @@ class UpdateCompaniesRequestEmailTheme extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->backgroundImage = $values['backgroundImage'] ?? null;
         $this->buttonStyle = $values['buttonStyle'] ?? null;
         $this->chromePack = $values['chromePack'] ?? null;
         $this->colors = $values['colors'] ?? null;

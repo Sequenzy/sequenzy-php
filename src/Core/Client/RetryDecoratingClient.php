@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 class RetryDecoratingClient implements ClientInterface
 {
     private const RETRY_STATUS_CODES = [408, 429];
+    private const IDEMPOTENT_HTTP_METHODS = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'];
     private const MAX_RETRY_DELAY = 60000; // 60 seconds in milliseconds
     private const JITTER_FACTOR = 0.2; // 20% random jitter
 
@@ -73,11 +74,11 @@ class RetryDecoratingClient implements ClientInterface
         while (true) {
             try {
                 $lastResponse = $this->doSend($request, $timeout);
-                if (!$this->shouldRetry($retryAttempt, $maxRetries, $lastResponse)) {
+                if (!$this->shouldRetry($retryAttempt, $maxRetries, $lastResponse, $request)) {
                     return $lastResponse;
                 }
             } catch (ClientExceptionInterface $e) {
-                if ($retryAttempt >= $maxRetries) {
+                if ($retryAttempt >= $maxRetries || !$this->canRetryUnsafeFailure($request)) {
                     throw $e;
                 }
             }
@@ -140,16 +141,30 @@ class RetryDecoratingClient implements ClientInterface
      * @param ?ResponseInterface $response
      * @return bool
      */
+    private function canRetryUnsafeFailure(RequestInterface $request): bool
+    {
+        if (in_array(strtoupper($request->getMethod()), self::IDEMPOTENT_HTTP_METHODS, true)) {
+            return true;
+        }
+
+        return trim($request->getHeaderLine('Idempotency-Key')) !== '';
+    }
+
     private function shouldRetry(
         int $retryAttempt,
         int $maxRetries,
         ?ResponseInterface $response = null,
+        ?RequestInterface $request = null,
     ): bool {
         if ($retryAttempt >= $maxRetries) {
             return false;
         }
 
         if ($response !== null) {
+            if ($request !== null && !$this->canRetryUnsafeFailure($request)) {
+                return $response->getStatusCode() === 429;
+            }
+
             return $response->getStatusCode() >= 500 ||
                 in_array($response->getStatusCode(), self::RETRY_STATUS_CODES);
         }

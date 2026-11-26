@@ -4,5 +4,5 @@ namespace Sequenzy\Types;
 
 enum GetMcpDiscoveryResponseDescription: string
 {
-    case EmailMarketingForSaaSAndEcommerce = "Email marketing for SaaS and ecommerce";
+    case AiNativeEmailMarketingToolForSaaS = "AI-native email marketing tool for SaaS";
 }
