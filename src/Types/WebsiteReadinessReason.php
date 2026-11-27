@@ -10,4 +10,5 @@ enum WebsiteReadinessReason: string
     case ActivationPending = "activation_pending";
     case ActivationFailed = "activation_failed";
     case SendingUnavailable = "sending_unavailable";
+    case CustomSendingDomainRequired = "custom_sending_domain_required";
 }

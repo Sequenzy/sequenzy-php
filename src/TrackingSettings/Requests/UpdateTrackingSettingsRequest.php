@@ -75,6 +75,12 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
     public ?bool $transactionalOpenTrackingEnabled;
 
     /**
+     * @var ?bool $transactionalReplyTrackingEnabled Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalReplyTrackingEnabled')]
+    public ?bool $transactionalReplyTrackingEnabled;
+
+    /**
      * @var ?bool $unsubscribeTrackingEnabled Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
      */
     #[JsonProperty('unsubscribeTrackingEnabled')]
@@ -93,6 +99,7 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
      *   strictBotFilteringEnabled?: ?bool,
      *   transactionalClickTrackingEnabled?: ?bool,
      *   transactionalOpenTrackingEnabled?: ?bool,
+     *   transactionalReplyTrackingEnabled?: ?bool,
      *   unsubscribeTrackingEnabled?: ?bool,
      * } $values
      */
@@ -110,6 +117,7 @@ class UpdateTrackingSettingsRequest extends JsonSerializableType
         $this->strictBotFilteringEnabled = $values['strictBotFilteringEnabled'] ?? null;
         $this->transactionalClickTrackingEnabled = $values['transactionalClickTrackingEnabled'] ?? null;
         $this->transactionalOpenTrackingEnabled = $values['transactionalOpenTrackingEnabled'] ?? null;
+        $this->transactionalReplyTrackingEnabled = $values['transactionalReplyTrackingEnabled'] ?? null;
         $this->unsubscribeTrackingEnabled = $values['unsubscribeTrackingEnabled'] ?? null;
     }
 }

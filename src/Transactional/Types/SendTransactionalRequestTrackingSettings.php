@@ -6,7 +6,7 @@ use Sequenzy\Core\Json\JsonSerializableType;
 use Sequenzy\Core\Json\JsonProperty;
 
 /**
- * Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
+ * Per-send tracking opt-outs. Omitted fields follow the company Transactional API open, click, and reply tracking defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
  */
 class SendTransactionalRequestTrackingSettings extends JsonSerializableType
 {
@@ -23,9 +23,16 @@ class SendTransactionalRequestTrackingSettings extends JsonSerializableType
     public ?bool $openTracking;
 
     /**
+     * @var ?bool $replyTracking Set `false` to skip Reply-To rewriting for this send only, so replies go directly to the original Reply-To address instead of Sequenzy Inbox.
+     */
+    #[JsonProperty('replyTracking')]
+    public ?bool $replyTracking;
+
+    /**
      * @param array{
      *   clickTracking?: ?bool,
      *   openTracking?: ?bool,
+     *   replyTracking?: ?bool,
      * } $values
      */
     public function __construct(
@@ -33,6 +40,7 @@ class SendTransactionalRequestTrackingSettings extends JsonSerializableType
     ) {
         $this->clickTracking = $values['clickTracking'] ?? null;
         $this->openTracking = $values['openTracking'] ?? null;
+        $this->replyTracking = $values['replyTracking'] ?? null;
     }
 
     /**

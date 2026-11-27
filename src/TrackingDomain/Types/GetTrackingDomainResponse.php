@@ -9,6 +9,12 @@ use Sequenzy\Types\TrackingDomain;
 class GetTrackingDomainResponse extends JsonSerializableType
 {
     /**
+     * @var ?bool $requireCustomTracking True when this workspace's sending policy requires a verified custom tracking domain and disallows fallback to shared tracking domains.
+     */
+    #[JsonProperty('requireCustomTracking')]
+    public ?bool $requireCustomTracking;
+
+    /**
      * @var ?bool $success
      */
     #[JsonProperty('success')]
@@ -22,6 +28,7 @@ class GetTrackingDomainResponse extends JsonSerializableType
 
     /**
      * @param array{
+     *   requireCustomTracking?: ?bool,
      *   success?: ?bool,
      *   trackingDomain?: ?TrackingDomain,
      * } $values
@@ -29,6 +36,7 @@ class GetTrackingDomainResponse extends JsonSerializableType
     public function __construct(
         array $values = [],
     ) {
+        $this->requireCustomTracking = $values['requireCustomTracking'] ?? null;
         $this->success = $values['success'] ?? null;
         $this->trackingDomain = $values['trackingDomain'] ?? null;
     }

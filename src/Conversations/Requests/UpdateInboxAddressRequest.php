@@ -8,7 +8,7 @@ use Sequenzy\Core\Json\JsonProperty;
 class UpdateInboxAddressRequest extends JsonSerializableType
 {
     /**
-     * @var ?string $domain One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as the workspace's one receiving domain, or fails with 409 `limit_reached` when the workspace already has a different one. Null to clear.
+     * @var ?string $domain One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as a receiving domain, or fails with 409 `limit_reached` when the workspace already has 5 receiving domains. Null to clear.
      */
     #[JsonProperty('domain')]
     public ?string $domain;

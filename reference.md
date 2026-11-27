@@ -10011,7 +10011,7 @@ $client->companies->update(
 <dl>
 <dd>
 
-**$replyTrackingEnabled:** `?bool` — Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
+**$replyTrackingEnabled:** `?bool` — Turn reply tracking on or off. When on, new emails get a tracking Reply-To address; without a verified receiving domain it is on inbound.sequenzy.com. Turning it off does not stop mail to your inbox addresses or replies to emails already sent. The first verification of a receiving domain you added also turns it on automatically.
     
 </dd>
 </dl>
@@ -10052,6 +10052,14 @@ $client->companies->update(
 <dd>
 
 **$toneVoice:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$transactionalReplyTrackingEnabled:** `?bool` — Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
     
 </dd>
 </dl>
@@ -10437,7 +10445,7 @@ $client->conversations->get(
 <dl>
 <dd>
 
-Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether receiving is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
+Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether reply tracking is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
 </dd>
 </dl>
 </dd>
@@ -10868,7 +10876,7 @@ $client->conversations->updateInboxAddress(
 <dl>
 <dd>
 
-**$domain:** `?string` — One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as the workspace's one receiving domain, or fails with 409 `limit_reached` when the workspace already has a different one. Null to clear.
+**$domain:** `?string` — One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as a receiving domain, or fails with 409 `limit_reached` when the workspace already has 5 receiving domains. Null to clear.
     
 </dd>
 </dl>
@@ -23050,7 +23058,7 @@ $client->push->updateWebPushSettings(
 <dl>
 <dd>
 
-Adds your workspace's receiving domain, a domain or subdomain whose mail should reach your Inbox, and returns the DNS records to publish. A workspace has one receiving domain. Once it is verified, replies to emails from all your sending domains come back to reply addresses on it, and its first verification turns Inbox on; until then replies use inbound.sequenzy.com. Mail for a domain goes wherever its MX records point, so a domain whose MX records already point at another mail service (Google Workspace, Microsoft 365, Cloudflare Email Routing) is refused: use a subdomain such as support.acme.com instead. When the workspace already has a receiving domain, a different name is refused with limit_reached before any DNS lookup. Adding a name this workspace already has returns it unchanged with created false, without checking its MX records again, so retries are safe. Adding the first receiving domain also sets the company's reply domain mode to custom. Requires the websites:write scope and owner or admin access.
+Adds a receiving domain, a domain or subdomain whose mail should reach your Inbox, and returns the DNS records to publish. Once verified, replies to emails from your sending domains come back to reply addresses on it, and its first verification turns reply tracking on; until then replies use inbound.sequenzy.com. Mail for a domain goes wherever its MX records point, so a domain whose MX records already point at another mail service (Google Workspace, Microsoft 365, Cloudflare Email Routing) is refused: use a subdomain such as support.acme.com instead. A workspace can have up to 5 receiving domains; a sixth is refused with limit_reached before any DNS lookup. Adding a name this workspace already has returns it unchanged with created false, without checking its MX records again, so retries are safe. Adding the first receiving domain also sets the company's reply domain mode to custom. Requires the websites:write scope and owner or admin access.
 </dd>
 </dl>
 </dd>
@@ -23164,7 +23172,7 @@ $client->receivingDomains->getReceivingDomain(
 <dl>
 <dd>
 
-Lists the domains and subdomains whose mail reaches your Inbox, in alphabetical order, with their status and the DNS records to publish. A workspace has one receiving domain; workspaces that set up several before keep them, and replies then use the sender's own domain or one on the same root, else the oldest verified one. Requires the websites:read scope. Marketer personal API keys cannot use receiving domain endpoints.
+Lists the domains and subdomains whose mail reaches your Inbox, in alphabetical order, with their status and the DNS records to publish. When more than one receiving domain is verified, replies use the sender's own domain or one on the same root, else the oldest verified one. Requires the websites:read scope. Marketer personal API keys cannot use receiving domain endpoints.
 </dd>
 </dl>
 </dd>
@@ -23259,7 +23267,7 @@ $client->receivingDomains->removeReceivingDomain(
 <dl>
 <dd>
 
-Checks the domain's DNS records and Amazon SES setup now instead of waiting for the next automatic check, and returns the result. The first time a receiving domain added with Add receiving domain becomes verified, Inbox turns on (replyTrackingEnabled becomes true). Domains moved from an older reply setup or added through Update inbox address leave the Inbox setting unchanged. Requires the websites:write scope and owner or admin access.
+Checks the domain's DNS records and Amazon SES setup now instead of waiting for the next automatic check, and returns the result. The first time a receiving domain added with Add receiving domain becomes verified, reply tracking turns on (replyTrackingEnabled becomes true). Domains moved from an older reply setup or added through Update inbox address leave that setting unchanged. Requires the websites:write scope and owner or admin access.
 </dd>
 </dl>
 </dd>
@@ -35497,6 +35505,14 @@ $client->trackingSettings->update(
 <dl>
 <dd>
 
+**$transactionalReplyTrackingEnabled:** `?bool` — Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$unsubscribeTrackingEnabled:** `?bool` — Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
     
 </dd>
@@ -36353,7 +36369,7 @@ the visible From.
 <dl>
 <dd>
 
-**$trackingSettings:** `?SendTransactionalRequestTrackingSettings` — Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
+**$trackingSettings:** `?SendTransactionalRequestTrackingSettings` — Per-send tracking opt-outs. Omitted fields follow the company Transactional API open, click, and reply tracking defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
     
 </dd>
 </dl>
@@ -38357,7 +38373,7 @@ $client->websites->list();
 <dl>
 <dd>
 
-Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles and sequences stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. A workspace without a tracking domain gets links.<domain> (links2 to links5 when that name is in use), as when adding a new domain; publish its CNAME from website.dnsUpgrade.trackingRecord too, which also lists an existing tracking domain in this DNS zone while it is not verified (null otherwise). It is optional and never holds up the switch: until it is verified, links use the shared tracking domains. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. The domain also gets a new 2048-bit DKIM key; the key change adds no records of its own. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain>) and the DKIM TXT, and DMARC stays. Requires websites:write.
+Starts moving a verified sending domain onto the current per-domain CNAME record set without removing it. The domain keeps sending on its current records while the upgrade is in progress, and sender profiles and sequences stay as they are. Publish the CNAMEs in website.dnsUpgrade.records next to your current records; remove nothing yet. A workspace without a tracking domain gets links.<domain> (links2 to links5 when that name is in use), as when adding a new domain; publish its CNAME from website.dnsUpgrade.trackingRecord too, which also lists an existing tracking domain in this DNS zone while it is not verified (null otherwise). It is optional and never holds up the switch: until it is verified, links use the shared tracking domains. About an hour after the required ones (DKIM and the return path) are visible on public DNS (Google and Cloudflare resolvers), the domain switches by itself; the wait lets cached "does not exist" answers expire. Sequenzy prepares the sending setup of the domain separately and switches only once it is confirmed, so sending is normally not interrupted and no emails are held. If that is not possible for a domain, emails sent through Amazon SES can be held for a few minutes while SES confirms the new setup, then they go out. The domain also gets a new 2048-bit DKIM key; the key change adds no records of its own. An older SES-only domain needs a working DMARC record first, otherwise the request returns 400. Call POST /websites/{domain}/verify after publishing to check now; it does not skip the wait. After the switch, website.dnsUpgrade lists the old records to delete after deleteOldRecordsAfter; for an older SES-only domain these include the old return path records (MX and TXT at send.<domain> or bounce.<domain>) and the old DKIM record(s) (the DKIM TXT or the three Easy DKIM CNAMEs), and DMARC stays. Requires websites:write.
 </dd>
 </dl>
 </dd>

@@ -10,7 +10,7 @@ use Sequenzy\Types\InboxCustomAddress;
 class GetInboxAddressResponseInbox extends JsonSerializableType
 {
     /**
-     * @var string $address The address to share. Your branded address once it is active, otherwise the default address.
+     * @var string $address The address to share. Your branded address once it is active, otherwise inbox@ your oldest verified receiving domain (inbox+{companyId}@ it for a domain moved from an older reply setup), otherwise the default address.
      */
     #[JsonProperty('address')]
     public string $address;
@@ -40,7 +40,7 @@ class GetInboxAddressResponseInbox extends JsonSerializableType
     public string $defaultAddress;
 
     /**
-     * @var bool $enabled Whether the company receives email. When false, replies and inbox address email are not stored.
+     * @var bool $enabled Whether reply tracking is on, so new emails get a tracking Reply-To address. Mail sent to the inbox addresses is stored either way.
      */
     #[JsonProperty('enabled')]
     public bool $enabled;

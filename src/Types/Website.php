@@ -35,7 +35,7 @@ class Website extends JsonSerializableType
     public ?WebsiteDnsRecords $dnsRecords;
 
     /**
-     * @var ?WebsiteDnsUpgrade $dnsUpgrade Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+     * @var ?WebsiteDnsUpgrade $dnsUpgrade Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
      */
     #[JsonProperty('dnsUpgrade')]
     public ?WebsiteDnsUpgrade $dnsUpgrade;
@@ -101,7 +101,7 @@ class Website extends JsonSerializableType
     public ?array $spf;
 
     /**
-     * @var ?value-of<WebsiteStatus> $status Stored DNS verification status. This does not imply that a sending transport is ready.
+     * @var ?value-of<WebsiteStatus> $status Stored DNS verification status. A new domain starts as pending and is checked automatically; not_started appears only on domains added before that. This does not imply that a sending transport is ready.
      */
     #[JsonProperty('status')]
     public ?string $status;

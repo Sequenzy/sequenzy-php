@@ -246,7 +246,7 @@ class Company extends JsonSerializableType
     public ?string $replyTrackingDomainMode;
 
     /**
-     * @var ?bool $replyTrackingEnabled Whether inbound reply capture is enabled for this company.
+     * @var ?bool $replyTrackingEnabled Whether new emails get a tracking Reply-To address so replies are matched to the email they answer. Mail sent to your inbox addresses is stored either way.
      */
     #[JsonProperty('replyTrackingEnabled')]
     public ?bool $replyTrackingEnabled;
@@ -280,6 +280,12 @@ class Company extends JsonSerializableType
      */
     #[JsonProperty('toneVoice')]
     public ?string $toneVoice;
+
+    /**
+     * @var ?bool $transactionalReplyTrackingEnabled Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalReplyTrackingEnabled')]
+    public ?bool $transactionalReplyTrackingEnabled;
 
     /**
      * @var ?string $url Dashboard edit URL for this campaign.
@@ -358,6 +364,7 @@ class Company extends JsonSerializableType
      *   termsUrl?: ?string,
      *   testimonials?: ?array<array<string, mixed>>,
      *   toneVoice?: ?string,
+     *   transactionalReplyTrackingEnabled?: ?bool,
      *   url?: ?string,
      *   valueProps?: ?array<array<string, mixed>>,
      *   websiteType?: ?value-of<CompanyWebsiteType>,
@@ -413,6 +420,7 @@ class Company extends JsonSerializableType
         $this->termsUrl = $values['termsUrl'] ?? null;
         $this->testimonials = $values['testimonials'] ?? null;
         $this->toneVoice = $values['toneVoice'] ?? null;
+        $this->transactionalReplyTrackingEnabled = $values['transactionalReplyTrackingEnabled'] ?? null;
         $this->url = $values['url'] ?? null;
         $this->valueProps = $values['valueProps'] ?? null;
         $this->websiteType = $values['websiteType'] ?? null;

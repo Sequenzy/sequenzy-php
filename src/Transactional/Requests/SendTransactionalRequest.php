@@ -169,7 +169,7 @@ class SendTransactionalRequest extends JsonSerializableType
     public ?string $trackAs;
 
     /**
-     * @var ?SendTransactionalRequestTrackingSettings $trackingSettings Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
+     * @var ?SendTransactionalRequestTrackingSettings $trackingSettings Per-send tracking opt-outs. Omitted fields follow the company Transactional API open, click, and reply tracking defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
      */
     #[JsonProperty('trackingSettings')]
     public ?SendTransactionalRequestTrackingSettings $trackingSettings;

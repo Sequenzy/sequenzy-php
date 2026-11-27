@@ -218,7 +218,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
     public ?string $replyTrackingDomainMode;
 
     /**
-     * @var ?bool $replyTrackingEnabled Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
+     * @var ?bool $replyTrackingEnabled Turn reply tracking on or off. When on, new emails get a tracking Reply-To address; without a verified receiving domain it is on inbound.sequenzy.com. Turning it off does not stop mail to your inbox addresses or replies to emails already sent. The first verification of a receiving domain you added also turns it on automatically.
      */
     #[JsonProperty('replyTrackingEnabled')]
     public ?bool $replyTrackingEnabled;
@@ -252,6 +252,12 @@ class UpdateCompaniesRequest extends JsonSerializableType
      */
     #[JsonProperty('toneVoice')]
     public ?string $toneVoice;
+
+    /**
+     * @var ?bool $transactionalReplyTrackingEnabled Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalReplyTrackingEnabled')]
+    public ?bool $transactionalReplyTrackingEnabled;
 
     /**
      * @var ?array<array<string, mixed>> $valueProps
@@ -306,6 +312,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
      *   termsUrl?: ?string,
      *   testimonials?: ?array<array<string, mixed>>,
      *   toneVoice?: ?string,
+     *   transactionalReplyTrackingEnabled?: ?bool,
      *   valueProps?: ?array<array<string, mixed>>,
      *   websiteType?: ?value-of<UpdateCompaniesRequestWebsiteType>,
      * } $values
@@ -352,6 +359,7 @@ class UpdateCompaniesRequest extends JsonSerializableType
         $this->termsUrl = $values['termsUrl'] ?? null;
         $this->testimonials = $values['testimonials'] ?? null;
         $this->toneVoice = $values['toneVoice'] ?? null;
+        $this->transactionalReplyTrackingEnabled = $values['transactionalReplyTrackingEnabled'] ?? null;
         $this->valueProps = $values['valueProps'] ?? null;
         $this->websiteType = $values['websiteType'] ?? null;
     }

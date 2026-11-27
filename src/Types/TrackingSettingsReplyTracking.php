@@ -26,10 +26,17 @@ class TrackingSettingsReplyTracking extends JsonSerializableType
     public ?string $inboundReplyDomainMode;
 
     /**
+     * @var ?bool $transactionalReplyTrackingEnabled Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+     */
+    #[JsonProperty('transactionalReplyTrackingEnabled')]
+    public ?bool $transactionalReplyTrackingEnabled;
+
+    /**
      * @param array{
      *   forwardReplies?: ?bool,
      *   inboundEmailEnabled?: ?bool,
      *   inboundReplyDomainMode?: ?value-of<TrackingSettingsReplyTrackingInboundReplyDomainMode>,
+     *   transactionalReplyTrackingEnabled?: ?bool,
      * } $values
      */
     public function __construct(
@@ -38,6 +45,7 @@ class TrackingSettingsReplyTracking extends JsonSerializableType
         $this->forwardReplies = $values['forwardReplies'] ?? null;
         $this->inboundEmailEnabled = $values['inboundEmailEnabled'] ?? null;
         $this->inboundReplyDomainMode = $values['inboundReplyDomainMode'] ?? null;
+        $this->transactionalReplyTrackingEnabled = $values['transactionalReplyTrackingEnabled'] ?? null;
     }
 
     /**

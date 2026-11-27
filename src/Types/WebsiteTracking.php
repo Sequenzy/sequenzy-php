@@ -47,7 +47,7 @@ class WebsiteTracking extends JsonSerializableType
     public ?bool $required;
 
     /**
-     * @var ?value-of<WebsiteTrackingStatus> $status Verification status of hostname, including HTTPS. not_started until you confirm DNS setup with Verify Sending Domain or check it with Verify Tracking Domain.
+     * @var ?value-of<WebsiteTrackingStatus> $status Verification status of hostname, including HTTPS. not_started until the first record of a sending domain is found, its DNS setup is confirmed with Verify Sending Domain, or you check it with Verify Tracking Domain.
      */
     #[JsonProperty('status')]
     public ?string $status;
