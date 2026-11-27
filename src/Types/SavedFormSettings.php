@@ -195,6 +195,12 @@ class SavedFormSettings extends JsonSerializableType
     public bool $showLastName;
 
     /**
+     * @var ?value-of<SavedFormSettingsSubmitTokenMode> $submitTokenMode Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+     */
+    #[JsonProperty('submitTokenMode')]
+    public ?string $submitTokenMode;
+
+    /**
      * @var ?string $successFontColor
      */
     #[JsonProperty('successFontColor')]
@@ -275,6 +281,7 @@ class SavedFormSettings extends JsonSerializableType
      *   fontSize?: ?string,
      *   imageUrl?: ?string,
      *   overlayColor?: ?string,
+     *   submitTokenMode?: ?value-of<SavedFormSettingsSubmitTokenMode>,
      *   successFontColor?: ?string,
      * } $values
      */
@@ -312,6 +319,7 @@ class SavedFormSettings extends JsonSerializableType
         $this->resubscribeBehavior = $values['resubscribeBehavior'];
         $this->showFirstName = $values['showFirstName'];
         $this->showLastName = $values['showLastName'];
+        $this->submitTokenMode = $values['submitTokenMode'] ?? null;
         $this->successFontColor = $values['successFontColor'] ?? null;
         $this->successFontSize = $values['successFontSize'];
         $this->successMessage = $values['successMessage'];

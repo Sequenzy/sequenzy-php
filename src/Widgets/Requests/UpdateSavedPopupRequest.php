@@ -13,6 +13,7 @@ use Sequenzy\Widgets\Types\UpdateSavedPopupRequestResubscribeBehavior;
 use Sequenzy\Types\SavedPopupReward;
 use Sequenzy\Types\SavedPopupSchedule;
 use Sequenzy\Widgets\Types\UpdateSavedPopupRequestStatus;
+use Sequenzy\Widgets\Types\UpdateSavedPopupRequestSubmitTokenMode;
 use Sequenzy\Types\SavedPopupTargeting;
 use Sequenzy\Types\SavedPopupTrigger;
 use Sequenzy\Types\SavedPopupVisual;
@@ -116,6 +117,12 @@ class UpdateSavedPopupRequest extends JsonSerializableType
     public ?string $status;
 
     /**
+     * @var ?value-of<UpdateSavedPopupRequestSubmitTokenMode> $submitTokenMode Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode. Omit to keep the current setting.
+     */
+    #[JsonProperty('submitTokenMode')]
+    public ?string $submitTokenMode;
+
+    /**
      * @var ?string $successMessage
      */
     #[JsonProperty('successMessage')]
@@ -169,6 +176,7 @@ class UpdateSavedPopupRequest extends JsonSerializableType
      *   reward?: ?SavedPopupReward,
      *   schedule?: ?SavedPopupSchedule,
      *   status?: ?value-of<UpdateSavedPopupRequestStatus>,
+     *   submitTokenMode?: ?value-of<UpdateSavedPopupRequestSubmitTokenMode>,
      *   successMessage?: ?string,
      *   tagIds?: ?array<string>,
      *   targeting?: ?SavedPopupTargeting,
@@ -196,6 +204,7 @@ class UpdateSavedPopupRequest extends JsonSerializableType
         $this->reward = $values['reward'] ?? null;
         $this->schedule = $values['schedule'] ?? null;
         $this->status = $values['status'] ?? null;
+        $this->submitTokenMode = $values['submitTokenMode'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->targeting = $values['targeting'] ?? null;

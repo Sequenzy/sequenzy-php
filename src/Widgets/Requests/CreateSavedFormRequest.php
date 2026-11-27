@@ -7,6 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Widgets\Types\CreateSavedFormRequestDuplicateStrategy;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Widgets\Types\CreateSavedFormRequestResubscribeBehavior;
+use Sequenzy\Widgets\Types\CreateSavedFormRequestSubmitTokenMode;
 
 class CreateSavedFormRequest extends JsonSerializableType
 {
@@ -77,6 +78,12 @@ class CreateSavedFormRequest extends JsonSerializableType
     public ?bool $showLastName;
 
     /**
+     * @var ?value-of<CreateSavedFormRequestSubmitTokenMode> $submitTokenMode Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode.
+     */
+    #[JsonProperty('submitTokenMode')]
+    public ?string $submitTokenMode;
+
+    /**
      * @var ?string $successMessage
      */
     #[JsonProperty('successMessage')]
@@ -107,6 +114,7 @@ class CreateSavedFormRequest extends JsonSerializableType
      *   resubscribeBehavior?: ?value-of<CreateSavedFormRequestResubscribeBehavior>,
      *   showFirstName?: ?bool,
      *   showLastName?: ?bool,
+     *   submitTokenMode?: ?value-of<CreateSavedFormRequestSubmitTokenMode>,
      *   successMessage?: ?string,
      *   tagIds?: ?array<string>,
      *   theme?: ?array<string, mixed>,
@@ -126,6 +134,7 @@ class CreateSavedFormRequest extends JsonSerializableType
         $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
         $this->showFirstName = $values['showFirstName'] ?? null;
         $this->showLastName = $values['showLastName'] ?? null;
+        $this->submitTokenMode = $values['submitTokenMode'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->theme = $values['theme'] ?? null;

@@ -51,6 +51,12 @@ class FormCaptureSettings extends JsonSerializableType
     public string $resubscribeBehavior;
 
     /**
+     * @var ?value-of<FormCaptureSettingsSubmitTokenMode> $submitTokenMode Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+     */
+    #[JsonProperty('submitTokenMode')]
+    public ?string $submitTokenMode;
+
+    /**
      * @var array<string> $tagIds
      */
     #[JsonProperty('tagIds'), ArrayType(['string'])]
@@ -66,6 +72,7 @@ class FormCaptureSettings extends JsonSerializableType
      *   redirectUrl: string,
      *   resubscribeBehavior: value-of<FormCaptureSettingsResubscribeBehavior>,
      *   tagIds: array<string>,
+     *   submitTokenMode?: ?value-of<FormCaptureSettingsSubmitTokenMode>,
      * } $values
      */
     public function __construct(
@@ -78,6 +85,7 @@ class FormCaptureSettings extends JsonSerializableType
         $this->listMode = $values['listMode'];
         $this->redirectUrl = $values['redirectUrl'];
         $this->resubscribeBehavior = $values['resubscribeBehavior'];
+        $this->submitTokenMode = $values['submitTokenMode'] ?? null;
         $this->tagIds = $values['tagIds'];
     }
 

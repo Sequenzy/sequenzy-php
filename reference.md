@@ -39023,6 +39023,14 @@ $client->widgets->createSavedForm(
 <dl>
 <dd>
 
+**$submitTokenMode:** `?string` — Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$successMessage:** `?string` 
     
 </dd>
@@ -39220,6 +39228,14 @@ $client->widgets->createSavedPopup(
 <dd>
 
 **$status:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$submitTokenMode:** `?string` — Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode.
     
 </dd>
 </dl>
@@ -40734,6 +40750,14 @@ $client->widgets->updateSavedForm(
 <dl>
 <dd>
 
+**$submitTokenMode:** `?string` — Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode. Omit to keep the current setting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **$successMessage:** `?string` 
     
 </dd>
@@ -40938,6 +40962,14 @@ $client->widgets->updateSavedPopup(
 <dd>
 
 **$status:** `?string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**$submitTokenMode:** `?string` — Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode. Omit to keep the current setting.
     
 </dd>
 </dl>

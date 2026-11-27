@@ -7,6 +7,7 @@ use Sequenzy\Core\Json\JsonProperty;
 use Sequenzy\Core\Types\ArrayType;
 use Sequenzy\Widgets\Types\UpdateSavedFormRequestDuplicateStrategy;
 use Sequenzy\Widgets\Types\UpdateSavedFormRequestResubscribeBehavior;
+use Sequenzy\Widgets\Types\UpdateSavedFormRequestSubmitTokenMode;
 
 class UpdateSavedFormRequest extends JsonSerializableType
 {
@@ -71,6 +72,12 @@ class UpdateSavedFormRequest extends JsonSerializableType
     public ?string $resubscribeBehavior;
 
     /**
+     * @var ?value-of<UpdateSavedFormRequestSubmitTokenMode> $submitTokenMode Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode. Omit to keep the current setting.
+     */
+    #[JsonProperty('submitTokenMode')]
+    public ?string $submitTokenMode;
+
+    /**
      * @var ?string $successMessage
      */
     #[JsonProperty('successMessage')]
@@ -100,6 +107,7 @@ class UpdateSavedFormRequest extends JsonSerializableType
      *   name?: ?string,
      *   redirectUrl?: ?string,
      *   resubscribeBehavior?: ?value-of<UpdateSavedFormRequestResubscribeBehavior>,
+     *   submitTokenMode?: ?value-of<UpdateSavedFormRequestSubmitTokenMode>,
      *   successMessage?: ?string,
      *   tagIds?: ?array<string>,
      *   theme?: ?array<string, mixed>,
@@ -118,6 +126,7 @@ class UpdateSavedFormRequest extends JsonSerializableType
         $this->name = $values['name'] ?? null;
         $this->redirectUrl = $values['redirectUrl'] ?? null;
         $this->resubscribeBehavior = $values['resubscribeBehavior'] ?? null;
+        $this->submitTokenMode = $values['submitTokenMode'] ?? null;
         $this->successMessage = $values['successMessage'] ?? null;
         $this->tagIds = $values['tagIds'] ?? null;
         $this->theme = $values['theme'] ?? null;
